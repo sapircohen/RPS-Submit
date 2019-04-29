@@ -9,7 +9,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
-import { withRouter } from "react-router-dom";
+import firebase from 'firebase';
 
 const styles = theme => ({
   main: {
@@ -44,10 +44,52 @@ const styles = theme => ({
 });
 
 class LoginScreen extends React.Component{
-  CheckUser = ()=>{
-    alert('ברוכים הבאים');
-    const { history } = this.props;
-    history.push("/ISproject")
+  constructor(props){
+    super(props);
+    this.changedGroupName = this.changedGroupName.bind(this);
+    this.changedPassword = this.changedPassword.bind(this);
+  }
+  state={
+    password:'',
+    groupName:''
+  }
+  CheckUser = (event)=>{
+    const {history} = this.props;
+    event.preventDefault();
+    if (this.state.password === '' || this.state.groupName === '') {
+      alert("can't connect");
+      return;
+    }
+    //check user on firebase. 
+    //need to add to each group a name and a password!!!
+    let logged = false;
+    const ref = firebase.database().ref('RuppinProjects');
+    ref.once("value", (snapshot)=> {
+      snapshot.forEach((project)=> {
+        if (parseInt(this.state.password) === project.val().Password && this.state.groupName === project.val().GroupName) {
+          logged = true;
+          console.log(project.val())
+          localStorage.setItem('groupData', JSON.stringify(project.val()));
+          if (project.val().Major === 'מערכות מידע') {
+            history.push('/ISproject');
+          }
+        }
+    })
+    }, (errorObject)=> {
+      console.log("The read failed: " + errorObject.code);
+    })
+    .then(()=>{
+      if (!logged) {
+        history.push('/Crop');
+        alert('worng details, try again')
+      }
+    })
+  }
+  changedGroupName(e){
+    this.setState({groupName:e.target.value});
+  }
+  changedPassword(e){
+    this.setState({password:e.target.value})
   }
   render(){
     const { classes } = this.props;
@@ -55,19 +97,25 @@ class LoginScreen extends React.Component{
       <main className={classes.main}>
         <CssBaseline />
         <Paper className={classes.paper}>
-          <Avatar className={classes.avatar}>
+          <Avatar style={{backgroundColor:'transparent'}} className={classes.avatar}>
+            <img
+              alt="ruppin logo"
+              src='http://sn2e.co.il/wp-content/uploads/2016/07/logo.Ruppin_round-300x296.png'
+              width='60'
+              height='60'
+            />
           </Avatar>
           <Typography component="h1" variant="h5">
             התחבר
           </Typography>
           <form className={classes.form}>
             <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="email">Email Address</InputLabel>
-              <Input id="email" name="email" autoComplete="email" autoFocus />
+              <InputLabel htmlFor="email">Group name</InputLabel>
+              <Input id="groupName" onChange={this.changedGroupName} name="groupName" autoFocus />
             </FormControl>
             <FormControl margin="normal" required fullWidth>
               <InputLabel htmlFor="password">Password</InputLabel>
-              <Input name="password" type="password" id="password" autoComplete="current-password" />
+              <Input name="password" onChange={this.changedPassword} type="password" id="password" autoComplete="current-password" />
             </FormControl>
             <Button
               onClick={this.CheckUser}
