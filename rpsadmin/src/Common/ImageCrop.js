@@ -2,18 +2,23 @@ import React,{Component} from 'react';
 import Dropzone from 'react-dropzone';
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css'
+import Cropper from 'react-easy-crop'
+
+import {image64toCanvasRef} from '../constant/ResuableUtils';
+
 
 const acceptedFileType = 'image/x-png, image/png, image/jpg, image/jpeg, image/gif';
 const acceptedFileTypeArray = acceptedFileType.split(",").map((item)=>{return item.trim()});
 class ImageCropper extends React.Component{
         constructor(props){
             super(props);
+            this.PreviewCanvasRef = React.createRef();
             this.state={
                 imgSrc:null,
-                crop:{
-                    aspect:4/3
-                }
+                crop: { x: 0, y: 0,width:300,height:300 },
+                aspect: 4 / 3,
             }
+            this.handleOnCropComplete = this.handleOnCropComplete.bind(this);
         }
         verifyFile = (files)=>{
             if(files && files.length>0){
@@ -29,7 +34,7 @@ class ImageCropper extends React.Component{
             return false;
         }
         handleOnDrop = (files,rejectedFiles)=>{
-            console.log(files)
+            //console.log(files)
             if (rejectedFiles && rejectedFiles.length>0) {
                 this.verifyFile(rejectedFiles);
             }
@@ -46,7 +51,7 @@ class ImageCropper extends React.Component{
                         })
                         console.log(reader.result);
                     },false)
-                    console.log(reader)
+                    //console.log(reader)
                     reader.readAsDataURL(currentFile);
 
                 }
@@ -60,22 +65,24 @@ class ImageCropper extends React.Component{
         handleImageLoaded = (image)=>{
 
         }
-        handleOnCropComplete = (crop,pixelCrop)=>{
-
+        handleOnCropComplete(crop,pixelCrop){
+            console.log(crop, pixelCrop)
         }
+        
         render(){
             const {imgSrc} = this.state;
         return (
-        <div style={{felx:1,marginTop:'5%'}}>
+        <div style={{flex:1,marginTop:'5%'}}>
             {imgSrc !== null ?
-                <div> 
-                    <ReactCrop 
-                    src={imgSrc} 
-                    crop={this.state.crop} 
-                    onChange={this.handleOnCropChange}
-                    onImageLoaded={this.handleImageLoaded}
-                    onComplete={this.handleOnCropComplete}
-                    />
+                <div style={{height:400,width:'100%',position:'relative'}}> 
+                    <Cropper
+                            image={this.state.imgSrc}
+                            crop={this.state.crop}
+                            aspect={this.state.aspect}
+                            onCropChange={this.handleOnCropChange}
+                            onCropComplete={this.handleOnCropComplete}
+                            //onZoomChange={this.onZoomChange}
+                        />
                 </div>
             : (
                 <Dropzone multiple={false} accept={acceptedFileType} onDrop={this.handleOnDrop}>

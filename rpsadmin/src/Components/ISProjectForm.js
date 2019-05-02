@@ -13,6 +13,7 @@ import HeaderForm from '../Common/HeaderForm';
 import SmallHeaderForm from '../Common/SmallHeaderForm';
 import ModalImage from '../Common/ImageModal';
 import firebase from 'firebase';
+import StudentDetails from '../Common/StudentsDetails';
 
 
 const KeyCodes = {
@@ -288,23 +289,24 @@ class ISProjectTemplate extends React.Component{
                         }
                     </div>                    
                     
+                    {/* FILES UPLOAD */}
                     <div style={{border:'solid 1px',padding:20,borderRadius:20,marginTop:'2%'}}>
                         <SmallHeaderForm title="הוספת קבצים"/>
 
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Col sm="4">
-                                    <Button onClick={()=>this.OpenImageModal('לוגו הפרויקט')} variant="primary">
+                                    <Button onClick={()=>this.OpenImageModal('Project Logo')} variant="primary">
                                         הוסף לוגו
                                     </Button>
                                 </Col>
                                 <Col sm="4">
-                                    <Button onClick={()=>this.OpenImageModal('לוגו הפרויקט')} variant="primary">
+                                    <Button onClick={()=>this.OpenImageModal('Screenshots')} variant="primary">
                                         הוסף תמונות מסך
                                     </Button>
                                 </Col>
                                 {this.state.organization ?
                                 <Col sm="4">
-                                    <Button onClick={()=>this.OpenImageModal('לוגו הפרויקט')} variant="primary">
+                                    <Button onClick={()=>this.OpenImageModal('Customer Logo')} variant="primary">
                                         הוסף לוגו לקוח
                                     </Button>
                                 </Col>
@@ -313,6 +315,10 @@ class ISProjectTemplate extends React.Component{
                                 }
                             </Row>
                     </div>
+
+                    <StudentDetails OpenImageModal={this.OpenImageModal}/>
+                    
+                    {/* tag the project */}
                     <div dir="rtl" style={{padding:15,borderRadius:20,marginTop:20}}>
                         <Row>
                             <Col sm="4" style={{fontSize:25}}>
@@ -332,6 +338,8 @@ class ISProjectTemplate extends React.Component{
                             <Col sm="5"></Col>
                         </Row>
                     </div>
+                    
+                    {/* techs tag */}
                     <div dir="rtl" style={{padding:15,borderRadius:20,marginTop:20}}>
                         <Row>
                             <Col sm="4" style={{fontSize:25}}>
