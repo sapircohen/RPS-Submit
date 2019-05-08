@@ -31,10 +31,11 @@ export function base64StringtoFile (base64String, filename) {
   
   // Base64 Image to Canvas with a Crop
   export function image64toCanvasRef (canvasRef, image64, pixelCrop) {
+    
     const canvas = canvasRef;
-    console.log(canvas);
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
+    console.log(image64.width);
+    canvas.width = 600;
+    canvas.height = 300;
     const ctx = canvas.getContext('2d');
     const image = new Image();
     image.src = image64;
@@ -47,8 +48,9 @@ export function base64StringtoFile (base64String, filename) {
         pixelCrop.height,
         0,
         0,
-        pixelCrop.width,
-        pixelCrop.height
+        pixelCrop.width/4,
+        pixelCrop.height/6
       )
     }
+
   }

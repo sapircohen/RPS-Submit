@@ -10,6 +10,8 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import firebase from 'firebase';
+import Loader from 'react-loader-spinner';
+
 
 const styles = theme => ({
   main: {
@@ -51,13 +53,27 @@ class LoginScreen extends React.Component{
   }
   state={
     password:'',
-    groupName:''
+    groupName:'',
+    isReady:true
   }
   CheckUser = (event)=>{
     const {history} = this.props;
     event.preventDefault();
-    if (this.state.password === '' || this.state.groupName === '') {
-      alert("can't connect");
+    this.setState({
+      isReady:false,
+    },()=>{
+    if (this.state.password === '') {
+      alert("שכחת סיסמה?");
+      this.setState({
+        isReady:true,
+      })
+      return;
+    }
+    else if (this.state.groupName === '') {
+      alert("שכחת שם משתמש?");
+      this.setState({
+        isReady:true,
+      })
       return;
     }
     //check user on firebase. 
@@ -66,12 +82,15 @@ class LoginScreen extends React.Component{
     const ref = firebase.database().ref('RuppinProjects');
     ref.once("value", (snapshot)=> {
       snapshot.forEach((project)=> {
+
         if (parseInt(this.state.password) === project.val().Password && this.state.groupName === project.val().GroupName) {
-          logged = true;
-          console.log(project.val())
+          logged = true;          
           localStorage.setItem('groupData', JSON.stringify(project.val()));
           if (project.val().Major === 'מערכות מידע') {
             history.push('/ISproject');
+          }
+          else if(project.val().Department ==='מדעי התנהגות'){
+            history.push('/BSproject');
           }
         }
     })
@@ -79,11 +98,15 @@ class LoginScreen extends React.Component{
       console.log("The read failed: " + errorObject.code);
     })
     .then(()=>{
-      if (!logged) {
-        history.push('/Crop');
-        alert('worng details, try again')
-      }
+      this.setState({isReady:true},()=>{
+        if (!logged) {
+          //history.push('/Crop');
+          alert('נתונים שגויים, נסה שוב');
+        }
+      });
     })
+
+  })
   }
   changedGroupName(e){
     this.setState({groupName:e.target.value});
@@ -93,6 +116,18 @@ class LoginScreen extends React.Component{
   }
   render(){
     const { classes } = this.props;
+    if(!this.state.isReady){
+      return(
+        <div style={{flex:1,marginTop:'20%'}}>
+          <Loader 
+          type="Watch"
+          color="#58947B"
+          height="100"	
+          width="100"
+          />  
+        </div> 
+      )
+    }
     return (
       <main className={classes.main}>
         <CssBaseline />
@@ -101,8 +136,8 @@ class LoginScreen extends React.Component{
             <img
               alt="ruppin logo"
               src='http://sn2e.co.il/wp-content/uploads/2016/07/logo.Ruppin_round-300x296.png'
-              width='80'
-              height='80'
+              width='70'
+              height='70'
             />
           </Avatar>
           <Typography component="h1" variant="h5">

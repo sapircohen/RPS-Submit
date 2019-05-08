@@ -10,7 +10,7 @@ const HeaderForm = (props)=>{
         <Row>
             <Col style={{fontSize:25}}>
                 <h2>
-                    <Badge pill variant="secondary">{props.title}</Badge>
+                    <Badge variant="secondary">{props.title}</Badge>
                 </h2>
             </Col>
         </Row>

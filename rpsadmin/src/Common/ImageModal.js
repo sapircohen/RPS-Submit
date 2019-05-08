@@ -5,10 +5,9 @@ import Dropzone from 'react-dropzone';
 import 'react-image-crop/dist/ReactCrop.css'
 import Cropper from 'react-easy-crop'
 import Slider from '@material-ui/lab/Slider';
-
-//TAKS:
-//enable ZOOM
-//enable insert of Students
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import Form from 'react-bootstrap/Form';
 
 import {base64StringtoFile,extractImageFileExtensionFromBase64, image64toCanvasRef} from '../constant/ResuableUtils';
 
@@ -90,13 +89,31 @@ class ModalImage extends React.Component{
         event.preventDefault();
         const {imgSrc} = this.state;
         const fileExtension = extractImageFileExtensionFromBase64(imgSrc);      
-        const fileName = 'previewFile.' + fileExtension;
+        
+        let fileName='';
+        if (this.props.title ==='Customer Logo') {
+            fileName = 'CustomerLogo.'+fileExtension;
+        }
+        else if (this.props.title ==='Project Logo') {
+            fileName = 'ProjectLogo.'+fileExtension;
+        }
+        else if(this.props.title ==='Screenshots') {
+            const min = 1;
+            const max = 1000;
+            const rand = min + Math.random() * (max - min);
+            fileName = 'previewFile'+rand+'.' + fileExtension;
+        }
+        else if(this.props.title ==='Student Pic'){
+            fileName = 'studentPic'+this.props.picTitle+'.' + fileExtension;
+        }
+        
         const canvasRef = this.PreviewCanvasRef.current;
         const image = canvasRef.toDataURL('image/'+fileExtension);
 
         //upload file:
         const myImage = base64StringtoFile(image,fileName);
         this.saveToFirebaseStorage(myImage);
+        this.props.modalClose();
     }
     modalClose = ()=>{
         this.setState({
@@ -105,8 +122,6 @@ class ModalImage extends React.Component{
             crop: { x: 0, y: 0},
             aspect: 4 / 3,
             zoom:1
-        },()=>{
-            return this.props.modalClose;
         })
     }
     saveToFirebaseStorage = (image)=>{
@@ -121,7 +136,7 @@ class ModalImage extends React.Component{
         ()=>{
             storage.ref('images/'+groupData.GroupName+'/'+this.props.title+'/'+image.name).getDownloadURL()
             .then((url)=>{
-                console.log(url)
+                this.props.savePic(url,this.props.title,this.props.picTitle);
             })
         })
     }
@@ -132,15 +147,22 @@ class ModalImage extends React.Component{
         const {imgSrc} = this.state;
 
         return(
-        <Modal centered	show={this.props.modalOpen}>
+        <Modal onHide={this.props.modalClose}  centered size='lg'	show={this.props.modalOpen}>
             <Modal.Header style={{justifyContent:'center'}}>
                 <Modal.Title>
                     {this.props.title}
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-
-            {/* image crop */}
+            {this.props.title==='Screenshots' &&
+                <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
+                    <Col sm="4"></Col>
+                    <Col sm="4">
+                        <Form.Control value={this.state.ProjectName} size="lg" type="text" dir="rtl"/>
+                    </Col>
+                    <Form.Label column sm="4">שם התמונה</Form.Label>
+                </Form.Group>
+            }
             <div style={{flex:1,marginTop:'5%'}}>
                 {imgSrc !== null ?
                     <div style={{height:300,width:'100%',position:'relative'}}> 
@@ -155,7 +177,7 @@ class ModalImage extends React.Component{
                             />
                         <Slider
                             value={this.state.zoom}
-                            min={0.1}
+                            min={1}
                             max={3}
                             step={0.1}
                             aria-labelledby="Zoom"
@@ -176,9 +198,10 @@ class ModalImage extends React.Component{
                     </Dropzone>
                 )}
                 <br/>
+                <br/>
+                <canvas d style={{display:'none',position:'relative'}} ref={this.PreviewCanvasRef}></canvas>
             </div>
-            <canvas style={{display:'none'}} ref={this.PreviewCanvasRef}></canvas>
-            
+                
             </Modal.Body>
             <Modal.Footer dir="rtl" style={{justifyContent:'space-around'}}>
                 <Button variant="success" onClick={this.saveImage}>

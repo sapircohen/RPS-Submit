@@ -2,15 +2,22 @@ import React from 'react';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
-import SmallHeaderForm from '../Common/SmallHeaderForm';
+import SmallHeaderForm from './SmallHeaderForm';
 import Form from 'react-bootstrap/Form';
-import { FaPlusCircle } from "react-icons/fa";
-import { IoIosCloseCircleOutline,IoMdCheckmark } from "react-icons/io";
+import { FaPlusCircle,FaCameraRetro,FaEye } from "react-icons/fa";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 
 export default class StudentsDetails extends React.Component{
-    state = {
-        numberOfStudents:1,
-        students: [{fullName:"", email:"",image:"",id:""}],
+    constructor(props){
+        super(props);
+        this.state = {
+            numberOfStudents:1,
+            students: [{fullName:"", email:"",image:"",id:""}],
+        }
+
+    }
+    componentDidMount = ()=>{
+        this.props.setStudents(this.state.students);
     }
     ChangeStudentsInputNumber = (e)=>{
         this.setState({
@@ -20,19 +27,19 @@ export default class StudentsDetails extends React.Component{
     addStudent = ()=>{
         if (this.state.students.length >= this.state.numberOfStudents) {
             alert("בבקשה הגדל/י את מספר הסטודנטים לפני המשך הזנה");
-
         }
         else{
             this.setState((prevState) => ({
                 students: [...prevState.students, {fullName:"", email:"",image:"",id:""}],
-            }));
+            }),()=>{
+                this.props.setStudents(this.state.students);
+            });
         }
     }
-    OpenImageModalStudent = (title)=>{
-        this.props.OpenImageModal(title)
+    OpenImageModalStudent = (title,id)=>{
+        this.props.OpenImageModal(title,id)
     }
     removeStudent = (index)=>{
-        alert(index);
         //remove a student in position index 
         var array = [...this.state.students];
         if (index !== -1) {
@@ -41,13 +48,32 @@ export default class StudentsDetails extends React.Component{
             this.setState({students: array});
         }
     }
-    saveStudent = (index)=>{
-        //save student to firebase 
+    changeName = (id,e)=>{
+        this.state.students[id].fullName = e.target.value;
+        this.forceUpdate();
+        this.props.setStudents(this.state.students);
     }
+    changeEmail = (id,e)=>{
+        this.state.students[id].email = e.target.value;
+        this.forceUpdate();
+        this.props.setStudents(this.state.students);
+
+    }
+    changeId = (id,e)=>{
+        this.state.students[id].id = e.target.value;
+        this.forceUpdate();
+        this.props.setStudents(this.state.students);
+
+    }
+    OpenPreviewModal=(index)=>{
+        this.props.OpenPreviewModal(index);
+    }
+    
     render(){
         const {students} = this.state;
         return(
-            <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:20,marginTop:'2%'}}>
+            <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:20,marginTop:'3%',marginBottom:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+                                
                 <SmallHeaderForm title="חברי הצוות"/>
                 <Row dir="rtl" style={{marginTop:'2%'}} >
                     {/* NUMBER OF STUDENTS */}
@@ -65,7 +91,6 @@ export default class StudentsDetails extends React.Component{
                     <Col sm="4"></Col>
                 </Row>
                 <Row dir="rtl" style={{marginTop:'2%'}}>
-                    <Col sm="4"></Col>
                     <Col sm="4">
                         <Button onClick={this.addStudent} variant="success">
                             <FaPlusCircle/>
@@ -73,45 +98,45 @@ export default class StudentsDetails extends React.Component{
                         </Button>
                     </Col>
                     <Col sm="4"></Col>
+                    <Col sm="4"></Col>
                 </Row>
                 {
                     students.map((val, idx)=> {
-                        let studentId = `studentId-${idx}`;
-                        let emailId = `email-${idx}`;
                         return (
                         <div  key={idx}>
                             <SmallHeaderForm title={`#סטודנט/ית ${idx+1}`}/>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="studentName">
                                 <Form.Label column sm="2">שם הסטודנט/ית</Form.Label>
                                 <Col sm="2">
-                                <Form.Control onChange={()=>this.changeName(idx)} type="text" dir="rtl"/>
+                                <Form.Control value={students[idx].fullName} onChange={(e)=>this.changeName(idx,e)} type="text" dir="rtl"/>
                                 </Col>
 
                                 <Form.Label column sm="2">אימייל</Form.Label>
                                 <Col sm="4">
-                                <Form.Control type="text" dir="rtl"/>
+                                <Form.Control value={students[idx].email} onChange={(e)=>this.changeEmail(idx,e)} type="text" dir="rtl"/>
                                 </Col>
-                                <IoIosCloseCircleOutline color="red" size={40}/>
-                                <Button onClick={()=>this.removeStudent(idx)} style={{backgroundColor:'grey'}}>
-                                    מחיקה
+                                <Button onClick={()=>this.removeStudent(idx)} style={{backgroundColor:'#fff',borderColor:'#fff',color:'red'}}>
+                                    <IoIosCloseCircleOutline color="red" size={40}/>
                                 </Button>
                             </Form.Group>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="studentName">
-                                <Form.Label column sm="2">תעודת זהות</Form.Label>
+                                <Form.Label  column sm="2">תעודת זהות</Form.Label>
                                 <Col sm="2">
-                                <Form.Control type="text" dir="rtl"/>
+                                <Form.Control value={students[idx].id} onChange={(e)=>this.changeId(idx,e)} type="text" dir="rtl"/>
                                 </Col>
-
-                                <Form.Label column sm="2">תמונה</Form.Label>
-                                <Col sm="4">
-                                    <Button onClick={()=>this.OpenImageModalStudent(`Student Number ${idx+1}`)} variant="primary">
-                                        תמונה
+                                <Col sm="2"></Col>
+                                <Col sm="2">
+                                    <Button block onClick={()=>this.OpenImageModalStudent(`Student Pic`,idx)} variant="primary">
+                                        <FaCameraRetro/>
+                                        {`  תמונה`} 
                                     </Button>
                                 </Col>
-                                <IoMdCheckmark onClick={()=>this.saveStudent(idx)} color="green" size={40}/>
-                                <Button style={{backgroundColor:'grey'}}>
-                                    שמירה
-                                </Button>
+                                <Col sm="2">
+                                    <Button block onClick={()=>this.OpenPreviewModal(idx)} variant="info" >
+                                        <FaEye/>
+                                        {`  תצוגה`} 
+                                    </Button>
+                                </Col>
                             </Form.Group>
                         </div>
                         )

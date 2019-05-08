@@ -1,0 +1,83 @@
+import React from 'react';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import Button from 'react-bootstrap/Button';
+import SmallHeaderForm from './SmallHeaderForm';
+import Form from 'react-bootstrap/Form';
+import { FaPlusCircle } from "react-icons/fa";
+import { IoIosCloseCircleOutline } from "react-icons/io";
+
+export default class ProjectModules extends React.Component{
+    state = {
+        modules: [{ModuleName:"", ModuleDescription:""}],
+    }
+    addModule = ()=>{
+        this.setState((prevState) => ({
+            modules: [...prevState.modules, {ModuleName:"", ModuleDescription:""}],
+        }));
+    }
+    removeModule= (index)=>{
+        let array = [...this.state.modules];
+    
+        console.log(this.state.modules)
+        if (index !== -1) {
+            array.splice(index, 1);
+            console.log(array);
+            this.setState({modules: array});
+        }
+    }
+    changeModuleDesc = (index,e)=>{
+        this.state.modules[index].ModuleDescription =e.target.value;
+        this.forceUpdate();
+        this.props.setProjectModules(this.state.modules);
+    }
+    changeModuleName = (index,e)=>{
+        this.state.modules[index].ModuleName = e.target.value;
+        this.forceUpdate();
+        this.props.setProjectModules(this.state.modules);
+    }
+    render(){
+        const {modules} = this.state;
+        return(
+            <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:20,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+                <SmallHeaderForm title="מודולי הפרויקט"/>
+                <Row dir="rtl" style={{marginTop:'2%'}}>
+                    <Col sm="4">
+                        <Button onClick={this.addModule} variant="success">
+                            <FaPlusCircle/>
+                            מודול חדש
+                        </Button>
+                    </Col>
+                    <Col sm="4"></Col>
+                    <Col sm="4"></Col>
+                </Row>
+                {
+                    modules.map((val, idx)=> {
+                        return (
+                        <div  key={idx}>
+                            <SmallHeaderForm title={`#מטרה ${idx+1}`}/>
+                            <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="goalName">
+                                <Form.Label column sm="2">שם המודול</Form.Label>
+                                <Col sm="3">
+                                    <Form.Control value={modules[idx].ModuleName} onChange={(e)=>this.changeModuleName(idx,e)} dir="rtl" type="text"/>
+                                </Col>
+
+                                <Form.Label column sm="2">תיאור המודול</Form.Label>
+                                <Col sm="3">
+                                    <Form.Control value={modules[idx].ModuleDescription} onChange={(e)=>this.changeModuleDesc(idx,e)} dir="rtl" as="textarea" rows="3"/>
+                                </Col>
+                                <Col sm="2">
+                                    <Button onClick={()=>this.removeModule(idx)} style={{backgroundColor:'#fff',borderColor:'#fff',color:'red'}}>
+                                        <IoIosCloseCircleOutline color="red" size={40}/>
+                                    </Button>
+                                </Col>
+                            </Form.Group>
+                           
+                        </div>
+                        )
+                    })
+                }
+            </div>
+        )
+    }
+}
