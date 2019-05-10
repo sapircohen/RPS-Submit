@@ -18,6 +18,7 @@ import ProjectModules from '../Common/ProjectModules';
 import ProjectGoals from '../Common/ProjectGoals';
 import PreviewModal from "../Common/imagesModalPrevies";
 import SaveAction from '../Common/SaveAction';
+import PreviewCard from '../Common/PreviewProjectCard';
 
 import Toggle from 'react-toggle';
 import "react-toggle/style.css";
@@ -33,9 +34,11 @@ class ISProjectTemplate extends React.Component{
     constructor(props){
         super(props);
         this.state={
+            showPreview:false,
             imagesToShowInModal:[],
             showImagesMode:false,
             ScreenShots:[],
+            ScreenShotsNames:[],
             logo:[],
             customerLogo:[],
             isPublished:true,
@@ -46,7 +49,7 @@ class ISProjectTemplate extends React.Component{
             HashTags:[],
             MovieLink:'',
             PDescription:'',
-            CDescription:'',
+            CDescription:null,
             ProjectSite:'',
             ProjectName:'',
             modalTitle:'',
@@ -62,7 +65,11 @@ class ISProjectTemplate extends React.Component{
             techOptions : [],
             StudentsDetails:[],
             projectGoals:[],
-            projectModules:[]
+            projectModules:[],
+            comments:'',
+            CustCustomers:'',
+            CStackholders:'',
+            projectDetails:{}
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
@@ -75,35 +82,44 @@ class ISProjectTemplate extends React.Component{
         this.projectChallenges = React.createRef();
         this.projectType = React.createRef();
         this.projectCustomerName = React.createRef();
-        this.projectCustomerDescription = React.createRef();
+        this.projectSmallDescription = React.createRef();
         this.projectMovieLink = React.createRef();
         this.projectSiteLink = React.createRef();
         this.appleStoreLink = React.createRef();
         this.googlePlayLink = React.createRef();
         this.firstAdvisor = React.createRef();
         this.secondAdvisor = React.createRef();
-
+        this.projectComments = React.createRef();
+        this.CustCustomersRef = React.createRef();
+        this.CStackholdersRef = React.createRef();
     }
     componentDidMount(){
         //get group data from local storage
         const groupData = JSON.parse(localStorage.getItem('groupData'));
+        console.log(groupData)
         this.setState({
-            Challenges:groupData.Challenges,
+            Challenges:groupData.Challenges?groupData.Challenges:'',
             GroupName:groupData.GroupName,
-            ProjectName:groupData.ProjectName,
-            PDescription:groupData.PDescription,
-            ProjectSite:groupData.ProjectSite,
-            MovieLink:groupData.MovieLink,
-            ScreenShots:groupData.ScreenShots,
-            logo:[groupData.ProjectLogo],
-            customerLogo:[groupData.CustomerLogo]
-        })
-        
-        //get technologies from firebase
-        this.getTechnologies();
-
+            ProjectName:groupData.ProjectName?groupData.ProjectName:'',
+            PDescription:groupData.PDescription?groupData.PDescription:'',
+            ProjectSite:groupData.ProjectSite?groupData.ProjectSite:'',
+            MovieLink:groupData.MovieLink?groupData.MovieLink:'',
+            ScreenShots:groupData.ScreenShots?[groupData.ScreenShots]:[],
+            logo:groupData.ProjectLogo?[groupData.ProjectLogo]:[],
+            customerLogo:groupData.CustomerLogo?[groupData.CustomerLogo]:[],
+            comments:groupData.Comments?groupData.Comments:'',
+            CustCustomers:groupData.CustCustomers?groupData.CustCustomers:'',
+            CStackholders:groupData.CStackholders?groupData.CStackholders:'',
+            CDescription:groupData.CDescription?groupData.CDescription:'',
+            ScreenShotsNames:groupData.ScreenShotsNames?[groupData.ScreenShotsNames]:[],
+            projectModules:groupData.Module?[groupData.Module]:[],
+            projectGoals:groupData.Goals?[groupData.Goals]:[],
+            StudentDetails:groupData.Students?[groupData.Students]:[]
+        },()=>console.log(this.state.PDescription))
         //get list of advisors from firebase
         this.getAdvisors();
+        //get technologies from firebase
+        this.getTechnologies();
     }
     getAdvisors = ()=>{
 
@@ -118,7 +134,13 @@ class ISProjectTemplate extends React.Component{
             })
         }
         else if(groupData.Department === "מנהל עסקים"){
-           
+            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Engineering').child('Departments').child('Industrial Engineering').child('Advisors');
+            ref.once("value", (snapshot)=> {
+                this.setState({advisorsList:snapshot.val()});
+                console.log(snapshot.val())
+            }, (errorObject)=> {
+                console.log("The read failed: " + errorObject.code);
+            })
         }
 
     }
@@ -161,11 +183,9 @@ class ISProjectTemplate extends React.Component{
          tags: tags.filter((tag, index) => index !== i),
         });
     }
- 
     handleAddition(tag){
         this.setState(state => ({ tags: [...state.tags, tag] }));
     }
- 
     handleDrag(tag, currPos, newPos){
         const tags = [...this.state.tags];
         const newTags = tags.slice();
@@ -268,9 +288,12 @@ class ISProjectTemplate extends React.Component{
         this.setState({isPublished:!this.state.isPublished})
     }
     getStudentsDetails = (students)=>{
-        this.setState({StudentsDetails:students},()=>{
-            console.log(this.state.StudentsDetails);
-        })
+
+            this.setState({StudentsDetails:students},()=>{
+                console.log(this.state.StudentsDetails);
+            })
+        
+        
     }
     getProjectGoals = (goals)=>{
         this.setState({projectGoals:goals},()=>{
@@ -294,7 +317,7 @@ class ISProjectTemplate extends React.Component{
             Year:(new Date().getFullYear()),
             isPublished:this.state.isPublished,
             CustomerName:this.state.organization?this.projectCustomerName.current.value:'',
-            CDescription:this.state.organization?this.projectCustomerDescription.current.value:'',
+            CDescription:this.projectSmallDescription.current.value,
             Goals:this.state.projectGoals,
             Module:this.state.projectModules,
             ProjectSite:this.projectSiteLink.current.value,
@@ -304,32 +327,51 @@ class ISProjectTemplate extends React.Component{
             Students:this.state.StudentsDetails,
             ScreenShots:this.state.ScreenShots,
             ProjectLogo:this.state.logo,
-            CustomerLogo:this.state.organization?this.state.customerLogo:''
+            CustomerLogo:this.state.organization?this.state.customerLogo:'',
+            Comments:this.projectComments.current.value,
+            CustCustomers:this.CustCustomersRef.current.value,
+            CStackholders:this.CStackholdersRef.current.value,
+            ScreenShotsNames:this.state.ScreenShotsNames
         }
         console.log(project);
+        this.setState({
+            projectDetails:project,
+        },()=>{
+            this.setState({showPreview:true})
+        })
     }
     //Get pics url from firebase storage
-    savePic=(url,title,index)=>{
-        console.log(url)
+    savePic=(url,title,index,screenshotName)=>{
+
+        console.log(screenshotName)
         switch (title) {
             case 'Customer Logo':this.setState({customerLogo:[url]})
                 break;
             case 'Project Logo':this.setState({logo:[url]})
                 break;
-            case 'Screenshots':this.setState({ScreenShots:[...this.state.ScreenShots,url]})
+            case 'Screenshots':this.changeScreenshots(url,screenshotName)
                 break;
             case 'Student Pic': this.changeStudentImage(url,index)
                 break;
             default:
                 break;
         }
+        
+    }
+    changeScreenshots= (url,name)=>{
+        
+        this.setState({
+            ScreenShots:[...this.state.ScreenShots,url],
+            ScreenShotsNames:[...this.state.ScreenShotsNames,name]
+        })
     }
     changeStudentImage = (url,index)=>{
-        this.state.StudentsDetails[index].image = url;
+        this.state.StudentsDetails[index].Picture = url;
         this.forceUpdate();
         console.log(this.state.StudentsDetails);
     }
-
+    //close preview:
+    closePreview = ()=>this.setState({showPreview:false})
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     render(){
         return(
@@ -342,6 +384,9 @@ class ISProjectTemplate extends React.Component{
                 
                 <HeaderForm title={this.state.GroupName}/>
                 
+                {/* preview project card */}
+                <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} />
+
                 <label>
                     <p dir="rtl">{`  האם לפרסם את הפרויקט?`}</p>
                     <Toggle
@@ -358,15 +403,41 @@ class ISProjectTemplate extends React.Component{
                         <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
                             <Col sm="3"></Col>
                             <Col sm="7">
-                                <Form.Control ref={this.projectName} value={this.state.ProjectName} size="lg" type="text" dir="rtl"/>
+                                <Form.Control ref={this.projectName} defaultValue={this.state.ProjectName} size="lg" type="text" dir="rtl"/>
                             </Col>
                             <Form.Label column sm="2">שם הפרויקט</Form.Label>
+                        </Form.Group>
+                        
+                        {/* stalkholders */}
+                        <Form.Group style={{marginTop:'2%'}} as={Row} id="CustCustomers">
+                            <Col sm="3"></Col>
+                            <Col sm="7">
+                                <Form.Control ref={this.CStackholdersRef} defaultValue={this.state.CStackholders} size="lg" type="text" dir="rtl"/>
+                            </Col>
+                            <Form.Label column sm="2">בעלי עניין</Form.Label>
+                        </Form.Group>
+                        
+                        {/* CustCustomers */}
+                        <Form.Group style={{marginTop:'2%'}} as={Row} id="CustCustomers">
+                            <Col sm="3"></Col>
+                            <Col sm="7">
+                                <Form.Control ref={this.CustCustomersRef} defaultValue={this.state.CustCustomers} size="lg" type="text" dir="rtl"/>
+                            </Col>
+                            <Form.Label column sm="2">משתמשי המערכת</Form.Label>
+                        </Form.Group>
+                        
+                        {/* project Small Description */}
+                        <Form.Group as={Row} id="projectSmallDescription">
+                            <Col sm="10">
+                                <Form.Control ref={this.projectSmallDescription} defaultValue={this.state.CDescription} dir="rtl" as="textarea" />
+                            </Col>
+                        <Form.Label column sm="2">תיאור קצר</Form.Label>
                         </Form.Group>
                         
                         {/* project description */}
                         <Form.Group as={Row} id="description">
                             <Col sm="10">
-                                <Form.Control ref={this.projectDescription} value={this.state.PDescription} dir="rtl" as="textarea" rows="3" />
+                                <Form.Control ref={this.projectDescription} defaultValue={this.state.PDescription} dir="rtl" as="textarea"/>
                             </Col>
                             <Form.Label column sm="2">תיאור הפרויקט</Form.Label>
                         </Form.Group>
@@ -374,9 +445,17 @@ class ISProjectTemplate extends React.Component{
                         {/* project Challenges  */}
                         <Form.Group as={Row} id="projectChallenges">
                             <Col sm="10">
-                                <Form.Control ref={this.projectChallenges} value={this.state.Challenges} dir="rtl" as="textarea" rows="3" />
+                                <Form.Control ref={this.projectChallenges} defaultValue={this.state.Challenges} dir="rtl" as="textarea" rows="3" />
                             </Col>
                             <Form.Label column sm="2">אתגרי הפרויקט</Form.Label>
+                        </Form.Group>
+
+                        {/* project Comments */}
+                        <Form.Group as={Row} id="comments">
+                            <Col sm="10">
+                                <Form.Control defaultValue={this.state.comments} ref={this.projectComments} dir="rtl" as="textarea" rows="3" />
+                            </Col>
+                            <Form.Label column sm="2">הערות</Form.Label>
                         </Form.Group>
 
                         {/* projectType */}
@@ -395,7 +474,7 @@ class ISProjectTemplate extends React.Component{
                         <Form.Label dir="rtl">מנחה חלק א'</Form.Label>
                         <Form.Control ref={this.firstAdvisor} dir="rtl" as="select">
                             <option>בחר</option>
-                            {this.state.advisorsList.map((a)=>
+                            {this.state.advisorsList.map((a,key)=>
                                 <option>{a}</option>
                             )}
                         </Form.Control>
@@ -419,17 +498,9 @@ class ISProjectTemplate extends React.Component{
                         <Form.Group as={Row} id="projectCustomerName">
                             <Col sm="3"></Col>
                             <Col sm="7">
-                                <Form.Control value='' ref={this.projectCustomerName} size="lg" type="text" dir="rtl"/>
+                                <Form.Control defaultValue='' ref={this.projectCustomerName} size="lg" type="text" dir="rtl"/>
                             </Col>
                             <Form.Label column sm="2">שם הלקוח</Form.Label>
-                        </Form.Group>
-
-                        {/* projectCustomerDescription */}
-                        <Form.Group as={Row} id="projectCustomerDescription">
-                            <Col sm="10">
-                                <Form.Control ref={this.projectCustomerDescription} dir="rtl" as="textarea" rows="3" />
-                            </Col>
-                        <Form.Label column sm="2">תיאור הלקוח</Form.Label>
                         </Form.Group>
                     </div>)}
                     </div>
@@ -488,7 +559,7 @@ class ISProjectTemplate extends React.Component{
                         <Form.Group style={{marginTop:15}} dir="rtl" as={Row}>
                             <Form.Label column sm="2">קישור לאתר הפרויקט</Form.Label>
                             <Col sm="7">
-                                <Form.Control ref={this.projectSiteLink} value={this.state.ProjectSite} dir="ltr" id="projectSite" size="sm" type="text" placeholder="http://proj.ruppin.ac.il/..." /> 
+                                <Form.Control ref={this.projectSiteLink} defaultValue={this.state.ProjectSite} dir="ltr" id="projectSite" size="sm" type="text" placeholder="http://proj.ruppin.ac.il/..." /> 
                             </Col>
                             <Col sm="3"></Col>
                         </Form.Group>
@@ -497,7 +568,7 @@ class ISProjectTemplate extends React.Component{
                         <Form.Group style={{marginTop:15}} dir="rtl" as={Row} id="formGridState">
                             <Form.Label column sm="4">קישור לסרטון הפרויקט ביוטיוב</Form.Label>
                             <Col sm="4">
-                                <Form.Control ref={this.projectMovieLink} value={this.state.MovieLink} dir="ltr" id="projectMovie" size="sm" type="text" placeholder="www.youtube.com" /> 
+                                <Form.Control ref={this.projectMovieLink} defaultValue={this.state.MovieLink} dir="ltr" id="projectMovie" size="sm" type="text" placeholder="www.youtube.com" /> 
                             </Col>
                             <Col sm="2"></Col>
                         </Form.Group>

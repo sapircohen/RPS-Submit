@@ -14,7 +14,9 @@ export default class ProjectModules extends React.Component{
     addModule = ()=>{
         this.setState((prevState) => ({
             modules: [...prevState.modules, {ModuleName:"", ModuleDescription:""}],
-        }));
+        }),()=>{
+            this.props.setProjectModules(this.state.modules);
+        });
     }
     removeModule= (index)=>{
         let array = [...this.state.modules];
@@ -23,7 +25,9 @@ export default class ProjectModules extends React.Component{
         if (index !== -1) {
             array.splice(index, 1);
             console.log(array);
-            this.setState({modules: array});
+            this.setState({modules: array},()=>{
+                this.props.setProjectModules(this.state.modules);
+            });
         }
     }
     changeModuleDesc = (index,e)=>{
@@ -55,7 +59,7 @@ export default class ProjectModules extends React.Component{
                     modules.map((val, idx)=> {
                         return (
                         <div  key={idx}>
-                            <SmallHeaderForm title={`#מטרה ${idx+1}`}/>
+                            <SmallHeaderForm title={`#מודול ${idx+1}`}/>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="goalName">
                                 <Form.Label column sm="2">שם המודול</Form.Label>
                                 <Col sm="3">

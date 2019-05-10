@@ -33,9 +33,9 @@ export function base64StringtoFile (base64String, filename) {
   export function image64toCanvasRef (canvasRef, image64, pixelCrop) {
     
     const canvas = canvasRef;
-    console.log(image64.width);
-    canvas.width = 600;
-    canvas.height = 300;
+    console.log(pixelCrop.width);
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
     const ctx = canvas.getContext('2d');
     const image = new Image();
     image.src = image64;
@@ -48,8 +48,8 @@ export function base64StringtoFile (base64String, filename) {
         pixelCrop.height,
         0,
         0,
-        pixelCrop.width/4,
-        pixelCrop.height/6
+        pixelCrop.width,
+        pixelCrop.height
       )
     }
 

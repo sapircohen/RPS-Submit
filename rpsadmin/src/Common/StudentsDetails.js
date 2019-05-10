@@ -12,7 +12,7 @@ export default class StudentsDetails extends React.Component{
         super(props);
         this.state = {
             numberOfStudents:1,
-            students: [{fullName:"", email:"",image:"",id:""}],
+            students: [{Name:"", Email:"",Picture:"",Id:""}],
         }
 
     }
@@ -30,7 +30,7 @@ export default class StudentsDetails extends React.Component{
         }
         else{
             this.setState((prevState) => ({
-                students: [...prevState.students, {fullName:"", email:"",image:"",id:""}],
+                students: [...prevState.students, {Name:"", Email:"",Picture:"",Id:""}],
             }),()=>{
                 this.props.setStudents(this.state.students);
             });
@@ -45,22 +45,24 @@ export default class StudentsDetails extends React.Component{
         if (index !== -1) {
             array.splice(index, 1);
             console.log(array);
-            this.setState({students: array});
+            this.setState({students: array},()=>{
+                this.props.setStudents(this.state.students);
+            });
         }
     }
     changeName = (id,e)=>{
-        this.state.students[id].fullName = e.target.value;
+        this.state.students[id].Name = e.target.value;
         this.forceUpdate();
         this.props.setStudents(this.state.students);
     }
     changeEmail = (id,e)=>{
-        this.state.students[id].email = e.target.value;
+        this.state.students[id].Email = e.target.value;
         this.forceUpdate();
         this.props.setStudents(this.state.students);
 
     }
     changeId = (id,e)=>{
-        this.state.students[id].id = e.target.value;
+        this.state.students[id].Id = e.target.value;
         this.forceUpdate();
         this.props.setStudents(this.state.students);
 

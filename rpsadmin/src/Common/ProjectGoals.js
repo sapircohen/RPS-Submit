@@ -15,7 +15,10 @@ export default class ProjectGoals extends React.Component{
     addGoal = ()=>{
         this.setState((prevState) => ({
             goals: [...prevState.goals, {GoalDescription:"", GoalStatus:""}],
-        }));
+        }),()=>{
+            this.props.setProjectGoals(this.state.goals);
+        });
+        
     }
     removeGoal= (index)=>{
         //alert(index);
@@ -26,7 +29,9 @@ export default class ProjectGoals extends React.Component{
         if (index !== -1) {
             array.splice(index, 1);
             console.log(array);
-            this.setState({goals: array});
+            this.setState({goals: array},()=>{
+                this.props.setProjectGoals(this.state.goals);
+            });
         }
     }
     changeGoalDesc = (index,e)=>{

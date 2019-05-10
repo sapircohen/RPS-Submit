@@ -22,6 +22,7 @@ class ModalImage extends React.Component{
         super(props);
         this.PreviewCanvasRef = React.createRef();
         this.state={
+            screenshotName:'',
             croppedAreaPixels:null,
             imgSrc:null,
             crop: { x: 0, y: 0 },
@@ -113,7 +114,7 @@ class ModalImage extends React.Component{
         //upload file:
         const myImage = base64StringtoFile(image,fileName);
         this.saveToFirebaseStorage(myImage);
-        this.props.modalClose();
+        
     }
     modalClose = ()=>{
         this.setState({
@@ -136,12 +137,19 @@ class ModalImage extends React.Component{
         ()=>{
             storage.ref('images/'+groupData.GroupName+'/'+this.props.title+'/'+image.name).getDownloadURL()
             .then((url)=>{
-                this.props.savePic(url,this.props.title,this.props.picTitle);
+                this.props.savePic(url,this.props.title,this.props.picTitle,this.state.screenshotName);
+                this.props.modalClose();
             })
         })
     }
     onZoomChange = zoom => {
         this.setState({ zoom })
+    }
+    screenShotName = (e)=>{
+        this.setState({screenshotName:e.target.value},
+        ()=>{
+            console.log(this.state.screenshotName)
+        })
     }
     render(){
         const {imgSrc} = this.state;
@@ -158,14 +166,14 @@ class ModalImage extends React.Component{
                 <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
                     <Col sm="4"></Col>
                     <Col sm="4">
-                        <Form.Control value={this.state.ProjectName} size="lg" type="text" dir="rtl"/>
+                        <Form.Control onChange={this.screenShotName} size="lg" type="text" dir="rtl"/>
                     </Col>
                     <Form.Label column sm="4">שם התמונה</Form.Label>
                 </Form.Group>
             }
             <div style={{flex:1,marginTop:'5%'}}>
                 {imgSrc !== null ?
-                    <div style={{height:300,width:'100%',position:'relative'}}> 
+                    <div style={{height:400,width:'100%',position:'relative'}}> 
                         <Cropper
                                 zoom={this.state.zoom}
                                 image={this.state.imgSrc}

@@ -13,6 +13,7 @@ import PreviewModal from "../Common/imagesModalPrevies";
 import firebase from 'firebase';
 import SaveAction from '../Common/SaveAction';
 import PDFupload from '../Common/PdfFileUpload';
+import PreviewCard from '../Common/PreviewProjectCard';
 
 import Toggle from 'react-toggle';
 import "react-toggle/style.css";
@@ -36,12 +37,16 @@ class BSProjectTemplate extends React.Component{
             advisorsList:[],
             coursesList:[],
             topicsList:[],
-            projectPdf:''
+            projectPdf:'',
+            projectDetails:{},
+            showPreview:false,
+            CDescription:''
         }
 
         //refs
         this.projectName = React.createRef();
         this.projectDescription = React.createRef();
+        this.projectSmallDescription = React.createRef();
         this.ProjectCourse = React.createRef();
         this.projectMajor = React.createRef();
         this.projectAdvisor = React.createRef();
@@ -53,12 +58,12 @@ class BSProjectTemplate extends React.Component{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
         this.setState({
             GroupName:groupData.GroupName,
-            ProjectName:groupData.ProjectName,
-            PDescription:groupData.PDescription,
-            poster:[groupData.ProjectLogo],
-            ProjectPDF:groupData.ProjectPDF,
+            ProjectName:groupData.ProjectName?groupData.ProjectName:'',
+            PDescription:groupData.PDescription?groupData.PDescription:'',
+            poster:groupData.ProjectLogo?[groupData.ProjectLogo]:[],
+            ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
             isPublished:true,
-
+            CDescription:groupData.CDescription?groupData.CDescription:groupData.CDescription
         })
         
         //get list of advisors from firebase
@@ -169,7 +174,7 @@ class BSProjectTemplate extends React.Component{
             alert("לא הועלתה תמונת סטודנט");
         }
     }
-    savePic=(url,title,index)=>{
+    savePic=(url,title,index,screenshotName)=>{
         console.log(url)
         console.log(index);
         switch (title) {
@@ -182,7 +187,7 @@ class BSProjectTemplate extends React.Component{
         }
     }
     changeStudentImage = (url,index)=>{
-        this.state.StudentsDetails[index].image = url;
+        this.state.StudentsDetails[index].Picture = url;
         this.forceUpdate();
         console.log(this.state.StudentsDetails);
     }
@@ -192,13 +197,14 @@ class BSProjectTemplate extends React.Component{
             projectPdf:url
         })
     }
-    //save project to firebase
+    //save project to object and show preview
     SetProjectOnFirbase = ()=>{
         //need to validate here too.
+        console.log(this.state.StudentsDetails)
         const project = {
             ProjectName:this.projectName.current.value,
             PDescription:this.projectDescription.current.value,
-            Advisor:this.projectAdvisor.current.value,
+            advisor:[this.projectAdvisor.current.value,"sapir"],
             Major:this.projectMajor.current.value,
             ProjectCourse:this.ProjectCourse.current.value,
             Students:this.state.StudentsDetails,
@@ -206,9 +212,22 @@ class BSProjectTemplate extends React.Component{
             isPublished:this.state.isPublished,
             MovieLink:this.MovieLink.current.value,
             ProjectLogo:this.state.poster[0],
-            ProjectPDF:this.state.projectPdf
+            ProjectPDF:this.state.projectPdf,
+            CDescription:this.projectSmallDescription.current.value,
         }
-        console.log(project);
+        
+        this.setState({
+            projectDetails:project,
+        },()=>{
+            console.log(this.state.projectDetails.Students.length);
+            this.setState({showPreview:true})
+        })
+    }
+    //close preview:
+    closePreview = ()=>{
+        this.setState({
+            showPreview:false
+        })
     }
     render(){
         return(
@@ -225,7 +244,10 @@ class BSProjectTemplate extends React.Component{
                 {/* Popup modal for uploading an image */}
                 <ModalImage savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal onHide={this.projectLogoClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showPoster} title='תצוגה מקדימה'/>
- 
+                
+                {/* preview project card */}
+                <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} />
+
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     
                     {/* Project details */}
@@ -236,18 +258,28 @@ class BSProjectTemplate extends React.Component{
                         <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
                             <Col sm="3"></Col>
                             <Col sm="7">
-                                <Form.Control value={this.state.ProjectName} ref={this.projectName}  size="lg" type="text" dir="rtl"/>
+                                <Form.Control  ref={this.projectName}  size="lg" type="text" dir="rtl"/>
                             </Col>
                             <Form.Label column sm="2">שם הפרויקט</Form.Label>
                         </Form.Group>
-
+                        
+                        {/* project small description */}
+                         <Form.Group as={Row} id="smalldescription">
+                            <Col sm="10">
+                                <Form.Control defaultValue={this.state.CDescription} ref={this.projectSmallDescription}  dir="rtl" as="textarea" rows="3" />
+                            </Col>
+                            <Form.Label column sm="2">תיאור קצר</Form.Label>
+                        </Form.Group>
+                        
                         {/* project description */}
                         <Form.Group as={Row} id="description">
                             <Col sm="10">
-                                <Form.Control value={this.state.PDescription} ref={this.projectDescription}  dir="rtl" as="textarea" rows="3" />
+                                <Form.Control defaultValue={this.state.PDescription} ref={this.projectDescription}  dir="rtl" as="textarea" rows="3" />
                             </Col>
                             <Form.Label column sm="2">תיאור הפרויקט</Form.Label>
                         </Form.Group>
+
+                         
 
                         <Form.Row dir="rtl">
                             
@@ -266,7 +298,7 @@ class BSProjectTemplate extends React.Component{
                             <Form.Label dir="rtl">מנחה הפרויקט</Form.Label>
                             <Form.Control ref={this.projectAdvisor} dir="rtl" as="select">
                                 <option>בחר</option>
-                                {this.state.advisorsList.map((a)=>
+                                {this.state.advisorsList.map((a,key)=>
                                     <option>{a}</option>
                                 )}
                             </Form.Control>
@@ -281,7 +313,7 @@ class BSProjectTemplate extends React.Component{
                                 <Form.Label>סוג הפרויקט</Form.Label>
                                 <Form.Control ref={this.ProjectCourse} dir="rtl" as="select">
                                     <option>בחר</option>
-                                    {this.state.coursesList.map((a)=>
+                                    {this.state.coursesList.map((a,key)=>
                                     <option>{a}</option>
                                     )}
                                 </Form.Control>
@@ -292,7 +324,7 @@ class BSProjectTemplate extends React.Component{
                             <Form.Label dir="rtl">נושא הפרויקט</Form.Label>
                             <Form.Control ref={this.ProjectTopic} dir="rtl" as="select">
                                 <option>בחר</option>
-                                {this.state.topicsList.map((a)=>
+                                {this.state.topicsList.map((a,key)=>
                                     <option>{a}</option>
                                 )}
                             </Form.Control>
@@ -307,7 +339,7 @@ class BSProjectTemplate extends React.Component{
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Form.Label column sm="2">קישור לסרטון</Form.Label>
                                 <Col sm="4">
-                                    <Form.Control size="lg" ref={this.MovieLink} value={this.state.MovieLink} dir="ltr" id="projectMovie" size="sm" type="text" placeholder="www.youtube.com" /> 
+                                    <Form.Control size="lg" ref={this.MovieLink} defaultValue={this.state.MovieLink} dir="ltr" id="projectMovie" size="sm" type="text" placeholder="www.youtube.com" /> 
                                 </Col>
                                 <Col sm="4">
                                     {/* <PDFupload /> */}
