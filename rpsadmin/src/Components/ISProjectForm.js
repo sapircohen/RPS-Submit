@@ -22,6 +22,7 @@ import PreviewCard from '../Common/PreviewProjectCard';
 
 import Toggle from 'react-toggle';
 import "react-toggle/style.css";
+import { CommunicationInvertColorsOff } from 'material-ui/svg-icons';
 
 const KeyCodes = {
     comma: 188,
@@ -98,23 +99,26 @@ class ISProjectTemplate extends React.Component{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
         console.log(groupData)
         this.setState({
+            Advisor:groupData.Advisor?groupData.Advisor:'',
             Challenges:groupData.Challenges?groupData.Challenges:'',
             GroupName:groupData.GroupName,
             ProjectName:groupData.ProjectName?groupData.ProjectName:'',
             PDescription:groupData.PDescription?groupData.PDescription:'',
             ProjectSite:groupData.ProjectSite?groupData.ProjectSite:'',
             MovieLink:groupData.MovieLink?groupData.MovieLink:'',
-            ScreenShots:groupData.ScreenShots?[groupData.ScreenShots]:[],
+            ScreenShots:groupData.ScreenShots?groupData.ScreenShots:[],
             logo:groupData.ProjectLogo?[groupData.ProjectLogo]:[],
             customerLogo:groupData.CustomerLogo?[groupData.CustomerLogo]:[],
             comments:groupData.Comments?groupData.Comments:'',
             CustCustomers:groupData.CustCustomers?groupData.CustCustomers:'',
             CStackholders:groupData.CStackholders?groupData.CStackholders:'',
             CDescription:groupData.CDescription?groupData.CDescription:'',
-            ScreenShotsNames:groupData.ScreenShotsNames?[groupData.ScreenShotsNames]:[],
-            projectModules:groupData.Module?[groupData.Module]:[],
-            projectGoals:groupData.Goals?[groupData.Goals]:[],
-            StudentDetails:groupData.Students?[groupData.Students]:[]
+            ScreenShotsNames:groupData.ScreenShotsNames?groupData.ScreenShotsNames:[],
+            projectModules:groupData.Module?groupData.Module:[],
+            projectGoals:groupData.Goals?groupData.Goals:[],
+            StudentDetails:groupData.Students?groupData.Students:[],
+            chosenTechs:groupData.Technologies?groupData.Technologies:[],
+            //tags:groupData.HashTags?groupData.HashTags:[]
         },()=>console.log(this.state.PDescription))
         //get list of advisors from firebase
         this.getAdvisors();
@@ -222,10 +226,10 @@ class ISProjectTemplate extends React.Component{
         })
     }
     OpenImagePreviewForStudent = (index)=>{
-        console.log(this.state.StudentsDetails[index].image);
-        if(this.state.StudentsDetails[index].image !==''){
+        console.log(this.state.StudentsDetails[index].Picture);
+        if(this.state.StudentsDetails[index].Picture !==''){
             let temp = [];
-            temp.push(this.state.StudentsDetails[index].image);
+            temp.push(this.state.StudentsDetails[index].Picture);
             console.log(temp);
             this.setState({
                 showImagesMode:true,
@@ -288,11 +292,22 @@ class ISProjectTemplate extends React.Component{
         this.setState({isPublished:!this.state.isPublished})
     }
     getStudentsDetails = (students)=>{
-
-            this.setState({StudentsDetails:students},()=>{
-                console.log(this.state.StudentsDetails);
-            })
-        
+        // const groupData = JSON.parse(localStorage.getItem('groupData'));
+        // console.log(groupData.Students)
+        // if (groupData.Students) {
+        //    groupData.Students.filter((s)=>{
+        //    let stud = {
+        //        Name:s.Name,
+        //        Email:s.Email,
+        //        Picture:s.Picture,
+        //        Id:s.Id
+        //    }
+        //    students.push(stud)
+        // })
+        // }
+        this.setState({StudentsDetails:students},()=>{
+            console.log(this.state.StudentsDetails);
+        })
         
     }
     getProjectGoals = (goals)=>{
@@ -306,13 +321,25 @@ class ISProjectTemplate extends React.Component{
         })
     }
     SetProjectOnFirbase = ()=>{
+
+        //technologies adjusment
+        //const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const arrayOfTags = this.state.tags.filter((text)=>text.text);
+        // if (groupData.HashTags) {
+        //     groupData.HashTags.filter((tag)=>{
+        //     arrayOfTags.push(tag)
+        //  })
+        // }
+        console.log(this.state.tags);
+        console.log(arrayOfTags)
         const project = {
             ProjectName:this.projectName.current.value,
             PDescription:this.projectDescription.current.value,
             Challenges:this.projectChallenges.current.value,
-            ProjectType:this.projectType.current.value,
+            ProjectTopic:this.projectType.current.value,
+            ProjectCourse:'פרויקט גמר',
             advisor:[this.firstAdvisor.current.value,this.secondAdvisor.current.value],
-            HashTags:this.state.tags,
+            HashTags:arrayOfTags,
             Technologies:this.state.chosenTechs,
             Year:(new Date().getFullYear()),
             isPublished:this.state.isPublished,
@@ -331,7 +358,7 @@ class ISProjectTemplate extends React.Component{
             Comments:this.projectComments.current.value,
             CustCustomers:this.CustCustomersRef.current.value,
             CStackholders:this.CStackholdersRef.current.value,
-            ScreenShotsNames:this.state.ScreenShotsNames
+            ScreenShotsNames:this.state.ScreenShotsNames,
         }
         console.log(project);
         this.setState({
@@ -370,6 +397,11 @@ class ISProjectTemplate extends React.Component{
         this.forceUpdate();
         console.log(this.state.StudentsDetails);
     }
+    SaveData = ()=>{
+        //save project to firebase.
+        //this.state.projectDetails
+        alert('hey there')
+    }
     //close preview:
     closePreview = ()=>this.setState({showPreview:false})
     imagesModalClose = ()=>this.setState({showImagesMode:false})
@@ -385,7 +417,7 @@ class ISProjectTemplate extends React.Component{
                 <HeaderForm title={this.state.GroupName}/>
                 
                 {/* preview project card */}
-                <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} />
+                <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
 
                 <label>
                     <p dir="rtl">{`  האם לפרסם את הפרויקט?`}</p>

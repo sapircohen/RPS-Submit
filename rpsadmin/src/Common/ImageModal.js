@@ -8,6 +8,7 @@ import Slider from '@material-ui/lab/Slider';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
+import Loader from 'react-loader-spinner';
 
 import {base64StringtoFile,extractImageFileExtensionFromBase64, image64toCanvasRef} from '../constant/ResuableUtils';
 
@@ -22,6 +23,7 @@ class ModalImage extends React.Component{
         super(props);
         this.PreviewCanvasRef = React.createRef();
         this.state={
+            isReady:true,
             screenshotName:'',
             croppedAreaPixels:null,
             imgSrc:null,
@@ -99,21 +101,29 @@ class ModalImage extends React.Component{
             fileName = 'ProjectLogo.'+fileExtension;
         }
         else if(this.props.title ==='Screenshots') {
-            const min = 1;
-            const max = 1000;
-            const rand = min + Math.random() * (max - min);
-            fileName = 'previewFile'+rand+'.' + fileExtension;
+            if(this.state.screenshotName ===''){
+                alert('בבקשה הכנס שם לתמונת מסך')
+                return;
+            }
+            else{
+                const min = 1;
+                const max = 1000;
+                const rand = min + Math.random() * (max - min);
+                fileName = 'screenShot'+rand+'.' + fileExtension;
+            }
         }
         else if(this.props.title ==='Student Pic'){
             fileName = 'studentPic'+this.props.picTitle+'.' + fileExtension;
-        }
-        
+        }        
         const canvasRef = this.PreviewCanvasRef.current;
         const image = canvasRef.toDataURL('image/'+fileExtension);
 
         //upload file:
         const myImage = base64StringtoFile(image,fileName);
-        this.saveToFirebaseStorage(myImage);
+        
+        this.setState({isReady:false},()=>{
+            this.saveToFirebaseStorage(myImage);
+        })
         
     }
     modalClose = ()=>{
@@ -126,6 +136,7 @@ class ModalImage extends React.Component{
         })
     }
     saveToFirebaseStorage = (image)=>{
+
         const groupData = JSON.parse(localStorage.getItem('groupData'));
         const uploadPic = storage.ref('images/'+groupData.GroupName+'/'+this.props.title+'/'+image.name).put(image);
         uploadPic.on('state_changed',
@@ -138,7 +149,11 @@ class ModalImage extends React.Component{
             storage.ref('images/'+groupData.GroupName+'/'+this.props.title+'/'+image.name).getDownloadURL()
             .then((url)=>{
                 this.props.savePic(url,this.props.title,this.props.picTitle,this.state.screenshotName);
-                this.props.modalClose();
+                this.setState({
+                    isReady:true,
+                },()=>{
+                    this.props.modalClose();
+                })
             })
         })
     }
@@ -153,16 +168,20 @@ class ModalImage extends React.Component{
     }
     render(){
         const {imgSrc} = this.state;
-
+         
         return(
         <Modal onHide={this.props.modalClose}  centered size='lg'	show={this.props.modalOpen}>
+            {/* put inside spinner inside the modal */}
+
             <Modal.Header style={{justifyContent:'center'}}>
                 <Modal.Title>
                     {this.props.title}
                 </Modal.Title>
             </Modal.Header>
+            {this.state.isReady?
             <Modal.Body>
-            {this.props.title==='Screenshots' &&
+            {
+                this.props.title==='Screenshots' &&
                 <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
                     <Col sm="4"></Col>
                     <Col sm="4">
@@ -211,6 +230,11 @@ class ModalImage extends React.Component{
             </div>
                 
             </Modal.Body>
+            :
+            <Modal.Body style={{textAlign:'center'}}>
+                <Loader/>
+            </Modal.Body>
+            }
             <Modal.Footer dir="rtl" style={{justifyContent:'space-around'}}>
                 <Button variant="success" onClick={this.saveImage}>
                 שמירה

@@ -9,6 +9,7 @@ import ReactPlayer from 'react-player'
 import ImagesCarousel from './Carousel';
 import Badge from 'react-bootstrap/Badge';
 import randomColor from 'randomcolor'
+import { FaGoogle,FaAppleAlt } from "react-icons/fa";
 
 class PreviewCard extends React.Component{
     state={
@@ -18,6 +19,9 @@ class PreviewCard extends React.Component{
     // componentDidUpdate(){
     //     console.log(this.props.projectDetails.Students)
     // }
+    OnSave = ()=>{
+        this.props.SaveData();
+    }
     render(){
         
         return (
@@ -77,9 +81,28 @@ class PreviewCard extends React.Component{
                             </Row>
                         </Col>
                     </Row>
+                    
+                    {/* project course and topic */}
+                    {
+                        (this.props.projectDetails.ProjectCourse &&this.props.projectDetails.ProjectTopic) &&
+                        <Row dir="rtl" style={{marginTop:'3%'}}>
+                            <Col style={{textAlign:'center'}} sm="6">קורס: {this.props.projectDetails.ProjectCourse}</Col>
+                            <Col style={{textAlign:'center'}} sm="6">נושא: {this.props.projectDetails.ProjectTopic}</Col>
+                        </Row>
+
+                    }
+
+                    {/* project Stalkholders and users (IS PROJECT)*/}
+                    {
+                        (this.props.projectDetails.CStackholders && this.props.projectDetails.CustCustomers) &&
+                        <Row dir="rtl" style={{marginTop:'3%'}}>
+                            <Col style={{textAlign:'center'}} sm="6">בעלי עניין: {this.props.projectDetails.CStackholders}</Col>
+                            <Col style={{textAlign:'center'}} sm="6">משתמשי המערכת: {this.props.projectDetails.CustCustomers}</Col>
+                        </Row>
+                    }
 
                     {/* project full description */}
-                    <Row className="show-grid">
+                    <Row style={{marginTop:'3%'}} className="show-grid">
                         <Col xs={12}>
                             <Row dir="rtl">
                                 <Col style={{textAlign:'right'}} sm="2">
@@ -98,7 +121,7 @@ class PreviewCard extends React.Component{
                         this.props.projectDetails.Goals &&
                         <Row style={{overflowWrap: 'break-word',marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid">
                             <Col style={{textAlign:'right'}} sm="12">
-                                <p>מטרות המערכת</p>
+                                <p>מטרות המערכת:</p>
                             </Col>
                             {
                                 this.props.projectDetails.Goals.map((goal,key)=>
@@ -161,12 +184,26 @@ class PreviewCard extends React.Component{
                         </Row>
                     }
 
+                    {/* project PDF */}
+                    {
+                        this.props.projectDetails.ProjectPDF &&
+                        <Row>
+                            <Col sm="4"></Col>
+                            <Col style={{textAlign:'center'}} sm="4">
+                                <Button  variant="info" href={this.props.projectDetails.ProjectPDF}>
+                                    PDF file
+                                </Button>
+                            </Col>
+                            <Col sm="4"></Col>
+                        </Row>
+                    }
+
                     {/* project modules (for IS project) */}
                     {
                         this.props.projectDetails.Module &&
                         <Row style={{overflowWrap: 'break-word',marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid">
                             <Col style={{textAlign:'right'}} sm="12">
-                                <p>מודולי המערכת</p>
+                                <p>מודולי המערכת:</p>
                             </Col>
                             {
                                 this.props.projectDetails.Module.map((module,key)=>
@@ -212,22 +249,68 @@ class PreviewCard extends React.Component{
                             </Col>
                             <Col sm="10" style={{textAlign:'center'}}>
                                 {
-                                    this.props.projectDetails.Technologies.map((tech)=>
+                                    this.props.projectDetails.Technologies.map((tech,key)=>
                                         <Badge size={20} marginWidth={2} style={{backgroundColor:randomColor(),fontSize:20,marginLeft:5}}>{tech}</Badge>
                                     )
                                 }
                             </Col>
                         </Row>
                     }
-
+                    {/* project hashtags (for IS project)   */}
+                    {
+                        this.props.projectDetails.HashTags &&
+                        <Row style={{marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid">
+                            <Col style={{textAlign:'right'}} sm="2">
+                                <p>האשטגים:</p>
+                            </Col>
+                            <Col sm="10" style={{textAlign:'center'}}>
+                                {
+                                    this.props.projectDetails.HashTags.map((tag,key)=>
+                                        <Badge size={20} marginWidth={2} style={{backgroundColor:randomColor(),fontSize:20,marginLeft:5}}>{tag}</Badge>
+                                    )
+                                }
+                            </Col>
+                        </Row>
+                    }
+                    {/* project links (for IS project) */}
+                    <Row dir="rtl" style={{justifyContent:'space-between',marginTop:'4%'}}>
+                        {
+                            this.props.projectDetails.ProjectSite&&
+                            (<Col sm="4">
+                                <Button variant='info' href={this.props.projectDetails.ProjectSite}>
+                                    לאתר הפרויקט
+                                </Button>
+                            </Col>)
+                        }
+                        {
+                            this.props.projectDetails.AppStore&&
+                            (<Col sm="4">
+                                <Button variant='info' href={this.props.projectDetails.AppStore}>
+                                    <FaAppleAlt/>
+                                    Appstore
+                                </Button>
+                            </Col>)
+                        }
+                        {
+                            this.props.projectDetails.GooglePlay&&
+                            (<Col sm="4">
+                                <Button variant='info' href={this.props.projectDetails.AppStore}>
+                                    <FaGoogle/>
+                                    GooglePlay
+                                </Button>
+                            </Col>)
+                        }
+                        </Row>
+                    
 
 
                 </Container>
               </Modal.Body>
+              
               <Modal.Footer style={{justifyContent:'space-between'}}>
                 <Col sm='3'></Col>
                 <Col sm='3' style={{textAlign:'center'}}>
-                    <Button onClick={this.props.close} variant="success">שמירה</Button>
+                    <Button onClick={this.OnSave} variant="success">שמירה</Button>
                 </Col>
                 <Col sm='3' style={{textAlign:'center'}}>
                     <Button onClick={this.props.close} variant="warning">סגירה</Button>

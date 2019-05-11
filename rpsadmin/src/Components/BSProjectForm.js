@@ -40,7 +40,8 @@ class BSProjectTemplate extends React.Component{
             projectPdf:'',
             projectDetails:{},
             showPreview:false,
-            CDescription:''
+            CDescription:'',
+            ProjectTopic:'',
         }
 
         //refs
@@ -143,6 +144,18 @@ class BSProjectTemplate extends React.Component{
         })
     }
     getStudentsDetails = (students)=>{
+        // const groupData = JSON.parse(localStorage.getItem('groupData'));
+        // if (groupData.Students) {
+        //     groupData.Students.filter((s)=>{
+        //     let stud = {
+        //         Name:s.Name,
+        //         Email:s.Email,
+        //         Picture:s.Picture,
+        //         Id:s.Id
+        //     }
+        //     students.push(stud)
+        //  })
+        // }
         this.setState({StudentsDetails:students},()=>{
             console.log(this.state.StudentsDetails);
         })
@@ -160,10 +173,10 @@ class BSProjectTemplate extends React.Component{
         this.setState({showPoster:false})
     }
     OpenImagePreviewForStudent = (index)=>{
-        console.log(this.state.StudentsDetails[index].image);
-        if(this.state.StudentsDetails[index].image !==''){
+        console.log(this.state.StudentsDetails[index].Picture);
+        if(this.state.StudentsDetails[index].Picture !==''){
             let temp = [];
-            temp.push(this.state.StudentsDetails[index].image);
+            temp.push(this.state.StudentsDetails[index].Picture);
             console.log(temp);
             this.setState({
                 showPoster:true, 
@@ -197,6 +210,11 @@ class BSProjectTemplate extends React.Component{
             projectPdf:url
         })
     }
+    SaveData = ()=>{
+        //save project to firebase.
+        //this.state.projectDetails
+        alert('hey there')
+    }
     //save project to object and show preview
     SetProjectOnFirbase = ()=>{
         //need to validate here too.
@@ -204,9 +222,10 @@ class BSProjectTemplate extends React.Component{
         const project = {
             ProjectName:this.projectName.current.value,
             PDescription:this.projectDescription.current.value,
-            advisor:[this.projectAdvisor.current.value,"sapir"],
+            advisor:[this.projectAdvisor.current.value],
             Major:this.projectMajor.current.value,
             ProjectCourse:this.ProjectCourse.current.value,
+            ProjectTopic:this.ProjectTopic.current.value,
             Students:this.state.StudentsDetails,
             Year:(new Date().getFullYear()),
             isPublished:this.state.isPublished,
@@ -246,7 +265,7 @@ class BSProjectTemplate extends React.Component{
                 <PreviewModal onHide={this.projectLogoClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showPoster} title='תצוגה מקדימה'/>
                 
                 {/* preview project card */}
-                <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} />
+                <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
 
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     

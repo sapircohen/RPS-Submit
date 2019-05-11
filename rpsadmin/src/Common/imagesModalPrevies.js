@@ -19,9 +19,9 @@ const PreviewModal = (props)=>{
                 
             </Modal.Body>
             <Modal.Footer dir="rtl" style={{justifyContent:'space-around'}}>
-                <Button  variant="danger">
-                מחיקה
-                </Button>
+                {/* <Button  variant="danger">
+                
+                </Button> */}
             </Modal.Footer>
         </Modal>
     )
