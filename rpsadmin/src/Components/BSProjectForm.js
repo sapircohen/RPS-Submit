@@ -14,6 +14,7 @@ import firebase from 'firebase';
 import SaveAction from '../Common/SaveAction';
 import PDFupload from '../Common/PdfFileUpload';
 import PreviewCard from '../Common/PreviewProjectCard';
+import Loader from 'react-loader-spinner';
 
 import Toggle from 'react-toggle';
 import "react-toggle/style.css";
@@ -42,6 +43,7 @@ class BSProjectTemplate extends React.Component{
             showPreview:false,
             CDescription:'',
             ProjectTopic:'',
+            isReady:true,
         }
 
         //refs
@@ -210,11 +212,6 @@ class BSProjectTemplate extends React.Component{
             projectPdf:url
         })
     }
-    SaveData = ()=>{
-        //save project to firebase.
-        //this.state.projectDetails
-        alert('hey there')
-    }
     //save project to object and show preview
     SetProjectOnFirbase = ()=>{
         //need to validate here too.
@@ -248,7 +245,45 @@ class BSProjectTemplate extends React.Component{
             showPreview:false
         })
     }
+    SaveData = ()=>{
+        //save project to firebase.
+        this.setState({isReady:false},()=>{
+            const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+            const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+            ref.update({
+                ProjectName: this.state.projectDetails.ProjectName,
+                isPublished:this.state.projectDetails.isPublished,
+                Year:this.state.projectDetails.Year,
+                isApproved:1,
+                CDescription:this.state.projectDetails.CDescription,
+                Students:this.state.projectDetails.Students,
+                Technologies:this.state.projectDetails.Technologies,
+                Advisor:this.state.projectDetails.advisor,
+                ProjectLogo:this.state.projectDetails.ProjectLogo,
+                MovieLink:this.state.projectDetails.MovieLink,
+                PDescription:this.state.projectDetails.PDescription,
+                ProjectCourse:this.state.projectDetails.ProjectCourse,
+                ProjectTopic:this.state.projectDetails.ProjectTopic,
+                ProjectPDF:this.state.projectDetails.ProjectPDF,
+            })
+            .then(()=>{
+                this.setState({isReady:true,showPreview:false})
+            })
+        })
+    }
     render(){
+        if (!this.state.isReady) {
+            return(
+                <div style={{flex:1,backgroundColor:'#eee'}}>
+                    <Loader 
+                    type="Watch"
+                    color="#58947B"
+                    height="100"	
+                    width="100"
+                    /> 
+                </div>
+            )
+        }
         return(
             <div style={{flex:1}}>
                 <NavbarProjs/>

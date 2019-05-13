@@ -86,6 +86,7 @@ class LoginScreen extends React.Component{
         if (parseInt(this.state.password) === project.val().Password && this.state.groupName === project.val().GroupName) {
           logged = true;          
           localStorage.setItem('groupData', JSON.stringify(project.val()));
+          localStorage.setItem('projectKey',JSON.stringify(project.key))
           if (project.val().Major === 'מערכות מידע') {
             history.push('/ISproject');
           }
@@ -141,7 +142,7 @@ class LoginScreen extends React.Component{
             />
           </Avatar>
           <Typography component="h1" variant="h5">
-            התחבר
+            התחברות
           </Typography>
           <form className={classes.form}>
             <FormControl margin="normal" required fullWidth>

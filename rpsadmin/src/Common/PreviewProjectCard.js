@@ -247,7 +247,7 @@ class PreviewCard extends React.Component{
                             <Col style={{textAlign:'right'}} sm="2">
                                 <p>טכנולוגיות:</p>
                             </Col>
-                            <Col sm="10" style={{textAlign:'center'}}>
+                            <Col sm="10" style={{textAlign:'right'}}>
                                 {
                                     this.props.projectDetails.Technologies.map((tech,key)=>
                                         <Badge size={20} marginWidth={2} style={{backgroundColor:randomColor(),fontSize:20,marginLeft:5}}>{tech}</Badge>
@@ -263,7 +263,7 @@ class PreviewCard extends React.Component{
                             <Col style={{textAlign:'right'}} sm="2">
                                 <p>האשטגים:</p>
                             </Col>
-                            <Col sm="10" style={{textAlign:'center'}}>
+                            <Col sm="10" style={{textAlign:'right'}}>
                                 {
                                     this.props.projectDetails.HashTags.map((tag,key)=>
                                         <Badge size={20} marginWidth={2} style={{backgroundColor:randomColor(),fontSize:20,marginLeft:5}}>{tag}</Badge>

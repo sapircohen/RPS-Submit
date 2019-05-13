@@ -10,7 +10,7 @@ import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 import Loader from 'react-loader-spinner';
 
-import {base64StringtoFile,extractImageFileExtensionFromBase64, image64toCanvasRef} from '../constant/ResuableUtils';
+import {base64StringtoFile,extractImageFileExtensionFromBase64, image64toCanvasRef} from '../Constants/ResuableUtils';
 
 import {storage} from '../App';
 
@@ -232,7 +232,12 @@ class ModalImage extends React.Component{
             </Modal.Body>
             :
             <Modal.Body style={{textAlign:'center'}}>
-                <Loader/>
+                <Loader 
+                type="Watch"
+                color="#58947B"
+                height="100"	
+                width="100"
+                /> 
             </Modal.Body>
             }
             <Modal.Footer dir="rtl" style={{justifyContent:'space-around'}}>

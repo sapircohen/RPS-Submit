@@ -19,6 +19,8 @@ import ProjectGoals from '../Common/ProjectGoals';
 import PreviewModal from "../Common/imagesModalPrevies";
 import SaveAction from '../Common/SaveAction';
 import PreviewCard from '../Common/PreviewProjectCard';
+import Loader from 'react-loader-spinner';
+import {storage} from '../App';
 
 import Toggle from 'react-toggle';
 import "react-toggle/style.css";
@@ -70,7 +72,8 @@ class ISProjectTemplate extends React.Component{
             comments:'',
             CustCustomers:'',
             CStackholders:'',
-            projectDetails:{}
+            projectDetails:{},
+            isReady:true
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
@@ -245,6 +248,7 @@ class ISProjectTemplate extends React.Component{
             case 'Screenshots':
                 this.setState({
                     //showScreenshotsPreview:true,
+                    modalTitle:title,
                     showImagesMode:true,
                     imagesToShowInModal:this.state.ScreenShots
                 })
@@ -253,6 +257,7 @@ class ISProjectTemplate extends React.Component{
                 if(this.state.logo[0]!==undefined){
                     this.setState({
                         showImagesMode:true,
+                        modalTitle:title,
                         //showProjectLogoPreview:true,
                         imagesToShowInModal:this.state.logo
                     })
@@ -260,6 +265,7 @@ class ISProjectTemplate extends React.Component{
                 else{
                     this.setState({
                         showImagesMode:true,
+                        modalTitle:title,
                         //showProjectLogoPreview:true,
                         imagesToShowInModal:undefined
                     })
@@ -269,6 +275,7 @@ class ISProjectTemplate extends React.Component{
                 if(this.state.customerLogo[0]!==undefined){
                     this.setState({
                         showImagesMode:true,
+                        modalTitle:title,
                         //showCustomerLogoPreview:true,
                         imagesToShowInModal:this.state.customerLogo
                     })
@@ -276,6 +283,7 @@ class ISProjectTemplate extends React.Component{
                 else{
                     this.setState({
                         showImagesMode:true,
+                        modalTitle:title,
                         //showProjectLogoPreview:true,
                         imagesToShowInModal:undefined
                     })
@@ -322,14 +330,9 @@ class ISProjectTemplate extends React.Component{
     }
     SetProjectOnFirbase = ()=>{
 
-        //technologies adjusment
-        //const groupData = JSON.parse(localStorage.getItem('groupData'));
-        const arrayOfTags = this.state.tags.filter((text)=>text.text);
-        // if (groupData.HashTags) {
-        //     groupData.HashTags.filter((tag)=>{
-        //     arrayOfTags.push(tag)
-        //  })
-        // }
+        const arrayOfTags = this.state.tags.map((text)=>text.text);
+        console.log(arrayOfTags)
+        
         console.log(this.state.tags);
         console.log(arrayOfTags)
         const project = {
@@ -398,19 +401,78 @@ class ISProjectTemplate extends React.Component{
         console.log(this.state.StudentsDetails);
     }
     SaveData = ()=>{
-        //save project to firebase.
-        //this.state.projectDetails
-        alert('hey there')
+        this.setState({isReady:false},()=>{
+            const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+            const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+            ref.update({
+                ProjectName: this.state.projectDetails.ProjectName,
+                ProjectSite:this.state.projectDetails.ProjectSite,
+                isPublished:this.state.projectDetails.isPublished,
+                Year:this.state.projectDetails.Year,
+                isApproved:1,
+                CDescription:this.state.projectDetails.CDescription,
+                CStackholders:this.state.projectDetails.CStackholders,
+                ScreenShotsNames:this.state.projectDetails.ScreenShotsNames,
+                ScreenShots:this.state.projectDetails.ScreenShots,
+                Students:this.state.projectDetails.Students,
+                Technologies:this.state.projectDetails.Technologies,
+                CustCustomers:this.state.projectDetails.CustCustomers,
+                Challenges:this.state.projectDetails.Challenges,
+                Comments:this.state.projectDetails.Comments,
+                Advisor:this.state.projectDetails.advisor,
+                CustomerLogo:this.state.projectDetails.CustomerLogo,
+                ProjectLogo:this.state.projectDetails.ProjectLogo,
+                MovieLink:this.state.projectDetails.MovieLink,
+                Goals:this.state.projectDetails.Goals,
+                Module:this.state.projectDetails.Module,
+                GooglePlay:this.state.projectDetails.GooglePlay,
+                AppStore:this.state.projectDetails.AppStore,
+                CustomerName:this.state.projectDetails.CustomerName,
+                HashTags:this.state.projectDetails.HashTags,
+                PDescription:this.state.projectDetails.PDescription
+            })
+            .then(()=>{
+                this.setState({isReady:true,showPreview:false})
+            })
+        })
+    }
+    DeletePic = (picURL)=>{
+        console.log(picURL)
+        const desertRef = firebase.storage().refFromURL(picURL);
+        // Delete the file
+        desertRef.delete().then(()=> {
+            alert('התמונה נמחקה');
+            const index = this.state.ScreenShots.indexOf(picURL);
+            console.log(index)
+            const array = this.state.ScreenShots.splice(index,1);
+            console.log(array);
+            this.setState({ScreenShots:array},()=>console.log(this.state.ScreenShots));
+            
+        }).catch((error)=> {
+            console.log(error)
+        });
     }
     //close preview:
     closePreview = ()=>this.setState({showPreview:false})
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     render(){
+        if (!this.state.isReady) {
+            return(
+                <div style={{flex:1,backgroundColor:'#eee'}}>
+                    <Loader 
+                    type="Watch"
+                    color="#58947B"
+                    height="100"	
+                    width="100"
+                    /> 
+                </div>
+            )
+        }
         return(
             <div style={{flex:1,backgroundColor:'#eee'}}>
 
                 <ModalImage savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
-                <PreviewModal onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
+                <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <NavbarProjs />
                 
