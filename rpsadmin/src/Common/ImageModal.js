@@ -28,7 +28,7 @@ class ModalImage extends React.Component{
             croppedAreaPixels:null,
             imgSrc:null,
             crop: { x: 0, y: 0 },
-            aspect: 4 / 3,
+            aspect: this.props.aspect,
             zoom:1
         }
         this.handleOnCropComplete = this.handleOnCropComplete.bind(this);

@@ -9,25 +9,31 @@ import ReactPlayer from 'react-player'
 import ImagesCarousel from './Carousel';
 import Badge from 'react-bootstrap/Badge';
 import randomColor from 'randomcolor'
-import { FaGoogle,FaAppleAlt } from "react-icons/fa";
+
+//ICONS:
+import { FaGoogle,FaAppleAlt,FaCameraRetro } from "react-icons/fa";
+import {FiLayers} from 'react-icons/fi';
+import { GiClapperboard,GiThreeFriends ,GiCrosshair} from "react-icons/gi";
+import {GoBook,GoTag} from 'react-icons/go';
+import {IoIosLaptop} from 'react-icons/io';
 
 class PreviewCard extends React.Component{
     state={
         isIS:false,
         isBS:false,
     }
-    // componentDidUpdate(){
-    //     console.log(this.props.projectDetails.Students)
-    // }
-    OnSave = ()=>{
-        this.props.SaveData();
+    componentDidUpdate(){
+        console.log(this.props.projectDetails)
+    }
+    OnSave = (e)=>{
+        this.props.SaveData(e);
     }
     render(){
         
         return (
-            <Modal style={{backgroundColor:'#B9C0C9',fontFamily:'Calibri'}} onHide={this.props.close} show={this.props.openPreview} size="xl" aria-labelledby="contained-modal-title-vcenter">
-              <Modal.Header style={{margin:'0px auto'}}>
-                <Modal.Title >
+            <Modal style={{backgroundColor:'#C1DEE6',fontFamily:'Calibri'}} onHide={this.props.close} show={this.props.openPreview} size="xl" aria-labelledby="contained-modal-title-vcenter">
+              <Modal.Header style={{margin:'0px auto'}} closeButton>
+                <Modal.Title>
                     {
                         this.props.projectDetails.ProjectName?
                         this.props.projectDetails.ProjectName:
@@ -38,19 +44,19 @@ class PreviewCard extends React.Component{
               <Modal.Body>
                 <Container>
                     {/* project logo */}
-                    <Row style={{justifyContent:'space-between',textAlign:'center'}} className="show-grid">
+                    <Row style={{justifyContent:'space-between',textAlign:'center',marginTop:'4%'}} className="show-grid">
                         {
                             this.props.projectDetails.ProjectLogo &&
                             (
                                 <Col xs={12}>
-                                    <Image height='100%' src={this.props.projectDetails.ProjectLogo} />
+                                    <Image style={{maxHeight:'300px'}} src={this.props.projectDetails.ProjectLogo} />
                                 </Col>
                             )
                         }
                     </Row>
 
                     {/* project advisors */}
-                    <Row className="show-grid" style={{marginTop:'1%'}}>
+                    <Row className="show-grid" style={{marginTop:'3%'}}>
                         <Col xs={12}>
                             <Row dir="rtl">
                                 <Col sm="1" style={{textAlign:'right'}}>
@@ -85,29 +91,31 @@ class PreviewCard extends React.Component{
                     {/* project course and topic */}
                     {
                         (this.props.projectDetails.ProjectCourse &&this.props.projectDetails.ProjectTopic) &&
-                        <Row dir="rtl" style={{marginTop:'3%'}}>
-                            <Col style={{textAlign:'center'}} sm="6">קורס: {this.props.projectDetails.ProjectCourse}</Col>
-                            <Col style={{textAlign:'center'}} sm="6">נושא: {this.props.projectDetails.ProjectTopic}</Col>
+                        <Row dir="rtl" style={{marginTop:'1%'}}>
+                            <Col style={{textAlign:'right'}} sm="3">קורס: {this.props.projectDetails.ProjectCourse}</Col>
+                            <Col style={{textAlign:'right'}} sm="3">נושא: {this.props.projectDetails.ProjectTopic}</Col>
+                            <Col sm="6"></Col>
                         </Row>
-
                     }
 
                     {/* project Stalkholders and users (IS PROJECT)*/}
                     {
                         (this.props.projectDetails.CStackholders && this.props.projectDetails.CustCustomers) &&
-                        <Row dir="rtl" style={{marginTop:'3%'}}>
-                            <Col style={{textAlign:'center'}} sm="6">בעלי עניין: {this.props.projectDetails.CStackholders}</Col>
-                            <Col style={{textAlign:'center'}} sm="6">משתמשי המערכת: {this.props.projectDetails.CustCustomers}</Col>
+                        <Row dir="rtl" style={{marginTop:'1%'}}>
+                            <Col style={{textAlign:'right'}} sm="3">בעלי עניין: {this.props.projectDetails.CStackholders}</Col>
+                            <Col style={{textAlign:'right'}} sm="3">משתמשי המערכת: {this.props.projectDetails.CustCustomers}</Col>
+                            <Col sm="6"></Col>
                         </Row>
                     }
 
                     {/* project full description */}
                     <Row style={{marginTop:'3%'}} className="show-grid">
-                        <Col xs={12}>
-                            <Row dir="rtl">
-                                <Col style={{textAlign:'right'}} sm="2">
-                                    תיאור הפרויקט:
+                                <Col style={{textAlign:'center'}} sm="12">
+                                <h3>תיאור הפרויקט<GoBook size={50}/></h3>
                                 </Col>
+                        <Col xs={12} style={{marginTop:'1%'}}>
+                            <Row dir="rtl">
+                                <Col sm="2"></Col>
                                 <Col sm="8">
                                 <p style={{overflowWrap: 'break-word',textAlign:'right'}}>{this.props.projectDetails.PDescription}</p>
                                 </Col>
@@ -120,22 +128,21 @@ class PreviewCard extends React.Component{
                     {
                         this.props.projectDetails.Goals &&
                         <Row style={{overflowWrap: 'break-word',marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid">
-                            <Col style={{textAlign:'right'}} sm="12">
-                                <p>מטרות המערכת:</p>
+                            <Col style={{textAlign:'center'}} sm="12">
+                                <h3><GiCrosshair size={50}/>מטרות המערכת</h3>
                             </Col>
                             {
                                 this.props.projectDetails.Goals.map((goal,key)=>
                                     <Col dir="rtl" sm="12" style={{textAlign:'center'}}>
                                         <Row style={{marginTop:'1%'}}>
-                                            <Col sm="2">
-                                                {`מטרה ${key+1}:`}
-                                            </Col>
+                                            <Col sm="1"></Col>
                                             <Col style={{textAlign:'right'}} sm="5">
                                                 תיאור המטרה:{goal.GoalDescription}
                                             </Col>
                                             <Col style={{textAlign:'right'}} sm="5">
                                                 סטטוס המטרה: {goal.GoalStatus}
                                             </Col>
+                                            <Col sm="1"></Col>
                                         </Row>
                                     </Col>
                                     
@@ -146,19 +153,19 @@ class PreviewCard extends React.Component{
                     }
 
                     {/* students details */}
-                    <Row style={{marginTop:'2%'}} dir="rtl" className="show-grid">
-                        <Col style={{textAlign:'right'}} dir="rtl" sm="2">
-                            חברי הצוות:
+                    <Row style={{marginTop:'6%'}} dir="rtl" className="show-grid">
+                        <Col style={{textAlign:'center'}} dir="rtl" sm="12">
+                            <h3><GiThreeFriends size={50}/>חברי הצוות</h3>
                         </Col>
                         <Col sm="10"></Col>
                     </Row>
-                    <Row style={{justifyContent:'space-between',alignContent:'center'}} className="show-grid">
+                    <Row style={{justifyContent:'space-between',alignContent:'center',marginTop:'2%'}} className="show-grid">
                         {
                             this.props.projectDetails.Students &&
                             this.props.projectDetails.Students.map((student)=>
                                 <Col style={{textAlign:'center'}} xs={12/this.props.projectDetails.Students.length}>
                                     <Row style={{justifyContent:'center'}}>
-                                        <a href={`mailto:${student.Email}`} dir="rtl" style={{textAlign:'center'}}>{student.Name}</a>
+                                        <a href={`mailto:${student.Email}`} dir="rtl" style={{textAlign:'center',fontSize:'large'}}>{student.Name}</a>
                                     </Row>
                                     <Row style={{justifyContent:'center'}}>
                                         <Image style={{height:130,textAlign:'center'}} roundedCircle fluid src={student.Picture} />
@@ -172,26 +179,30 @@ class PreviewCard extends React.Component{
                     {/* project video */}
                     {
                         this.props.projectDetails.MovieLink &&
-                        <Row style={{marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid">
-                            <Col style={{textAlign:'right'}} sm="2">
-                                <p>סרטון הפרויקט:</p>
+                        <Col style={{marginTop:'6%',textAlign:'center'}}>
+                            <Col style={{textAlign:'center'}} sm="12">
+                                <h3>סרטון הפרויקט<GiClapperboard size={50}/></h3>
+                                
                             </Col>
-                            <Col sm="8" style={{textAlign:'center'}}>
-                            
-                             <ReactPlayer controls loop url={this.props.projectDetails.MovieLink} playing />
-                            </Col>
-                            <Col sm="2"></Col>
-                        </Row>
+                            <Row style={{marginTop:'2%',textAlign:'center'}} dir="rtl" className="show-grid">
+                                <Col sm="2"></Col>
+                                <Col sm="8" style={{textAlign:'center'}}>
+                                
+                                <ReactPlayer controls loop url={this.props.projectDetails.MovieLink} playing />
+                                </Col>
+                                <Col sm="2"></Col>
+                            </Row>
+                        </Col>
                     }
 
                     {/* project PDF */}
                     {
                         this.props.projectDetails.ProjectPDF &&
-                        <Row>
+                        <Row style={{marginTop:'5%',textAlign:'center'}}>
                             <Col sm="4"></Col>
                             <Col style={{textAlign:'center'}} sm="4">
-                                <Button  variant="info" href={this.props.projectDetails.ProjectPDF}>
-                                    PDF file
+                                <Button dir="rtl" variant="info" href={this.props.projectDetails.ProjectPDF}>
+                                    PDF להורדה
                                 </Button>
                             </Col>
                             <Col sm="4"></Col>
@@ -201,22 +212,23 @@ class PreviewCard extends React.Component{
                     {/* project modules (for IS project) */}
                     {
                         this.props.projectDetails.Module &&
-                        <Row style={{overflowWrap: 'break-word',marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid">
-                            <Col style={{textAlign:'right'}} sm="12">
-                                <p>מודולי המערכת:</p>
+                        <Row style={{overflowWrap: 'break-word',marginTop:'5%',textAlign:'center'}} dir="rtl" className="show-grid">
+                            <Col style={{textAlign:'center'}} sm="12">
+                                <h3><FiLayers size={50}/> מודולי המערכת </h3>
                             </Col>
                             {
                                 this.props.projectDetails.Module.map((module,key)=>
                                     <Col dir="rtl" sm="12" style={{textAlign:'center'}}>
-                                        <Row style={{marginTop:'1%'}}>
+                                        <Row style={{marginTop:'2%'}}>
                                             <Col sm="2">
-                                                {`${key+1}.`}
                                             </Col>
-                                            <Col style={{textAlign:'right'}} sm="3">
+                                            <Col style={{textAlign:'right'}} sm="2">
                                                 {module.ModuleName}:
                                             </Col>
-                                            <Col style={{textAlign:'right'}} sm="7">
+                                            <Col style={{textAlign:'right'}} sm="6">
                                                 {module.ModuleDescription}
+                                            </Col>
+                                            <Col sm="2">
                                             </Col>
                                         </Row>
                                     </Col>
@@ -230,27 +242,33 @@ class PreviewCard extends React.Component{
                     {/* project screenshots (for IS project) */}
                     {
                         this.props.projectDetails.ScreenShots &&
-                        <Row style={{marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid">
-                            <Col style={{textAlign:'right'}} sm="2">
-                                <p>תמונות מסך:</p>
+                        <Col style={{marginTop:'4%',textAlign:'center'}}>
+                            <Col style={{textAlign:'center',fontFamily:'Calibri'}} sm="12">
+                                <h3>תמונות מסך <FaCameraRetro size={50}/></h3>
                             </Col>
-                            <Col sm="8" style={{textAlign:'center'}}>
-                                <ImagesCarousel screenshotsNames={this.props.projectDetails.ScreenShotsNames} images={this.props.projectDetails.ScreenShots}/>
-                            </Col>
-                            <Col style={{textAlign:'right'}} sm="2"></Col>
-                        </Row>
+                            <Row style={{marginTop:'4%',textAlign:'center'}} dir="rtl" className="show-grid">
+                                <Col style={{textAlign:'right'}} sm="2"></Col>
+                                <Col sm="8" style={{textAlign:'center'}}>
+                                    <ImagesCarousel screenshotsNames={this.props.projectDetails.ScreenShotsNames} images={this.props.projectDetails.ScreenShots}/>
+                                </Col>
+                                <Col style={{textAlign:'right'}} sm="2"></Col>
+                            </Row>
+                        </Col>
                     }
                     {/* project techs (for IS project)   */}
                     {
                         this.props.projectDetails.Technologies &&
-                        <Row style={{marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid">
+                        <Row style={{marginTop:'4%',textAlign:'center'}} dir="rtl" className="show-grid">
                             <Col style={{textAlign:'right'}} sm="2">
-                                <p>טכנולוגיות:</p>
+                            <p style={{fontSize:'20px'}}><IoIosLaptop size={40}/>טכנולוגיות:</p>
                             </Col>
                             <Col sm="10" style={{textAlign:'right'}}>
                                 {
                                     this.props.projectDetails.Technologies.map((tech,key)=>
-                                        <Badge size={20} marginWidth={2} style={{backgroundColor:randomColor(),fontSize:20,marginLeft:5}}>{tech}</Badge>
+                                        <Badge size={20} marginWidth={2} style={{backgroundColor:randomColor({
+                                            luminosity: 'light',
+                                            hue: 'blue'
+                                         }),fontSize:20,marginLeft:5}}>{tech}</Badge>
                                     )
                                 }
                             </Col>
@@ -259,14 +277,17 @@ class PreviewCard extends React.Component{
                     {/* project hashtags (for IS project)   */}
                     {
                         this.props.projectDetails.HashTags &&
-                        <Row style={{marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid">
-                            <Col style={{textAlign:'right'}} sm="2">
-                                <p>האשטגים:</p>
+                        <Row style={{marginTop:'4%',textAlign:'center'}} dir="rtl" className="show-grid">
+                            <Col style={{textAlign:'right',fontSize:'30'}} sm="2">
+                                <p style={{fontSize:'20px'}}><GoTag size={40}/>האשטגים:</p>
                             </Col>
                             <Col sm="10" style={{textAlign:'right'}}>
                                 {
                                     this.props.projectDetails.HashTags.map((tag,key)=>
-                                        <Badge size={20} marginWidth={2} style={{backgroundColor:randomColor(),fontSize:20,marginLeft:5}}>{tag}</Badge>
+                                        <Badge size={20} marginWidth={2} style={{backgroundColor:randomColor({
+                                            luminosity: 'light',
+                                            hue: 'blue'
+                                         }),fontSize:20,marginLeft:5}}>{tag}</Badge>
                                     )
                                 }
                             </Col>

@@ -23,6 +23,7 @@ class BSProjectTemplate extends React.Component{
     constructor(props){
         super(props);
         this.state = {
+            imageAspect:4/3,
             openModal:false,
             modalTitle:'',
             isPublished:true,
@@ -38,7 +39,6 @@ class BSProjectTemplate extends React.Component{
             advisorsList:[],
             coursesList:[],
             topicsList:[],
-            projectPdf:'',
             projectDetails:{},
             showPreview:false,
             CDescription:'',
@@ -59,6 +59,7 @@ class BSProjectTemplate extends React.Component{
     componentDidMount(){
         //get group data from local storage
         const groupData = JSON.parse(localStorage.getItem('groupData'));
+        console.log(groupData);
         this.setState({
             GroupName:groupData.GroupName,
             ProjectName:groupData.ProjectName?groupData.ProjectName:'',
@@ -66,6 +67,8 @@ class BSProjectTemplate extends React.Component{
             poster:groupData.ProjectLogo?[groupData.ProjectLogo]:[],
             ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
             isPublished:true,
+            StudentDetails:groupData.Students?groupData.Students:[],
+
             CDescription:groupData.CDescription?groupData.CDescription:groupData.CDescription
         })
         
@@ -209,7 +212,7 @@ class BSProjectTemplate extends React.Component{
     savePDF = (url)=>{
         console.log(url);
         this.setState({
-            projectPdf:url
+            ProjectPDF:url
         })
     }
     //save project to object and show preview
@@ -228,7 +231,7 @@ class BSProjectTemplate extends React.Component{
             isPublished:this.state.isPublished,
             MovieLink:this.MovieLink.current.value,
             ProjectLogo:this.state.poster[0],
-            ProjectPDF:this.state.projectPdf,
+            ProjectPDF:this.state.ProjectPDF,
             CDescription:this.projectSmallDescription.current.value,
         }
         
@@ -245,7 +248,8 @@ class BSProjectTemplate extends React.Component{
             showPreview:false
         })
     }
-    SaveData = ()=>{
+    SaveData = (event)=>{
+        event.preventDefault();
         //save project to firebase.
         this.setState({isReady:false},()=>{
             const projectKey = JSON.parse(localStorage.getItem('projectKey'));
@@ -296,7 +300,7 @@ class BSProjectTemplate extends React.Component{
                         onChange={this.handlePublishedChange} />
                 </label>
                 {/* Popup modal for uploading an image */}
-                <ModalImage savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal onHide={this.projectLogoClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showPoster} title='תצוגה מקדימה'/>
                 
                 {/* preview project card */}
@@ -312,7 +316,7 @@ class BSProjectTemplate extends React.Component{
                         <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
                             <Col sm="3"></Col>
                             <Col sm="7">
-                                <Form.Control  ref={this.projectName}  size="lg" type="text" dir="rtl"/>
+                                <Form.Control defaultValue={this.state.ProjectName} ref={this.projectName}  size="lg" type="text" dir="rtl"/>
                             </Col>
                             <Form.Label column sm="2">שם הפרויקט</Form.Label>
                         </Form.Group>
@@ -320,7 +324,7 @@ class BSProjectTemplate extends React.Component{
                         {/* project small description */}
                          <Form.Group as={Row} id="smalldescription">
                             <Col sm="10">
-                                <Form.Control defaultValue={this.state.CDescription} ref={this.projectSmallDescription}  dir="rtl" as="textarea" rows="3" />
+                                <Form.Control defaultValue={this.state.CDescription} ref={this.projectSmallDescription}  dir="rtl" type="textarea" rows="3" />
                             </Col>
                             <Form.Label column sm="2">תיאור קצר</Form.Label>
                         </Form.Group>
@@ -328,12 +332,10 @@ class BSProjectTemplate extends React.Component{
                         {/* project description */}
                         <Form.Group as={Row} id="description">
                             <Col sm="10">
-                                <Form.Control defaultValue={this.state.PDescription} ref={this.projectDescription}  dir="rtl" as="textarea" rows="3" />
+                                <Form.Control defaultValue={this.state.PDescription} ref={this.projectDescription}  dir="rtl" type="textarea" rows="3" />
                             </Col>
                             <Form.Label column sm="2">תיאור הפרויקט</Form.Label>
-                        </Form.Group>
-
-                         
+                        </Form.Group>               
 
                         <Form.Row dir="rtl">
                             
@@ -434,7 +436,7 @@ class BSProjectTemplate extends React.Component{
                     </div>
 
                     {/* Students details */}
-                    <StudentDetails setStudents={this.getStudentsDetails}  OpenImageModal={this.OpenImageModal}  OpenPreviewModal={this.OpenImagePreviewForStudent}/>
+                    <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}  OpenPreviewModal={this.OpenImagePreviewForStudent}/>
                     
                 </Form>
             </div>

@@ -17,7 +17,23 @@ export default class StudentsDetails extends React.Component{
 
     }
     componentDidMount = ()=>{
-        this.props.setStudents(this.state.students);
+        window.setTimeout(()=>{
+            console.log(this.props)
+            if(this.props.studentInitalDetails&&this.props.studentInitalDetails.length!==0){
+                this.setState({
+                    students:this.props.studentInitalDetails,
+                   
+                },()=>{
+                    this.setState({
+                        numberOfStudents:this.state.students+1,
+                    },()=>{
+                        this.props.setStudents(this.state.students);
+                    })
+                })
+            }
+            else this.props.setStudents(this.state.students);
+        },1000)
+        
     }
     ChangeStudentsInputNumber = (e)=>{
         this.setState({
@@ -82,7 +98,7 @@ export default class StudentsDetails extends React.Component{
                     <Col sm="4"></Col>
                     <Col sm="4">
                         <Form.Label>מספר חברי צוות</Form.Label>
-                        <Form.Control onChange={this.ChangeStudentsInputNumber} id="studentsNumber" as="select">
+                        <Form.Control value={this.state.numberOfStudents} onChange={this.ChangeStudentsInputNumber} id="studentsNumber" as="select">
                             <option>1</option>
                             <option>2</option>
                             <option>3</option>
@@ -105,17 +121,17 @@ export default class StudentsDetails extends React.Component{
                 {
                     students.map((val, idx)=> {
                         return (
-                        <div  key={idx}>
+                        <div key={idx}>
                             <SmallHeaderForm title={`#סטודנט/ית ${idx+1}`}/>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="studentName">
                                 <Form.Label column sm="2">שם הסטודנט/ית</Form.Label>
                                 <Col sm="2">
-                                <Form.Control value={students[idx].fullName} onChange={(e)=>this.changeName(idx,e)} type="text" dir="rtl"/>
+                                <Form.Control defaultValue={students[idx].Name} onChange={(e)=>this.changeName(idx,e)} type="text" dir="rtl"/>
                                 </Col>
 
                                 <Form.Label column sm="2">אימייל</Form.Label>
                                 <Col sm="4">
-                                <Form.Control value={students[idx].email} onChange={(e)=>this.changeEmail(idx,e)} type="text" dir="rtl"/>
+                                <Form.Control defaultValue={students[idx].Email} onChange={(e)=>this.changeEmail(idx,e)} type="text" dir="rtl"/>
                                 </Col>
                                 <Button onClick={()=>this.removeStudent(idx)} style={{backgroundColor:'#fff',borderColor:'#fff',color:'red'}}>
                                     <IoIosCloseCircleOutline color="red" size={40}/>
@@ -124,7 +140,7 @@ export default class StudentsDetails extends React.Component{
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="studentName">
                                 <Form.Label  column sm="2">תעודת זהות</Form.Label>
                                 <Col sm="2">
-                                <Form.Control value={students[idx].id} onChange={(e)=>this.changeId(idx,e)} type="text" dir="rtl"/>
+                                <Form.Control defaultValue={students[idx].Id} onChange={(e)=>this.changeId(idx,e)} type="text" dir="rtl"/>
                                 </Col>
                                 <Col sm="2"></Col>
                                 <Col sm="2">
@@ -134,10 +150,10 @@ export default class StudentsDetails extends React.Component{
                                     </Button>
                                 </Col>
                                 <Col sm="2">
-                                    <Button block onClick={()=>this.OpenPreviewModal(idx)} variant="info" >
+                                    {/* <Button block onClick={()=>this.OpenPreviewModal(idx)} variant="info" >
                                         <FaEye/>
                                         {`  תצוגה`} 
-                                    </Button>
+                                    </Button> */}
                                 </Col>
                             </Form.Group>
                         </div>

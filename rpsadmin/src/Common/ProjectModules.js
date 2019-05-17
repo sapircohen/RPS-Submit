@@ -11,6 +11,19 @@ export default class ProjectModules extends React.Component{
     state = {
         modules: [{ModuleName:"", ModuleDescription:""}],
     }
+    componentDidMount(){
+        window.setTimeout(()=>{
+            console.log(this.props)
+            if(this.props.initalProjectModule&&this.props.initalProjectModule.length!==0){
+                this.setState({
+                    modules:this.props.initalProjectModule,
+                },()=>{
+                    this.props.setProjectModules(this.state.modules);
+                })
+            }
+            else this.props.setProjectModules(this.state.modules);
+        },1000)
+    }
     addModule = ()=>{
         this.setState((prevState) => ({
             modules: [...prevState.modules, {ModuleName:"", ModuleDescription:""}],

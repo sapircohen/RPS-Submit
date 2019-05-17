@@ -12,6 +12,20 @@ export default class ProjectGoals extends React.Component{
         //numberOfStudents:1,
         goals: [{GoalDescription:"", GoalStatus:""}],
     }
+    componentDidMount(){
+        window.setTimeout(()=>{
+            console.log(this.props)
+            if(this.props.initalProjectGoals&&this.props.initalProjectGoals.length!==0){
+                this.setState({
+                    goals:this.props.initalProjectGoals,
+                   
+                },()=>{
+                    this.props.setProjectGoals(this.state.goals);
+                })
+            }
+            else this.props.setProjectGoals(this.state.goals);
+        },1000)
+    }
     addGoal = ()=>{
         this.setState((prevState) => ({
             goals: [...prevState.goals, {GoalDescription:"", GoalStatus:""}],

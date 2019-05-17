@@ -20,11 +20,15 @@ import PreviewModal from "../Common/imagesModalPrevies";
 import SaveAction from '../Common/SaveAction';
 import PreviewCard from '../Common/PreviewProjectCard';
 import Loader from 'react-loader-spinner';
-import {storage} from '../App';
+//import {storage} from '../App';
+import { MDBInput } from "mdbreact";
+
+//import ProjectName from '../Common/ProjectName';
 
 import Toggle from 'react-toggle';
 import "react-toggle/style.css";
-import { CommunicationInvertColorsOff } from 'material-ui/svg-icons';
+
+
 
 const KeyCodes = {
     comma: 188,
@@ -37,6 +41,7 @@ class ISProjectTemplate extends React.Component{
     constructor(props){
         super(props);
         this.state={
+            imageAspect:4/3,
             showPreview:false,
             imagesToShowInModal:[],
             showImagesMode:false,
@@ -73,7 +78,9 @@ class ISProjectTemplate extends React.Component{
             CustCustomers:'',
             CStackholders:'',
             projectDetails:{},
-            isReady:true
+            isReady:true,
+            coursesList:[],
+            topicList:[]
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
@@ -122,11 +129,45 @@ class ISProjectTemplate extends React.Component{
             StudentDetails:groupData.Students?groupData.Students:[],
             chosenTechs:groupData.Technologies?groupData.Technologies:[],
             //tags:groupData.HashTags?groupData.HashTags:[]
-        },()=>console.log(this.state.PDescription))
+        },()=>console.log(this.state.StudentDetails))
         //get list of advisors from firebase
         this.getAdvisors();
         //get technologies from firebase
         this.getTechnologies();
+        //get courses from firebase
+        this.getCourses();
+        //get topics for Final project from firebase
+        this.getTopicForFinalProject();
+    }
+    getCourses= ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        if (groupData.Department === "הנדסת תעשייה וניהול") {///Ruppin/Faculties/Engineering/Departments/Industrial Engineering/Advisors'
+            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Engineering').child('Departments').child('Industrial Engineering').child('Experties').child('Information systems').child('Courses');
+            ref.once("value", (snapshot)=> {
+                snapshot.forEach((course)=>{
+                    this.setState({coursesList:[...this.state.coursesList,course.val().Name]});
+                    console.log(course.val())
+                })
+            }, (errorObject)=> {
+                console.log("The read failed: " + errorObject.code);
+            })
+        }
+        ///need another one for "מנהל עסקים"
+    }
+    getTopicForFinalProject = ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        if (groupData.Department === "הנדסת תעשייה וניהול" || groupData.Department === "מנהל עסקים" ) {///Ruppin/Faculties/Engineering/Departments/Industrial Engineering/Advisors'
+            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Engineering').child('Departments').child('Industrial Engineering').child('Experties').child('Information systems').child('Courses').child('Final project').child('Topics');
+            ref.once("value", (snapshot)=> {
+                snapshot.forEach((topicName)=>{
+                    this.setState({topicList:[...this.state.topicList,topicName.val().Name]});
+                    console.log(topicName.val())
+                })
+            }, (errorObject)=> {
+                console.log("The read failed: " + errorObject.code);
+            })
+        }
+        ///need another one for "מנהל עסקים"
     }
     getAdvisors = ()=>{
 
@@ -140,6 +181,7 @@ class ISProjectTemplate extends React.Component{
                 console.log("The read failed: " + errorObject.code);
             })
         }
+        //need to go to another route, only for the mean time.
         else if(groupData.Department === "מנהל עסקים"){
             const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Engineering').child('Departments').child('Industrial Engineering').child('Advisors');
             ref.once("value", (snapshot)=> {
@@ -300,19 +342,7 @@ class ISProjectTemplate extends React.Component{
         this.setState({isPublished:!this.state.isPublished})
     }
     getStudentsDetails = (students)=>{
-        // const groupData = JSON.parse(localStorage.getItem('groupData'));
-        // console.log(groupData.Students)
-        // if (groupData.Students) {
-        //    groupData.Students.filter((s)=>{
-        //    let stud = {
-        //        Name:s.Name,
-        //        Email:s.Email,
-        //        Picture:s.Picture,
-        //        Id:s.Id
-        //    }
-        //    students.push(stud)
-        // })
-        // }
+        
         this.setState({StudentsDetails:students},()=>{
             console.log(this.state.StudentsDetails);
         })
@@ -400,7 +430,9 @@ class ISProjectTemplate extends React.Component{
         this.forceUpdate();
         console.log(this.state.StudentsDetails);
     }
-    SaveData = ()=>{
+    SaveData = (event)=>{        
+        event.preventDefault();
+
         this.setState({isReady:false},()=>{
             const projectKey = JSON.parse(localStorage.getItem('projectKey'));
             const ref = firebase.database().ref('RuppinProjects/'+projectKey);
@@ -471,7 +503,7 @@ class ISProjectTemplate extends React.Component{
         return(
             <div style={{flex:1,backgroundColor:'#eee'}}>
 
-                <ModalImage savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <ModalImage aspect={this.state.imageAspect}savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <NavbarProjs />
@@ -494,6 +526,7 @@ class ISProjectTemplate extends React.Component{
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         
                         {/* projectName */}
+                        {/* <ProjectName /> */}
                         <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
                             <Col sm="3"></Col>
                             <Col sm="7">
@@ -523,15 +556,18 @@ class ISProjectTemplate extends React.Component{
                         {/* project Small Description */}
                         <Form.Group as={Row} id="projectSmallDescription">
                             <Col sm="10">
-                                <Form.Control ref={this.projectSmallDescription} defaultValue={this.state.CDescription} dir="rtl" as="textarea" />
+                                <Form.Control ref={this.projectSmallDescription} type="textarea" defaultValue={this.state.CDescription} dir="rtl" />
                             </Col>
                         <Form.Label column sm="2">תיאור קצר</Form.Label>
                         </Form.Group>
                         
                         {/* project description */}
                         <Form.Group as={Row} id="description">
-                            <Col sm="10">
-                                <Form.Control ref={this.projectDescription} defaultValue={this.state.PDescription} dir="rtl" as="textarea"/>
+                            <Col  sm="10">
+                                {/* <textarea dir="rtl" defaultValue= ref={this.projectDescription}>
+                                </textarea> */}
+                                
+                                <Form.Control ref={this.projectDescription} type="textarea" defaultValue={this.state.PDescription} dir="rtl" rows={3} />
                             </Col>
                             <Form.Label column sm="2">תיאור הפרויקט</Form.Label>
                         </Form.Group>
@@ -539,7 +575,7 @@ class ISProjectTemplate extends React.Component{
                         {/* project Challenges  */}
                         <Form.Group as={Row} id="projectChallenges">
                             <Col sm="10">
-                                <Form.Control ref={this.projectChallenges} defaultValue={this.state.Challenges} dir="rtl" as="textarea" rows="3" />
+                                <Form.Control ref={this.projectChallenges} type="textarea" defaultValue={this.state.Challenges} dir="rtl" rows="3" />
                             </Col>
                             <Form.Label column sm="2">אתגרי הפרויקט</Form.Label>
                         </Form.Group>
@@ -547,7 +583,7 @@ class ISProjectTemplate extends React.Component{
                         {/* project Comments */}
                         <Form.Group as={Row} id="comments">
                             <Col sm="10">
-                                <Form.Control defaultValue={this.state.comments} ref={this.projectComments} dir="rtl" as="textarea" rows="3" />
+                                <Form.Control defaultValue={this.state.comments} ref={this.projectComments} dir="rtl" type="textarea" rows="3" />
                             </Col>
                             <Form.Label column sm="2">הערות</Form.Label>
                         </Form.Group>
@@ -555,18 +591,20 @@ class ISProjectTemplate extends React.Component{
                         {/* projectType */}
                         <Form.Row dir="rtl">
                             <Form.Group as={Col} id="projectType">
-                            <Form.Label>סוג הפרויקט</Form.Label>
+                            <Form.Label>נושא הפרויקט</Form.Label>
                             <Form.Control ref={this.projectType} onChange={this.changeProjectType} dir="rtl" as="select">
                                 <option>בחר</option>
-                                <option>ארגוני</option>
-                                <option>יזמי</option>
+                                {this.state.topicList.map((topicName,key)=>
+                                    <option>{topicName}</option>
+                                )}
                             </Form.Control>
                         </Form.Group>
-                        
+                            
+
                         {/* first advisor */}
                         <Form.Group as={Col} id="firstAdvisor">
                         <Form.Label dir="rtl">מנחה חלק א'</Form.Label>
-                        <Form.Control ref={this.firstAdvisor} dir="rtl" as="select">
+                        <Form.Control defaultValue={this.state.a} ref={this.firstAdvisor} dir="rtl" as="select">
                             <option>בחר</option>
                             {this.state.advisorsList.map((a,key)=>
                                 <option>{a}</option>
@@ -586,6 +624,7 @@ class ISProjectTemplate extends React.Component{
                         </Form.Group>   
                     </Form.Row>
                     
+                    {/* if the topic is organization */}
                     {this.state.organization &&
                     (<div>
                         {/* projectCustomerName */}
@@ -599,8 +638,8 @@ class ISProjectTemplate extends React.Component{
                     </div>)}
                     </div>
                     
-                    <ProjectGoals setProjectGoals={this.getProjectGoals}/>
-                    <ProjectModules setProjectModules={this.getprojectModules}/>
+                    <ProjectGoals initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
+                    <ProjectModules initalProjectModule={this.state.projectModules} setProjectModules={this.getprojectModules}/>
                     
                     {/* tag the project */}
                     <div dir="rtl" style={{padding:15,borderRadius:20,marginTop:30,border:'solid 1px',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
@@ -697,21 +736,21 @@ class ISProjectTemplate extends React.Component{
                         <SmallHeaderForm title="קבצים"/>
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Col sm="4">
-                                    <Button style={{backgroundColor:'#96B2CC',borderColor:'#96B2CC'}} onClick={()=>this.OpenImageModal('Project Logo','Plogo')}>
+                                    <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Project Logo','Plogo')}>
                                         <FaCameraRetro/>
                                         {`  הוסף לוגו`}
                                         
                                     </Button>
                                 </Col>
                                 <Col sm="4">
-                                    <Button style={{backgroundColor:'#EECC4D',borderColor:'#EECC4D'}} onClick={()=>this.OpenImageModal('Screenshots','')}>
+                                    <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Screenshots','')}>
                                         <FaCameraRetro/>
                                         {`  תמונות מסך`}
                                     </Button>
                                 </Col>
                                 {this.state.organization ?
                                 <Col sm="4">
-                                    <Button style={{backgroundColor:'#B9CABF',borderColor:'#B9CABF'}} onClick={()=>this.OpenImageModal('Customer Logo','Clogo')}>
+                                    <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Customer Logo','Clogo')}>
                                          <FaCameraRetro/>
                                         {` לוגו לקוח`}
                                     </Button>
@@ -722,24 +761,24 @@ class ISProjectTemplate extends React.Component{
                             </Row>
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Col sm="4">
-                                    <Button style={{backgroundColor:'#96B2CC',borderColor:'#96B2CC'}} onClick={()=>this.OpenImagePreview('Project Logo')}>
+                                    {/* <Button style={{backgroundColor:'#96B2CC',borderColor:'#96B2CC'}} onClick={()=>this.OpenImagePreview('Project Logo')}>
                                         <FaCameraRetro/>
                                         {`  הראה לוגו`}
                                         
-                                    </Button>
+                                    </Button> */}
                                 </Col>
                                 <Col sm="4">
-                                    <Button style={{backgroundColor:'#EECC4D',borderColor:'#EECC4D'}} onClick={()=>this.OpenImagePreview('Screenshots')}>
+                                    <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.OpenImagePreview('Screenshots')}>
                                         <FaCameraRetro/>
-                                        {`  צפה בתמונות מסך`}
+                                        {`  עריכת תמונות מסך`}
                                     </Button>
                                 </Col>
                                 {this.state.organization ?
                                 <Col sm="4">
-                                    <Button style={{backgroundColor:'#B9CABF',borderColor:'#B9CABF'}} onClick={()=>this.OpenImagePreview('Customer Logo')}>
+                                    {/* <Button style={{backgroundColor:'#B9CABF',borderColor:'#B9CABF'}} onClick={()=>this.OpenImagePreview('Customer Logo')}>
                                          <FaCameraRetro/>
                                         {` צפה בלוגו לקוח`}
-                                    </Button>
+                                    </Button> */}
                                 </Col>
                                 :
                                 <Col sm="4"></Col>
@@ -747,13 +786,14 @@ class ISProjectTemplate extends React.Component{
                             </Row>
                     </div>
 
-                    <StudentDetails setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
+                    <StudentDetails setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
                     
                 </Form>
             </div>
         );
     }
 }
+
 
 
 export default ISProjectTemplate;
