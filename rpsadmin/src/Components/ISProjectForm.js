@@ -21,13 +21,10 @@ import SaveAction from '../Common/SaveAction';
 import PreviewCard from '../Common/PreviewProjectCard';
 import Loader from 'react-loader-spinner';
 //import {storage} from '../App';
-import { MDBInput } from "mdbreact";
-
-//import ProjectName from '../Common/ProjectName';
 
 import Toggle from 'react-toggle';
 import "react-toggle/style.css";
-
+//import { forEach } from '@firebase/util';
 
 
 const KeyCodes = {
@@ -105,8 +102,21 @@ class ISProjectTemplate extends React.Component{
         this.CStackholdersRef = React.createRef();
     }
     componentDidMount(){
+
         //get group data from local storage
         const groupData = JSON.parse(localStorage.getItem('groupData'));
+        let tagsList = [];
+        
+        if(groupData.HashTags){
+            groupData.HashTags.forEach((tag)=>{
+                let t = {
+                    'id':tag,
+                    'text':tag
+                }
+                tagsList.push(t);
+            })
+        }
+        
         console.log(groupData)
         this.setState({
             Advisor:groupData.Advisor?groupData.Advisor:'',
@@ -128,7 +138,7 @@ class ISProjectTemplate extends React.Component{
             projectGoals:groupData.Goals?groupData.Goals:[],
             StudentDetails:groupData.Students?groupData.Students:[],
             chosenTechs:groupData.Technologies?groupData.Technologies:[],
-            //tags:groupData.HashTags?groupData.HashTags:[]
+            tags:tagsList
         },()=>console.log(this.state.StudentDetails))
         //get list of advisors from firebase
         this.getAdvisors();
@@ -430,43 +440,186 @@ class ISProjectTemplate extends React.Component{
         this.forceUpdate();
         console.log(this.state.StudentsDetails);
     }
+    ValidateData = (projectData)=>{
+        // project name validation
+        if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
+            alert('שם הפרויקט חסר');
+            return false;
+        }
+        //project modules -->Module
+        if(projectData.Module.length<2){
+            alert('מספר מודולי הפרויקט צריך להיות לפחות 2');
+            return false;
+        }
+        else{
+            projectData.Module.forEach((mod,index)=>{
+                if (mod.ModuleDescription.length<20) {
+                    alert(" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ");
+                    return false;
+                }
+                if (mod.ModuleDescription.length>200) {
+                    alert(" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ");
+                    return false;
+                }
+                if(mod.ModuleName.length<3){
+                    alert(" שם מודול מספר " +(index+1)+"צריך להיות גדול מ3 תווים ");
+                    return false;
+                }
+                if(mod.ModuleName.length>70){
+                    alert(" שם מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                    return false;
+                }
+            })
+        }
+
+        //project goals-->Goals
+        if(projectData.Goals.length<2){
+            alert('מספר מטרות הפרויקט צריך להיות לפחות 2');
+            return false;
+        }
+        else{
+            projectData.Goals.forEach((goal,index)=>{
+                if (goal.GoalDescription.length<10) {
+                    alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות גדול מ10 תווים ");
+                    return false;
+                }
+                if (goal.GoalDescription.length>100) {
+                    alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                    return false;
+                }
+                if(goal.GoalStatus.length<4){
+                    alert(" סטטוס מטרה מספר " +(index+1)+"צריך להיות גדול מ4 תווים ");
+                    return false;
+                }
+                if(goal.GoalStatus.length<100){
+                    alert(" סטטוס מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                    return false;
+                }
+            })
+        }
+        //project comments
+        if(projectData.Comments.length<5 && projectData.Comments!==''){
+            alert("שדה הערות צריך להיות גדול מ-5 תווים");
+            return false;
+        }
+        // project short description validation
+        if(projectData.CDescription.length<50){
+            alert("תיאור קצר צריך להיות גדול מ-50 תווים");
+            return false;
+        }
+        if(projectData.CDescription.length>150){
+            alert("תיאור קצר צריך להיות קטן מ-150 תווים");
+            return false;
+        }
+        //project long description -->PDescription
+        if(projectData.PDescription.length<200){
+            alert("תיאור הפרויקט צריך להיות גדול מ-200 תווים");
+            return false;
+        }
+        if(projectData.PDescription.length>500){
+            alert("תיאור הפרויקט צריך להיות קטן מ-500 תווים");
+            return false;
+        }
+        // project Challenges -->Challenges
+        if(projectData.Challenges.length<50){
+            alert("שדה אתגרי הפרויקט צריך להיות גדול מ-50 תווים");
+            return false;
+        }
+        if(projectData.Challenges.length>200){
+            alert("שדה אתגרי הפרויקט צריך להיות קטן מ-200 תווים");
+            return false;
+        }
+        //project technologies -->Technologies
+        if(projectData.technologies.length<5){
+            alert('מספר הטכנולוגיות צריך להיות לפחות 5');
+        }
+        
+        //project students
+        if(projectData.Students.length<1){
+            alert('חייב שיהיה לפחות חבר צוות אחת');
+            return false;
+        }
+        else{
+            projectData.Students.forEach((student,index)=>{
+                if(student.Name===''){
+                    alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
+                    return false;
+                }
+                //id validation
+                //pic validation
+                //email validation
+            })
+        }
+
+        return true;
+    }
     SaveData = (event)=>{        
         event.preventDefault();
-
-        this.setState({isReady:false},()=>{
-            const projectKey = JSON.parse(localStorage.getItem('projectKey'));
-            const ref = firebase.database().ref('RuppinProjects/'+projectKey);
-            ref.update({
-                ProjectName: this.state.projectDetails.ProjectName,
-                ProjectSite:this.state.projectDetails.ProjectSite,
-                isPublished:this.state.projectDetails.isPublished,
-                Year:this.state.projectDetails.Year,
-                isApproved:1,
-                CDescription:this.state.projectDetails.CDescription,
-                CStackholders:this.state.projectDetails.CStackholders,
-                ScreenShotsNames:this.state.projectDetails.ScreenShotsNames,
-                ScreenShots:this.state.projectDetails.ScreenShots,
-                Students:this.state.projectDetails.Students,
-                Technologies:this.state.projectDetails.Technologies,
-                CustCustomers:this.state.projectDetails.CustCustomers,
-                Challenges:this.state.projectDetails.Challenges,
-                Comments:this.state.projectDetails.Comments,
-                Advisor:this.state.projectDetails.advisor,
-                CustomerLogo:this.state.projectDetails.CustomerLogo,
-                ProjectLogo:this.state.projectDetails.ProjectLogo,
-                MovieLink:this.state.projectDetails.MovieLink,
-                Goals:this.state.projectDetails.Goals,
-                Module:this.state.projectDetails.Module,
-                GooglePlay:this.state.projectDetails.GooglePlay,
-                AppStore:this.state.projectDetails.AppStore,
-                CustomerName:this.state.projectDetails.CustomerName,
-                HashTags:this.state.projectDetails.HashTags,
-                PDescription:this.state.projectDetails.PDescription
+        
+        const project = {
+            ProjectName: this.state.projectDetails.ProjectName,
+            ProjectSite:this.state.projectDetails.ProjectSite,
+            isPublished:this.state.projectDetails.isPublished,
+            Year:this.state.projectDetails.Year,
+            isApproved:1,
+            CDescription:this.state.projectDetails.CDescription,
+            CStackholders:this.state.projectDetails.CStackholders,
+            ScreenShotsNames:this.state.projectDetails.ScreenShotsNames,
+            ScreenShots:this.state.projectDetails.ScreenShots,
+            Students:this.state.projectDetails.Students,
+            Technologies:this.state.projectDetails.Technologies,
+            CustCustomers:this.state.projectDetails.CustCustomers,
+            Challenges:this.state.projectDetails.Challenges,
+            Comments:this.state.projectDetails.Comments,
+            Advisor:this.state.projectDetails.advisor,
+            CustomerLogo:this.state.projectDetails.CustomerLogo,
+            ProjectLogo:this.state.projectDetails.ProjectLogo,
+            MovieLink:this.state.projectDetails.MovieLink,
+            Goals:this.state.projectDetails.Goals,
+            Module:this.state.projectDetails.Module,
+            GooglePlay:this.state.projectDetails.GooglePlay,
+            AppStore:this.state.projectDetails.AppStore,
+            CustomerName:this.state.projectDetails.CustomerName,
+            HashTags:this.state.projectDetails.HashTags,
+            PDescription:this.state.projectDetails.PDescription
+        }
+        if(this.ValidateData(project)){
+            this.setState({isReady:false},()=>{
+                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                ref.update({
+                    ProjectName: this.state.projectDetails.ProjectName,
+                    ProjectSite:this.state.projectDetails.ProjectSite,
+                    isPublished:this.state.projectDetails.isPublished,
+                    Year:this.state.projectDetails.Year,
+                    isApproved:1,
+                    CDescription:this.state.projectDetails.CDescription,
+                    CStackholders:this.state.projectDetails.CStackholders,
+                    ScreenShotsNames:this.state.projectDetails.ScreenShotsNames,
+                    ScreenShots:this.state.projectDetails.ScreenShots,
+                    Students:this.state.projectDetails.Students,
+                    Technologies:this.state.projectDetails.Technologies,
+                    CustCustomers:this.state.projectDetails.CustCustomers,
+                    Challenges:this.state.projectDetails.Challenges,
+                    Comments:this.state.projectDetails.Comments,
+                    Advisor:this.state.projectDetails.advisor,
+                    CustomerLogo:this.state.projectDetails.CustomerLogo,
+                    ProjectLogo:this.state.projectDetails.ProjectLogo,
+                    MovieLink:this.state.projectDetails.MovieLink,
+                    Goals:this.state.projectDetails.Goals,
+                    Module:this.state.projectDetails.Module,
+                    GooglePlay:this.state.projectDetails.GooglePlay,
+                    AppStore:this.state.projectDetails.AppStore,
+                    CustomerName:this.state.projectDetails.CustomerName,
+                    HashTags:this.state.projectDetails.HashTags,
+                    PDescription:this.state.projectDetails.PDescription
+                })
+                .then(()=>{
+                    this.setState({isReady:true,showPreview:false})
+                })
             })
-            .then(()=>{
-                this.setState({isReady:true,showPreview:false})
-            })
-        })
+        }
+        
     }
     DeletePic = (picURL)=>{
         console.log(picURL)

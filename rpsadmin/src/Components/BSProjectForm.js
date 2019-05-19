@@ -8,16 +8,20 @@ import HeaderForm from '../Common/HeaderForm';
 import SmallHeaderForm from '../Common/SmallHeaderForm';
 import ModalImage from '../Common/ImageModal';
 import StudentDetails from '../Common/StudentsDetails';
-import { FaPlusCircle,FaEye } from "react-icons/fa";
+import { FaPlusCircle,FaEye, FaFlask } from "react-icons/fa";
 import PreviewModal from "../Common/imagesModalPrevies";
 import firebase from 'firebase';
 import SaveAction from '../Common/SaveAction';
 import PDFupload from '../Common/PdfFileUpload';
 import PreviewCard from '../Common/PreviewProjectCard';
 import Loader from 'react-loader-spinner';
-
+//toggle library for publish
 import Toggle from 'react-toggle';
 import "react-toggle/style.css";
+
+//fire up an alert 
+import SweetAlert from 'react-bootstrap-sweetalert';
+
 
 class BSProjectTemplate extends React.Component{
     constructor(props){
@@ -149,18 +153,6 @@ class BSProjectTemplate extends React.Component{
         })
     }
     getStudentsDetails = (students)=>{
-        // const groupData = JSON.parse(localStorage.getItem('groupData'));
-        // if (groupData.Students) {
-        //     groupData.Students.filter((s)=>{
-        //     let stud = {
-        //         Name:s.Name,
-        //         Email:s.Email,
-        //         Picture:s.Picture,
-        //         Id:s.Id
-        //     }
-        //     students.push(stud)
-        //  })
-        // }
         this.setState({StudentsDetails:students},()=>{
             console.log(this.state.StudentsDetails);
         })
@@ -189,7 +181,7 @@ class BSProjectTemplate extends React.Component{
             })
         }
         else{
-            alert("לא הועלתה תמונת סטודנט");
+            alert('לא הועלתה תמונת סטודנט/ית');
         }
     }
     savePic=(url,title,index,screenshotName)=>{
@@ -248,32 +240,96 @@ class BSProjectTemplate extends React.Component{
             showPreview:false
         })
     }
+    ValidateData = (projectData)=>{
+        // project name validation
+        if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
+            alert('שם הפרויקט חסר');
+            return false;
+        }
+        // project short description validation
+        if(projectData.CDescription.length<50){
+            alert("תיאור קצר צריך להיות גדול מ-50 תווים");
+            return false;
+        }
+        if(projectData.CDescription.length>150){
+            alert("תיאור קצר צריך להיות קטן מ-150 תווים");
+            return false;
+        }
+
+        //project long description -->PDescription
+        if(projectData.PDescription.length<200){
+            alert("תיאור הפרויקט צריך להיות גדול מ-200 תווים");
+            return false;
+        }
+        if(projectData.PDescription.length>500){
+            alert("תיאור הפרויקט צריך להיות קטן מ-500 תווים");
+            return false;
+        }
+
+        //project students
+        if(projectData.Students.length<1){
+            alert('חייב שיהיה לפחות חבר צוות אחת');
+            return false;
+        }
+        else{
+            projectData.Students.forEach((student,index)=>{
+                if(student.Name===''){
+                    alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
+                    return false;
+                }
+                //id validation
+                //pic validation
+                //email validation
+            })
+        }
+        
+        return true;
+    }
     SaveData = (event)=>{
         event.preventDefault();
-        //save project to firebase.
-        this.setState({isReady:false},()=>{
-            const projectKey = JSON.parse(localStorage.getItem('projectKey'));
-            const ref = firebase.database().ref('RuppinProjects/'+projectKey);
-            ref.update({
-                ProjectName: this.state.projectDetails.ProjectName,
-                isPublished:this.state.projectDetails.isPublished,
-                Year:this.state.projectDetails.Year,
-                isApproved:1,
-                CDescription:this.state.projectDetails.CDescription,
-                Students:this.state.projectDetails.Students,
-                Technologies:this.state.projectDetails.Technologies,
-                Advisor:this.state.projectDetails.advisor,
-                ProjectLogo:this.state.projectDetails.ProjectLogo,
-                MovieLink:this.state.projectDetails.MovieLink,
-                PDescription:this.state.projectDetails.PDescription,
-                ProjectCourse:this.state.projectDetails.ProjectCourse,
-                ProjectTopic:this.state.projectDetails.ProjectTopic,
-                ProjectPDF:this.state.projectDetails.ProjectPDF,
+        //validate project inputs
+        let project = {
+            ProjectName: this.state.projectDetails.ProjectName,
+            isPublished:this.state.projectDetails.isPublished,
+            Year:this.state.projectDetails.Year,
+            isApproved:1,
+            CDescription:this.state.projectDetails.CDescription,
+            Students:this.state.projectDetails.Students,
+            Technologies:this.state.projectDetails.Technologies,
+            Advisor:this.state.projectDetails.advisor,
+            ProjectLogo:this.state.projectDetails.ProjectLogo,
+            MovieLink:this.state.projectDetails.MovieLink,
+            PDescription:this.state.projectDetails.PDescription,
+            ProjectCourse:this.state.projectDetails.ProjectCourse,
+            ProjectTopic:this.state.projectDetails.ProjectTopic,
+            ProjectPDF:this.state.projectDetails.ProjectPDF,
+        }
+        if(this.ValidateData(project)){
+            //save project to firebase.
+            this.setState({isReady:false},()=>{
+                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                ref.update({
+                    ProjectName: this.state.projectDetails.ProjectName,
+                    isPublished:this.state.projectDetails.isPublished,
+                    Year:this.state.projectDetails.Year,
+                    isApproved:1,
+                    CDescription:this.state.projectDetails.CDescription,
+                    Students:this.state.projectDetails.Students,
+                    Technologies:this.state.projectDetails.Technologies,
+                    Advisor:this.state.projectDetails.advisor,
+                    ProjectLogo:this.state.projectDetails.ProjectLogo,
+                    MovieLink:this.state.projectDetails.MovieLink,
+                    PDescription:this.state.projectDetails.PDescription,
+                    ProjectCourse:this.state.projectDetails.ProjectCourse,
+                    ProjectTopic:this.state.projectDetails.ProjectTopic,
+                    ProjectPDF:this.state.projectDetails.ProjectPDF,
+                })
+                .then(()=>{
+                    this.setState({isReady:true,showPreview:false})
+                })
             })
-            .then(()=>{
-                this.setState({isReady:true,showPreview:false})
-            })
-        })
+        }
     }
     render(){
         if (!this.state.isReady) {
