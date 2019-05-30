@@ -19,10 +19,32 @@ import Loader from 'react-loader-spinner';
 import Toggle from 'react-toggle';
 import "react-toggle/style.css";
 
-//fire up an alert 
-import SweetAlert from 'react-bootstrap-sweetalert';
+//commons
+import TextareaInput from '../Common/TextAreaInputs';
+import TextInputs from '../Common/TextInputs';
+import SelectInput from '../Common/inputSelect';
 
 
+const sectionNames = {
+    projectDesc : "תיאור הפרויקט",
+    projectChallenges:"אתגרי הפרויקט",
+    projectSmallDesc:"תיאור קצר",
+    projectComments:"הערות",
+    projectName:"שם הפרויקט",
+    projectStackholders:"בעלי עניין",
+    projectCustCustomers:"משתמשי המערכת",
+    projectCustomerName:'שם הלקוח',
+    projectType:'נושא הפרויקט',
+    projectFirstAdvisor:"מנחה חלק א",
+    projectSecondAdvisor:"מנחה חלק ב",
+    projectLink:'קישור לאתר הפרויקט',
+    projectMovie:'קישור לסרטון הפרויקט ביוטיוב',
+    appleLinke:'apple',
+    googleLink:'google',
+    projectMajor:'התמחות',
+    projectCourse:'סוג הפרויקט',
+
+}
 class BSProjectTemplate extends React.Component{
     constructor(props){
         super(props);
@@ -48,6 +70,9 @@ class BSProjectTemplate extends React.Component{
             CDescription:'',
             ProjectTopic:'',
             isReady:true,
+            ProjectAdvisor:'',
+            projectMajor:'',
+            projectCourse:''
         }
 
         //refs
@@ -72,7 +97,6 @@ class BSProjectTemplate extends React.Component{
             ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
             isPublished:true,
             StudentDetails:groupData.Students?groupData.Students:[],
-
             CDescription:groupData.CDescription?groupData.CDescription:groupData.CDescription
         })
         
@@ -212,19 +236,19 @@ class BSProjectTemplate extends React.Component{
         //need to validate here too.
         console.log(this.state.StudentsDetails)
         const project = {
-            ProjectName:this.projectName.current.value,
-            PDescription:this.projectDescription.current.value,
-            advisor:[this.projectAdvisor.current.value],
-            Major:this.projectMajor.current.value,
-            ProjectCourse:this.ProjectCourse.current.value,
-            ProjectTopic:this.ProjectTopic.current.value,
+            ProjectName:this.state.ProjectName,
+            PDescription:this.state.PDescription,
+            advisor:[this.state.ProjectAdvisor],
+            Major:this.state.projectMajor,
+            ProjectCourse:this.state.projectCourse,
+            ProjectTopic:this.state.ProjectTopic,
             Students:this.state.StudentsDetails,
             Year:(new Date().getFullYear()),
             isPublished:this.state.isPublished,
             MovieLink:this.MovieLink.current.value,
             ProjectLogo:this.state.poster[0],
             ProjectPDF:this.state.ProjectPDF,
-            CDescription:this.projectSmallDescription.current.value,
+            CDescription:this.state.CDescription,
         }
         
         this.setState({
@@ -236,9 +260,7 @@ class BSProjectTemplate extends React.Component{
     }
     //close preview:
     closePreview = ()=>{
-        this.setState({
-            showPreview:false
-        })
+        this.setState({showPreview:false})
     }
     ValidateData = (projectData)=>{
         // project name validation
@@ -331,6 +353,32 @@ class BSProjectTemplate extends React.Component{
             })
         }
     }
+    ChangeInputTextarea = (event,textareaTitle)=>{
+        switch (textareaTitle) {
+            case sectionNames.projectDesc:this.setState({PDescription:event.target.value})
+                break;
+            case sectionNames.projectSmallDesc:this.setState({CDescription:event.target.value})
+                    break;
+            case sectionNames.projectName:this.setState({ProjectName:event.target.value})
+                break;
+           default:
+               break;
+        }
+    }
+    ChangeSelectedInputs = (event,selectedTitle)=>{
+        switch (selectedTitle) {
+            case sectionNames.projectType:this.setState({ProjectTopic:event.target.value})
+                break;
+            case sectionNames.projectFirstAdvisor:this.setState({ProjectAdvisor:event.target.value})
+                break;
+            case sectionNames.projectMajor:this.setState({projectMajor:event.target.value})
+                break;
+            case sectionNames.projectCourse:this.setState({projectCourse:event.target.value})
+                break;
+            default:
+                break;
+        }
+    }
     render(){
         if (!this.state.isReady) {
             return(
@@ -367,84 +415,25 @@ class BSProjectTemplate extends React.Component{
                     {/* Project details */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>   
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
-                        
                         {/* project name */}
-                        <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
-                            <Col sm="3"></Col>
-                            <Col sm="7">
-                                <Form.Control defaultValue={this.state.ProjectName} ref={this.projectName}  size="lg" type="text" dir="rtl"/>
-                            </Col>
-                            <Form.Label column sm="2">שם הפרויקט</Form.Label>
-                        </Form.Group>
-                        
+                        <TextInputs defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* project small description */}
-                         <Form.Group as={Row} id="smalldescription">
-                            <Col sm="10">
-                                <Form.Control defaultValue={this.state.CDescription} ref={this.projectSmallDescription}  dir="rtl" type="textarea" rows="3" />
-                            </Col>
-                            <Form.Label column sm="2">תיאור קצר</Form.Label>
-                        </Form.Group>
-                        
+                        <TextareaInput defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <Form.Group as={Row} id="description">
-                            <Col sm="10">
-                                <Form.Control defaultValue={this.state.PDescription} ref={this.projectDescription}  dir="rtl" type="textarea" rows="3" />
-                            </Col>
-                            <Form.Label column sm="2">תיאור הפרויקט</Form.Label>
-                        </Form.Group>               
-
+                        <TextareaInput defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         <Form.Row dir="rtl">
-                            
                             {/* project major */}
-                            <Form.Group as={Col} id="projectType">
-                                <Form.Label>התמחות</Form.Label>
-                                <Form.Control ref={this.projectMajor} dir="rtl" as="select">
-                                    <option>בחר</option>
-                                    <option>פסיכולוגיה</option>
-                                    <option>סוציולוגיה ואנתרופולוגיה</option>
-                                </Form.Control>
-                            </Form.Group>
-
+                            <SelectInput inputList={["פסיכולוגיה","סוציולוגיה ואנתרופולוגיה"]} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* project advisor */}
-                            <Form.Group as={Col} id="firstAdvisor">
-                            <Form.Label dir="rtl">מנחה הפרויקט</Form.Label>
-                            <Form.Control ref={this.projectAdvisor} dir="rtl" as="select">
-                                <option>בחר</option>
-                                {this.state.advisorsList.map((a,key)=>
-                                    <option>{a}</option>
-                                )}
-                            </Form.Control>
-                            </Form.Group>
+                            <SelectInput inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
-
-
                         <Form.Row dir="rtl">
-                                    
                             {/* Project Course */}
-                            <Form.Group as={Col} id="projectType">
-                                <Form.Label>סוג הפרויקט</Form.Label>
-                                <Form.Control ref={this.ProjectCourse} dir="rtl" as="select">
-                                    <option>בחר</option>
-                                    {this.state.coursesList.map((a,key)=>
-                                    <option>{a}</option>
-                                    )}
-                                </Form.Control>
-                            </Form.Group>
-
+                            <SelectInput inputList={this.state.coursesList} InputTitle={sectionNames.projectCourse} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/*project topic */}
-                            <Form.Group as={Col} id="firstAdvisor">
-                            <Form.Label dir="rtl">נושא הפרויקט</Form.Label>
-                            <Form.Control ref={this.ProjectTopic} dir="rtl" as="select">
-                                <option>בחר</option>
-                                {this.state.topicsList.map((a,key)=>
-                                    <option>{a}</option>
-                                )}
-                            </Form.Control>
-                            </Form.Group>
+                            <SelectInput inputList={this.state.topicsList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
-
                     </div>
-
                     {/* FILES UPLOAD */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="הוספת קבצים"/>
@@ -456,11 +445,8 @@ class BSProjectTemplate extends React.Component{
                                 <Col sm="4">
                                     {/* <PDFupload /> */}
                                 </Col>
-                                
-                                
                             </Row>
                             <Row dir="rtl" style={{marginTop:'2%'}} >
-                               
                                 <Col sm="4"></Col>
                                 <Col sm="4">
                                     <Form.Label>קובץ PDF</Form.Label>
@@ -468,7 +454,6 @@ class BSProjectTemplate extends React.Component{
                                 </Col>
                                 <Col sm="4"></Col>
                             </Row>
-
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Col sm="4"> </Col>
                                 <Col sm="4">
@@ -490,7 +475,6 @@ class BSProjectTemplate extends React.Component{
                                 <Col sm="4"> </Col>
                             </Row>
                     </div>
-
                     {/* Students details */}
                     <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}  OpenPreviewModal={this.OpenImagePreviewForStudent}/>
                     
@@ -500,6 +484,5 @@ class BSProjectTemplate extends React.Component{
     }
      
 }
-
 export default BSProjectTemplate;
 

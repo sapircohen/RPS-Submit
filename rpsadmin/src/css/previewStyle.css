@@ -1,0 +1,11 @@
+.Box{
+    padding: 10px;
+    border: 1px solid #888888;
+    border-radius: 50px;
+    box-shadow: 1px 5px #888888;
+}
+.Headers{
+    font-family: 'Amatic SC', cursive;
+    font-weight: 'bold';
+    text-decoration: underline;
+}

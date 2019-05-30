@@ -10,12 +10,15 @@ import ImagesCarousel from './Carousel';
 import Badge from 'react-bootstrap/Badge';
 import randomColor from 'randomcolor'
 
+//CSS:
+import '../css/previewStyle.css';
+
 //ICONS:
 import { FaGoogle,FaAppleAlt,FaCameraRetro } from "react-icons/fa";
 import {FiLayers} from 'react-icons/fi';
 import { GiClapperboard,GiThreeFriends ,GiCrosshair} from "react-icons/gi";
 import {GoBook,GoTag} from 'react-icons/go';
-import {IoIosLaptop} from 'react-icons/io';
+import {IoIosLaptop,IoIosDesktop} from 'react-icons/io';
 
 class PreviewCard extends React.Component{
     state={
@@ -56,7 +59,7 @@ class PreviewCard extends React.Component{
                     </Row>
 
                     {/* project advisors */}
-                    <Row className="show-grid" style={{marginTop:'3%'}}>
+                    <Row className="show-grid"  style={{marginTop:'3%'}}>
                         <Col xs={12}>
                             <Row dir="rtl">
                                 <Col sm="1" style={{textAlign:'right'}}>
@@ -92,9 +95,9 @@ class PreviewCard extends React.Component{
                     {
                         (this.props.projectDetails.ProjectCourse &&this.props.projectDetails.ProjectTopic) &&
                         <Row dir="rtl" style={{marginTop:'1%'}}>
-                            <Col style={{textAlign:'right'}} sm="3">קורס: {this.props.projectDetails.ProjectCourse}</Col>
-                            <Col style={{textAlign:'right'}} sm="3">נושא: {this.props.projectDetails.ProjectTopic}</Col>
-                            <Col sm="6"></Col>
+                            <Col style={{textAlign:'right'}} sm="5">קורס: {this.props.projectDetails.ProjectCourse}</Col>
+                            <Col style={{textAlign:'right'}} sm="5">נושא: {this.props.projectDetails.ProjectTopic}</Col>
+                            <Col sm="2"></Col>
                         </Row>
                     }
 
@@ -102,14 +105,14 @@ class PreviewCard extends React.Component{
                     {
                         (this.props.projectDetails.CStackholders && this.props.projectDetails.CustCustomers) &&
                         <Row dir="rtl" style={{marginTop:'1%'}}>
-                            <Col style={{textAlign:'right'}} sm="3">בעלי עניין: {this.props.projectDetails.CStackholders}</Col>
-                            <Col style={{textAlign:'right'}} sm="3">משתמשי המערכת: {this.props.projectDetails.CustCustomers}</Col>
-                            <Col sm="6"></Col>
+                            <Col style={{textAlign:'right'}} sm="5">בעלי עניין: {this.props.projectDetails.CStackholders}</Col>
+                            <Col style={{textAlign:'right'}} sm="5">משתמשי המערכת: {this.props.projectDetails.CustCustomers}</Col>
+                            <Col sm="3"></Col>
                         </Row>
                     }
 
                     {/* project full description */}
-                    <Row style={{marginTop:'3%'}} className="show-grid">
+                    <Row  style={{marginTop:'3%'}} className="show-grid Box">
                                 <Col style={{textAlign:'center'}} sm="12">
                                 <h3>תיאור הפרויקט<GoBook size={50}/></h3>
                                 </Col>
@@ -127,7 +130,7 @@ class PreviewCard extends React.Component{
                     {/* project goals (for IS project) */}
                     {
                         this.props.projectDetails.Goals &&
-                        <Row style={{overflowWrap: 'break-word',marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid">
+                        <Row style={{overflowWrap: 'break-word',marginTop:'3%',textAlign:'center'}} dir="rtl" className="show-grid Box">
                             <Col style={{textAlign:'center'}} sm="12">
                                 <h3><GiCrosshair size={50}/>מטרות המערכת</h3>
                             </Col>
@@ -153,7 +156,7 @@ class PreviewCard extends React.Component{
                     }
 
                     {/* students details */}
-                    <Row style={{marginTop:'6%'}} dir="rtl" className="show-grid">
+                    <Row style={{marginTop:'6%'}} dir="rtl" className="show-grid Box">
                         <Col style={{textAlign:'center'}} dir="rtl" sm="12">
                             <h3><GiThreeFriends size={50}/>חברי הצוות</h3>
                         </Col>
@@ -179,7 +182,7 @@ class PreviewCard extends React.Component{
                     {/* project video */}
                     {
                         this.props.projectDetails.MovieLink &&
-                        <Col style={{marginTop:'6%',textAlign:'center'}}>
+                        <Col className="Box" style={{marginTop:'6%',textAlign:'center'}}>
                             <Col style={{textAlign:'center'}} sm="12">
                                 <h3>סרטון הפרויקט<GiClapperboard size={50}/></h3>
                                 
@@ -212,7 +215,7 @@ class PreviewCard extends React.Component{
                     {/* project modules (for IS project) */}
                     {
                         this.props.projectDetails.Module &&
-                        <Row style={{overflowWrap: 'break-word',marginTop:'5%',textAlign:'center'}} dir="rtl" className="show-grid">
+                        <Row style={{overflowWrap: 'break-word',marginTop:'5%',textAlign:'center'}} dir="rtl" className="show-grid Box">
                             <Col style={{textAlign:'center'}} sm="12">
                                 <h3><FiLayers size={50}/> מודולי המערכת </h3>
                             </Col>
@@ -242,7 +245,7 @@ class PreviewCard extends React.Component{
                     {/* project screenshots (for IS project) */}
                     {
                         this.props.projectDetails.ScreenShots &&
-                        <Col style={{marginTop:'4%',textAlign:'center'}}>
+                        <Col className="Box"  style={{marginTop:'4%',textAlign:'center'}}>
                             <Col style={{textAlign:'center',fontFamily:'Calibri'}} sm="12">
                                 <h3>תמונות מסך <FaCameraRetro size={50}/></h3>
                             </Col>
@@ -297,9 +300,10 @@ class PreviewCard extends React.Component{
                     <Row dir="rtl" style={{justifyContent:'space-between',marginTop:'4%'}}>
                         {
                             this.props.projectDetails.ProjectSite&&
-                            (<Col sm="4">
+                            (<Col sm="4" style={{textAlign:'center'}}>
                                 <Button variant='info' href={this.props.projectDetails.ProjectSite}>
-                                    לאתר הפרויקט
+                                    <IoIosDesktop/>
+                                       {`  לאתר הפרויקט`}
                                 </Button>
                             </Col>)
                         }
@@ -308,7 +312,7 @@ class PreviewCard extends React.Component{
                             (<Col sm="4">
                                 <Button variant='info' href={this.props.projectDetails.AppStore}>
                                     <FaAppleAlt/>
-                                    Appstore
+                                    {`  Appstore`}  
                                 </Button>
                             </Col>)
                         }

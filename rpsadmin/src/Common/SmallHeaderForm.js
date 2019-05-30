@@ -4,14 +4,17 @@ import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
 import Badge from 'react-bootstrap/Badge';
 
+//CSS:
+import '../css/previewStyle.css';
+
 const SmallHeaderForm = (props)=>{
     return(
     <Container style={{marginTop:20,borderWidth:12}}>
         <Row>
-            <Col style={{fontSize:20}}>
-                <h4>
-                    <Badge style={{backgroundColor:'#B5DBF8'}}>{props.title}</Badge>
-                </h4>
+            <Col>
+                <h2 className="Headers">
+                    {props.title}
+                </h2>
             </Col>
         </Row>
     </Container>
