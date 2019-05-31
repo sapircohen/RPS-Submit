@@ -5,40 +5,20 @@ import {storage} from '../App';
 import SweetAlert from 'react-bootstrap-sweetalert';
 
 class PDFupload extends React.Component{
-    // state= {
-    //     alert:null
-    // }
-    AddPDF = 	(error, file)=>{
+    AddPDF = (error, file)=>{
         console.log(file)
         if(this.fileValidate(file)){
             this.saveToFirebaseStorage(file.file);
         }
-        else{
-            alert('false validate')
-        }
     }
     fileValidate = (file)=>{
-        console.log(file.file)
-        if (file.fileExtension !=='pdf' || file.fileExtension !== 'docx') {
-            // this.setState({
-            //     alert:(
-            //         <SweetAlert 
-            //         info 
-            //         title="!שימ/י לב" 
-            //         onConfirm = {
-            //             () => this.hideAlert()
-            //         } >
-            //         > 
-            //         'ניתן להעלות אך ורק קבצי PDF או Word'
-            //         </SweetAlert>
-            //     )
-            // },()=>{
-            //     file.abortLoad();
-            //     return false;
-            // })
-            alert('ניתן להעלות אך ורק קבצי PDF או Word');
-            file.abortLoad();
-            return false;
+        console.log(file.fileExtension)
+        if (file.fileExtension !=='pdf') {
+            if (file.fileExtension !== 'docx') {
+                alert('ניתן להעלות אך ורק קבצי PDF או Word');
+                file.abortLoad();
+                return false;
+            }
         }
         else{
             if (file.fileSize > 8000000) {

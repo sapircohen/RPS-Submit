@@ -31,8 +31,7 @@ class PreviewCard extends React.Component{
     OnSave = (e)=>{
         this.props.SaveData(e);
     }
-    render(){
-        
+    render(){  
         return (
             <Modal style={{backgroundColor:'#C1DEE6',fontFamily:'Calibri'}} onHide={this.props.close} show={this.props.openPreview} size="xl" aria-labelledby="contained-modal-title-vcenter">
               <Modal.Header style={{margin:'0px auto'}} closeButton>
@@ -154,31 +153,31 @@ class PreviewCard extends React.Component{
                             <Col style={{textAlign:'right'}} sm="2"></Col>
                         </Row>
                     }
-
                     {/* students details */}
-                    <Row style={{marginTop:'6%'}} dir="rtl" className="show-grid Box">
-                        <Col style={{textAlign:'center'}} dir="rtl" sm="12">
-                            <h3><GiThreeFriends size={50}/>חברי הצוות</h3>
-                        </Col>
-                        <Col sm="10"></Col>
-                    </Row>
-                    <Row style={{justifyContent:'space-between',alignContent:'center',marginTop:'2%'}} className="show-grid">
-                        {
-                            this.props.projectDetails.Students &&
-                            this.props.projectDetails.Students.map((student)=>
-                                <Col style={{textAlign:'center'}} xs={12/this.props.projectDetails.Students.length}>
-                                    <Row style={{justifyContent:'center'}}>
-                                        <a href={`mailto:${student.Email}`} dir="rtl" style={{textAlign:'center',fontSize:'large'}}>{student.Name}</a>
-                                    </Row>
-                                    <Row style={{justifyContent:'center'}}>
-                                        <Image style={{height:130,textAlign:'center'}} roundedCircle fluid src={student.Picture} />
-                                    </Row>
-                                    
-                                </Col>
-                            )
-                        }
-                    </Row>
-
+                    <div style={{marginTop:'4%'}} className="Box">
+                        <Row dir="rtl" className="show-grid">
+                            <Col style={{textAlign:'center'}} dir="rtl" sm="12">
+                                <h3><GiThreeFriends size={50}/>חברי הצוות</h3>
+                            </Col>
+                            <Col sm="10"></Col>
+                        </Row>
+                        <Row style={{justifyContent:'space-between',alignContent:'center',marginTop:'2%'}} className="show-grid">
+                            {
+                                this.props.projectDetails.Students &&
+                                this.props.projectDetails.Students.map((student)=>
+                                    <Col style={{textAlign:'center'}} xs={12/this.props.projectDetails.Students.length}>
+                                        <Row style={{justifyContent:'center'}}>
+                                            <a href={`mailto:${student.Email}`} dir="rtl" style={{textAlign:'center',fontSize:'large'}}>{student.Name}</a>
+                                        </Row>
+                                        <Row style={{justifyContent:'center'}}>
+                                            <Image style={{height:130,textAlign:'center'}} roundedCircle fluid src={student.Picture} />
+                                        </Row>
+                                        
+                                    </Col>
+                                )
+                            }
+                        </Row>
+                    </div>
                     {/* project video */}
                     {
                         this.props.projectDetails.MovieLink &&
@@ -197,7 +196,6 @@ class PreviewCard extends React.Component{
                             </Row>
                         </Col>
                     }
-
                     {/* project PDF */}
                     {
                         this.props.projectDetails.ProjectPDF &&
@@ -211,7 +209,6 @@ class PreviewCard extends React.Component{
                             <Col sm="4"></Col>
                         </Row>
                     }
-
                     {/* project modules (for IS project) */}
                     {
                         this.props.projectDetails.Module &&
@@ -241,7 +238,6 @@ class PreviewCard extends React.Component{
                             <Col style={{textAlign:'right'}} sm="2"></Col>
                         </Row>
                     }
-
                     {/* project screenshots (for IS project) */}
                     {
                         this.props.projectDetails.ScreenShots &&
@@ -326,12 +322,8 @@ class PreviewCard extends React.Component{
                             </Col>)
                         }
                         </Row>
-                    
-
-
                 </Container>
-              </Modal.Body>
-              
+              </Modal.Body>  
               <Modal.Footer style={{justifyContent:'space-between'}}>
                 <Col sm='3'></Col>
                 <Col sm='3' style={{textAlign:'center'}}>

@@ -1,13 +1,7 @@
 import React from 'react';
 import NavbarProjs from './NavbarStudents';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Form from 'react-bootstrap/Form';
-import Badge from 'react-bootstrap/Badge';
-import Button from 'react-bootstrap/Button';
+import {Col,Row,Form,Button} from 'react-bootstrap';
 import { FaGoogle,FaAppleAlt,FaCameraRetro } from "react-icons/fa";
-import Select from 'react-select';
-import makeAnimated from 'react-select/lib/animated';
 import HeaderForm from '../Common/HeaderForm';
 import SmallHeaderForm from '../Common/SmallHeaderForm';
 import ModalImage from '../Common/ImageModal';
@@ -19,11 +13,8 @@ import PreviewModal from "../Common/imagesModalPrevies";
 import SaveAction from '../Common/SaveAction';
 import PreviewCard from '../Common/PreviewProjectCard';
 import Loader from 'react-loader-spinner';
-
-import Toggle from 'react-toggle';
-import "react-toggle/style.css";
-
 //commons
+import PublishProject from '../Common/PublishProject';
 import TextareaInput from '../Common/TextAreaInputs';
 import TextInputs from '../Common/TextInputs';
 import SelectInput from '../Common/inputSelect';
@@ -430,64 +421,20 @@ class ISProjectTemplate extends React.Component{
         console.log(this.state.StudentsDetails);
     }
     ValidateData = (projectData)=>{
+        console.log(projectData);
         // project name validation
         if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
             alert('שם הפרויקט חסר');
             return false;
         }
-        //project modules -->Module
-        if(projectData.Module.length<2){
-            alert('מספר מודולי הפרויקט צריך להיות לפחות 2');
+        //project custCustomers(משתמשי המערכת)
+        if(projectData.CustCustomers===''){
+            alert('חסר שדה משתמשי המערכת');
             return false;
         }
-        else{
-            projectData.Module.forEach((mod,index)=>{
-                if (mod.ModuleDescription.length<20) {
-                    alert(" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ");
-                    return false;
-                }
-                if (mod.ModuleDescription.length>200) {
-                    alert(" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ");
-                    return false;
-                }
-                if(mod.ModuleName.length<3){
-                    alert(" שם מודול מספר " +(index+1)+"צריך להיות גדול מ3 תווים ");
-                    return false;
-                }
-                if(mod.ModuleName.length>70){
-                    alert(" שם מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
-                    return false;
-                }
-            })
-        }
-        //project goals-->Goals
-        if(projectData.Goals.length<2){
-            alert('מספר מטרות הפרויקט צריך להיות לפחות 2');
-            return false;
-        }
-        else{
-            projectData.Goals.forEach((goal,index)=>{
-                if (goal.GoalDescription.length<10) {
-                    alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות גדול מ10 תווים ");
-                    return false;
-                }
-                if (goal.GoalDescription.length>100) {
-                    alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
-                    return false;
-                }
-                if(goal.GoalStatus.length<4){
-                    alert(" סטטוס מטרה מספר " +(index+1)+"צריך להיות גדול מ4 תווים ");
-                    return false;
-                }
-                if(goal.GoalStatus.length<100){
-                    alert(" סטטוס מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
-                    return false;
-                }
-            })
-        }
-        //project comments
-        if(projectData.Comments.length<5 && projectData.Comments!==''){
-            alert("שדה הערות צריך להיות גדול מ-5 תווים");
+        //project stackholders(בעלי ענייןs)
+        if(projectData.CStackholders===''){
+            alert('חסר שדה בעלי עניין');
             return false;
         }
         // project short description validation
@@ -517,9 +464,88 @@ class ISProjectTemplate extends React.Component{
             alert("שדה אתגרי הפרויקט צריך להיות קטן מ-200 תווים");
             return false;
         }
+        //project comments
+        if(projectData.Comments.length<5 && projectData.Comments!==''){
+            alert("שדה הערות צריך להיות גדול מ-5 תווים");
+            return false;
+        }
+        //project Topic 
+        if (projectData.ProjectTopic==='') {
+            alert('בחר נושא פרויקט');
+            return false;
+        }
+        //project Advisors
+        if(projectData.Advisor[0]===''){
+            alert('מנחה א חסר ');
+            return false;
+        } 
+        if(projectData.Advisor[1]===''){
+            alert('מנחה ב חסר ');
+            return false;
+        } 
+        //project goals-->Goals
+        if(projectData.Goals.length<2){
+            alert('מספר מטרות הפרויקט צריך להיות לפחות 2');
+            return false;
+        }
+        else{
+            projectData.Goals.forEach((goal,index)=>{
+                if (goal.GoalDescription.length<10) {
+                    alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות גדול מ10 תווים ");
+                    return false;
+                }
+                if (goal.GoalDescription.length>100) {
+                    alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                    return false;
+                }
+                if(goal.GoalStatus.length<4){
+                    alert(" סטטוס מטרה מספר " +(index+1)+"צריך להיות גדול מ4 תווים ");
+                    return false;
+                }
+                if(goal.GoalStatus.length>100){
+                    alert(" סטטוס מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                    return false;
+                }
+            })
+        }
+        //project modules -->Module
+        if(projectData.Module.length<2){
+            alert('מספר מודולי הפרויקט צריך להיות לפחות 2');
+            return false;
+        }
+        else{
+            projectData.Module.forEach((mod,index)=>{
+                if (mod.ModuleDescription.length<20) {
+                    alert(" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ");
+                    return false;
+                }
+                if (mod.ModuleDescription.length>200) {
+                    alert(" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ");
+                    return false;
+                }
+                if(mod.ModuleName.length<3){
+                    alert(" שם מודול מספר " +(index+1)+"צריך להיות גדול מ3 תווים ");
+                    return false;
+                }
+                if(mod.ModuleName.length>70){
+                    alert(" שם מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                    return false;
+                }
+            })
+        }
         //project technologies -->Technologies
-        if(projectData.technologies.length<5){
+        if(projectData.Technologies.length<5){
             alert('מספר הטכנולוגיות צריך להיות לפחות 5');
+        }
+        //project screenshots
+        if (projectData.ScreenShots.length<5) {
+            alert('מספר תמונות המסך צריך להיות לפחות 5');
+            return false;
+        }        
+        //project logo
+        if (projectData.ProjectLogo<1) {
+            alert('חסר לוגו הפרויקט');
+            return false;
         }
         //project students
         if(projectData.Students.length<1){
@@ -532,11 +558,17 @@ class ISProjectTemplate extends React.Component{
                     alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
                     return false;
                 }
+                if (student.Picture==='') {
+                    alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
+                    return false;
+                }
                 //id validation
                 //pic validation
                 //email validation
             })
         }
+        
+        
         return true;
     }
     SaveData = (event)=>{
@@ -574,6 +606,7 @@ class ISProjectTemplate extends React.Component{
                 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
+                    ProjectCourse:'פרויקט גמר',
                     ProjectName: this.state.projectDetails.ProjectName,
                     ProjectSite:this.state.projectDetails.ProjectSite,
                     isPublished:this.state.projectDetails.isPublished,
@@ -691,9 +724,9 @@ class ISProjectTemplate extends React.Component{
             tags:newTags
         })
     }
-    //close preview:
     closePreview = ()=>this.setState({showPreview:false})
     imagesModalClose = ()=>this.setState({showImagesMode:false})
+    ChangePublish = ()=>this.setState({isPublished:!this.state.isPublished})
     render(){
         if (!this.state.isReady) {
             return(
@@ -716,12 +749,8 @@ class ISProjectTemplate extends React.Component{
                 <HeaderForm title={this.state.GroupName}/>
                 {/* preview project card */}
                 <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
-                <label>
-                    <p dir="rtl">{`  האם לפרסם את הפרויקט?`}</p>
-                    <Toggle
-                        defaultChecked={this.state.isPublished}
-                        onChange={()=>this.setState({isPublished:!this.state.isPublished})                    } />
-                </label>
+                {/*publish project? */}
+                <PublishProject ChangePublish={()=>this.ChangePublish} isPublished={this.state.isPublished}  />
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Poject details */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
@@ -731,22 +760,22 @@ class ISProjectTemplate extends React.Component{
                         {/* stalkholders */}
                         <TextInputs defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectStackholders} inputSize="lg" />
                         {/* CustCustomers */}
-                        <TextInputs defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
+                        <TextInputs  defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
                         {/* project Small Description */}
-                        <TextareaInput defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <TextareaInput defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <TextareaInput  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         {/* project Challenges  */}
-                        <TextareaInput defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectChallenges} />
+                        <TextareaInput  defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectChallenges} />
                         {/* project Comments */}
                         <TextareaInput defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
                         <Form.Row dir="rtl">
                             {/* projectType */}
                             <SelectInput inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}
-                            <SelectInput inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* second advisor */}
-                            <SelectInput inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                     
                         {/* if the topic is organization */}

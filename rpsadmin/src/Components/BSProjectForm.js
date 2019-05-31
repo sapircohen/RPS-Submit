@@ -15,15 +15,12 @@ import SaveAction from '../Common/SaveAction';
 import PDFupload from '../Common/PdfFileUpload';
 import PreviewCard from '../Common/PreviewProjectCard';
 import Loader from 'react-loader-spinner';
-//toggle library for publish
-import Toggle from 'react-toggle';
-import "react-toggle/style.css";
-
 //commons
+import PublishProject from '../Common/PublishProject';
 import TextareaInput from '../Common/TextAreaInputs';
 import TextInputs from '../Common/TextInputs';
 import SelectInput from '../Common/inputSelect';
-
+import LinkInput from '../Common/Projectlinks';
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -43,7 +40,6 @@ const sectionNames = {
     googleLink:'google',
     projectMajor:'התמחות',
     projectCourse:'סוג הפרויקט',
-
 }
 class BSProjectTemplate extends React.Component{
     constructor(props){
@@ -65,6 +61,7 @@ class BSProjectTemplate extends React.Component{
             advisorsList:[],
             coursesList:[],
             topicsList:[],
+            expertiesList:[],
             projectDetails:{},
             showPreview:false,
             CDescription:'',
@@ -74,22 +71,16 @@ class BSProjectTemplate extends React.Component{
             projectMajor:'',
             projectCourse:''
         }
-
-        //refs
-        this.projectName = React.createRef();
-        this.projectDescription = React.createRef();
-        this.projectSmallDescription = React.createRef();
-        this.ProjectCourse = React.createRef();
-        this.projectMajor = React.createRef();
-        this.projectAdvisor = React.createRef();
-        this.ProjectTopic = React.createRef();
-        this.MovieLink = React.createRef();
     }
     componentDidMount(){
         //get group data from local storage
         const groupData = JSON.parse(localStorage.getItem('groupData'));
         console.log(groupData);
         this.setState({
+            ProjectTopic:groupData.ProjectTopic?groupData.ProjectTopic:'',
+            projectCourse:groupData.ProjectCourse?groupData.ProjectCourse:'',
+            projectMajor:groupData.Major?groupData.Major:'',
+            MovieLink:groupData.MovieLink?groupData.MovieLink:'',
             GroupName:groupData.GroupName,
             ProjectName:groupData.ProjectName?groupData.ProjectName:'',
             PDescription:groupData.PDescription?groupData.PDescription:'',
@@ -97,15 +88,15 @@ class BSProjectTemplate extends React.Component{
             ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
             isPublished:true,
             StudentDetails:groupData.Students?groupData.Students:[],
-            CDescription:groupData.CDescription?groupData.CDescription:groupData.CDescription
+            CDescription:groupData.CDescription?groupData.CDescription:'',
+            ProjectAdvisor:groupData.Advisor?groupData.Advisor:'',
         })
-        
         //get list of advisors from firebase
         this.getAdvisorsForDepartment();
-
+        //get list of Experties
+        this.getExperties();
         //get list of courses
         this.getCoursesForExpertis();
-
     }
     getAdvisorsForDepartment = ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
@@ -113,7 +104,7 @@ class BSProjectTemplate extends React.Component{
             const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Social and community sciences').child('Departments').child('Behavioral Sciences').child('Advisors');
             ref.once("value", (snapshot)=> {
                 this.setState({advisorsList:snapshot.val()});
-                console.log(snapshot.val())
+                //console.log(snapshot.val())
             }, (errorObject)=> {
                 console.log("The read failed: " + errorObject.code);
             })
@@ -143,11 +134,24 @@ class BSProjectTemplate extends React.Component{
             })
             .then(()=>{
                 //get list of topics
-                console.log(this.state.coursesList)
+              //  console.log(this.state.coursesList)
                 this.getTopicsListForCourses();
             })
             
         }      
+    }
+    getExperties = ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        if (groupData.Department === 'מדעי התנהגות') {
+            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Social and community sciences').child('Departments').child('Behavioral Sciences').child('Experties');
+            ref.once("value", (snapshot)=> {
+                snapshot.forEach((exp)=> {
+                    this.setState({
+                        expertiesList:[...this.state.expertiesList,exp.val().Name]
+                    })
+                })
+            })
+        }
     }
     getTopicsListForCourses=()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
@@ -165,24 +169,12 @@ class BSProjectTemplate extends React.Component{
             })
         }
     }
-    handleClose = ()=> {
-        this.setState({ openModal: false });
-    }
-    OpenImageModal = (title,index)=>{
- 
-        this.setState({
-            openModal:true,
-            modalTitle:title,
-            picTitle:index
-        })
-    }
+    handleClose = ()=> this.setState({ openModal: false });
+    OpenImageModal = (title,index)=>this.setState({openModal:true,modalTitle:title,picTitle:index})
     getStudentsDetails = (students)=>{
         this.setState({StudentsDetails:students},()=>{
             console.log(this.state.StudentsDetails);
         })
-    }
-    handlePublishedChange = ()=>{
-        this.setState({isPublished:!this.state.isPublished})
     }
     projectLogoShow=()=>{
         this.setState({
@@ -233,8 +225,6 @@ class BSProjectTemplate extends React.Component{
     }
     //save project to object and show preview
     SetProjectOnFirbase = ()=>{
-        //need to validate here too.
-        console.log(this.state.StudentsDetails)
         const project = {
             ProjectName:this.state.ProjectName,
             PDescription:this.state.PDescription,
@@ -245,24 +235,21 @@ class BSProjectTemplate extends React.Component{
             Students:this.state.StudentsDetails,
             Year:(new Date().getFullYear()),
             isPublished:this.state.isPublished,
-            MovieLink:this.MovieLink.current.value,
+            MovieLink:this.state.MovieLink,
             ProjectLogo:this.state.poster[0],
             ProjectPDF:this.state.ProjectPDF,
             CDescription:this.state.CDescription,
         }
-        
         this.setState({
             projectDetails:project,
         },()=>{
-            console.log(this.state.projectDetails.Students.length);
             this.setState({showPreview:true})
         })
     }
     //close preview:
-    closePreview = ()=>{
-        this.setState({showPreview:false})
-    }
+    closePreview = ()=>this.setState({showPreview:false})
     ValidateData = (projectData)=>{
+        console.log(projectData.Advisor[0]);
         // project name validation
         if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
             alert('שם הפרויקט חסר');
@@ -277,7 +264,6 @@ class BSProjectTemplate extends React.Component{
             alert("תיאור קצר צריך להיות קטן מ-150 תווים");
             return false;
         }
-
         //project long description -->PDescription
         if(projectData.PDescription.length<200){
             alert("תיאור הפרויקט צריך להיות גדול מ-200 תווים");
@@ -287,7 +273,26 @@ class BSProjectTemplate extends React.Component{
             alert("תיאור הפרויקט צריך להיות קטן מ-500 תווים");
             return false;
         }
-
+        //project major/experties
+        if(projectData.Major === ""){
+            alert('יש לבחור התמחות');
+            return false;
+        }
+        //project course
+        if(projectData.ProjectCourse === ""){
+            alert('יש לבחור סוג');
+            return false;
+        }
+        //project topic
+        if(projectData.ProjectTopic === ""){
+            alert('יש לבחור נושא');
+            return false;
+        }
+        //project advisor
+        if(projectData.Advisor[0] === ""){
+            alert('יש לבחור מנחה');
+            return false;
+        }
         //project students
         if(projectData.Students.length<1){
             alert('חייב שיהיה לפחות חבר צוות אחת');
@@ -299,12 +304,19 @@ class BSProjectTemplate extends React.Component{
                     alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
                     return false;
                 }
+                if (student.Picture==='') {
+                    alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
+                    return false;
+                }
                 //id validation
                 //pic validation
                 //email validation
             })
         }
-        
+        if(projectData.ProjectPDF ===''){
+            alert('חסר קובץ PDF/WORD');
+            return false;
+        }
         return true;
     }
     SaveData = (event)=>{
@@ -315,9 +327,9 @@ class BSProjectTemplate extends React.Component{
             isPublished:this.state.projectDetails.isPublished,
             Year:this.state.projectDetails.Year,
             isApproved:1,
+            Major:this.state.projectMajor,
             CDescription:this.state.projectDetails.CDescription,
             Students:this.state.projectDetails.Students,
-            Technologies:this.state.projectDetails.Technologies,
             Advisor:this.state.projectDetails.advisor,
             ProjectLogo:this.state.projectDetails.ProjectLogo,
             MovieLink:this.state.projectDetails.MovieLink,
@@ -336,9 +348,9 @@ class BSProjectTemplate extends React.Component{
                     isPublished:this.state.projectDetails.isPublished,
                     Year:this.state.projectDetails.Year,
                     isApproved:1,
+                    Major:this.state.projectMajor,
                     CDescription:this.state.projectDetails.CDescription,
                     Students:this.state.projectDetails.Students,
-                    Technologies:this.state.projectDetails.Technologies,
                     Advisor:this.state.projectDetails.advisor,
                     ProjectLogo:this.state.projectDetails.ProjectLogo,
                     MovieLink:this.state.projectDetails.MovieLink,
@@ -379,6 +391,15 @@ class BSProjectTemplate extends React.Component{
                 break;
         }
     }
+    ChangeLinkInput = (event,selectedTitle)=>{
+        switch (selectedTitle) {
+            case sectionNames.projectMovie:this.setState({MovieLink:event.target.value})
+                break;
+            default:
+                break;
+        }
+    }
+    ChangePublish = ()=>this.setState({isPublished:!this.state.isPublished})
     render(){
         if (!this.state.isReady) {
             return(
@@ -397,55 +418,45 @@ class BSProjectTemplate extends React.Component{
                 <NavbarProjs/>
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <HeaderForm title={this.state.GroupName}/>
-                <label>
+                <PublishProject isPublished={this.state.isPublished}  />
+                {/* <label>
                     <p dir="rtl">{`  פרסם פרויקט?`}</p>
                     <Toggle
                         defaultChecked={this.state.isPublished}
                         onChange={this.handlePublishedChange} />
-                </label>
-                {/* Popup modal for uploading an image */}
+                </label> */}
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal onHide={this.projectLogoClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showPoster} title='תצוגה מקדימה'/>
-                
                 {/* preview project card */}
                 <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
-
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
-                    
                     {/* Project details */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>   
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* project name */}
-                        <TextInputs defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
+                        <TextInputs isMandatory={true} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* project small description */}
-                        <TextareaInput defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput isMandatory={true} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <TextareaInput defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <TextareaInput isMandatory={true} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         <Form.Row dir="rtl">
                             {/* project major */}
-                            <SelectInput inputList={["פסיכולוגיה","סוציולוגיה ואנתרופולוגיה"]} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* project advisor */}
-                            <SelectInput inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                         <Form.Row dir="rtl">
                             {/* Project Course */}
-                            <SelectInput inputList={this.state.coursesList} InputTitle={sectionNames.projectCourse} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput inputList={this.state.coursesList} defaultInput={this.state.projectCourse} InputTitle={sectionNames.projectCourse} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/*project topic */}
-                            <SelectInput inputList={this.state.topicsList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                     </div>
                     {/* FILES UPLOAD */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="הוספת קבצים"/>
-                            <Row dir="rtl" style={{marginTop:'2%'}} >
-                                <Form.Label column sm="2">קישור לסרטון</Form.Label>
-                                <Col sm="4">
-                                    <Form.Control size="lg" ref={this.MovieLink} defaultValue={this.state.MovieLink} dir="ltr" id="projectMovie" size="sm" type="text" placeholder="www.youtube.com" /> 
-                                </Col>
-                                <Col sm="4">
-                                    {/* <PDFupload /> */}
-                                </Col>
-                            </Row>
+                            {/* project movie link */}
+                            <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com"/>
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Col sm="4"></Col>
                                 <Col sm="4">
