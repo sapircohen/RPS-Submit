@@ -236,7 +236,6 @@ class ISProjectTemplate extends React.Component{
         this.setState(state => ({ tags: [...state.tags, tag] }));
     }
     changeProjectType = (e)=>{
-
         if (e.target.value==='ארגוני') {
             this.setState({organization:true})
         }
@@ -245,28 +244,17 @@ class ISProjectTemplate extends React.Component{
         }
     }
     TechsChosen (value){
-        //insert all techs to an array
         this.setState({
             chosenTechs:value.map((val)=>{
                 return val.value;
             })
-        },()=>{
-            console.log(this.state.chosenTechs)
         })
     }
-    OpenImageModal = (title,pic)=>{
-        this.setState({
-            openModal:true,
-            modalTitle:title,
-            picTitle:pic
-        })
-    }
+    OpenImageModal = (title,pic)=>this.setState({openModal:true,modalTitle:title,picTitle:pic})
     OpenImagePreviewForStudent = (index)=>{
-        console.log(this.state.StudentsDetails[index].Picture);
         if(this.state.StudentsDetails[index].Picture !==''){
             let temp = [];
             temp.push(this.state.StudentsDetails[index].Picture);
-            console.log(temp);
             this.setState({
                 showImagesMode:true,
                 imagesToShowInModal:temp
@@ -280,7 +268,6 @@ class ISProjectTemplate extends React.Component{
         switch (title) {
             case 'Screenshots':
                 this.setState({
-                    //showScreenshotsPreview:true,
                     modalTitle:title,
                     showImagesMode:true,
                     imagesToShowInModal:this.state.ScreenShots
@@ -291,7 +278,6 @@ class ISProjectTemplate extends React.Component{
                     this.setState({
                         showImagesMode:true,
                         modalTitle:title,
-                        //showProjectLogoPreview:true,
                         imagesToShowInModal:this.state.logo
                     })
                 }
@@ -299,7 +285,6 @@ class ISProjectTemplate extends React.Component{
                     this.setState({
                         showImagesMode:true,
                         modalTitle:title,
-                        //showProjectLogoPreview:true,
                         imagesToShowInModal:undefined
                     })
                 }
@@ -391,7 +376,6 @@ class ISProjectTemplate extends React.Component{
             this.setState({showPreview:true})
         })
     }
-    //Get pics url from firebase storage
     savePic=(url,title,index,screenshotName)=>{
 
         console.log(screenshotName)

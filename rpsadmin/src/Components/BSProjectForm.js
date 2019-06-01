@@ -1,14 +1,11 @@
 import React from 'react';
 import NavbarProjs from './NavbarStudents';
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
+import {Col,Row,Form,Button} from 'react-bootstrap';
 import HeaderForm from '../Common/HeaderForm';
 import SmallHeaderForm from '../Common/SmallHeaderForm';
 import ModalImage from '../Common/ImageModal';
 import StudentDetails from '../Common/StudentsDetails';
-import { FaPlusCircle,FaEye, FaFlask } from "react-icons/fa";
+import { FaPlusCircle,FaEye } from "react-icons/fa";
 import PreviewModal from "../Common/imagesModalPrevies";
 import firebase from 'firebase';
 import SaveAction from '../Common/SaveAction';
@@ -21,7 +18,6 @@ import TextareaInput from '../Common/TextAreaInputs';
 import TextInputs from '../Common/TextInputs';
 import SelectInput from '../Common/inputSelect';
 import LinkInput from '../Common/Projectlinks';
-
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
     projectChallenges:"אתגרי הפרויקט",
@@ -200,9 +196,7 @@ class BSProjectTemplate extends React.Component{
             alert('לא הועלתה תמונת סטודנט/ית');
         }
     }
-    savePic=(url,title,index,screenshotName)=>{
-        console.log(url)
-        console.log(index);
+    savePic=(url,title,index)=>{
         switch (title) {
             case 'Project Logo':this.setState({poster:[url]})
                 break;
@@ -246,7 +240,6 @@ class BSProjectTemplate extends React.Component{
             this.setState({showPreview:true})
         })
     }
-    //close preview:
     closePreview = ()=>this.setState({showPreview:false})
     ValidateData = (projectData)=>{
         console.log(projectData.Advisor[0]);
@@ -418,13 +411,7 @@ class BSProjectTemplate extends React.Component{
                 <NavbarProjs/>
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <HeaderForm title={this.state.GroupName}/>
-                <PublishProject isPublished={this.state.isPublished}  />
-                {/* <label>
-                    <p dir="rtl">{`  פרסם פרויקט?`}</p>
-                    <Toggle
-                        defaultChecked={this.state.isPublished}
-                        onChange={this.handlePublishedChange} />
-                </label> */}
+                <PublishProject ChangePublish={()=>this.ChangePublish} isPublished={this.state.isPublished}  />
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal onHide={this.projectLogoClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showPoster} title='תצוגה מקדימה'/>
                 {/* preview project card */}

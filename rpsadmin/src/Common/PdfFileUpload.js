@@ -2,7 +2,6 @@ import React from 'react';
 import { FilePond } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import {storage} from '../App';
-import SweetAlert from 'react-bootstrap-sweetalert';
 
 class PDFupload extends React.Component{
     AddPDF = (error, file)=>{
@@ -31,18 +30,11 @@ class PDFupload extends React.Component{
             }
         }
     }
-    // hideAlert() {
-    //     console.log('Hiding alert...');
-    //     this.setState({
-    //       alert: null
-    //     });
-    //   }
     saveToFirebaseStorage = (file)=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
         const uploadPic = storage.ref('images/'+groupData.GroupName+'/ProjectPDF').put(file);
         uploadPic.on('state_changed',
         (snapshot)=>{
-
         },(error)=>{
             console.log(error);
         },

@@ -169,7 +169,6 @@ class LoginScreen extends React.Component{
     );
   }
 }
-
 LoginScreen.propTypes = {
   classes: PropTypes.object.isRequired,
 };
