@@ -11,7 +11,7 @@ export default class StudentsDetails extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            numberOfStudents:1,
+            //numberOfStudents:1,
             students: [{Name:"", Email:"",Picture:"",Id:""}],
         }
 
@@ -33,24 +33,13 @@ export default class StudentsDetails extends React.Component{
             }
             else this.props.setStudents(this.state.students);
         },1000)
-        
-    }
-    ChangeStudentsInputNumber = (e)=>{
-        this.setState({
-            numberOfStudents:e.target.value,
-        })
     }
     addStudent = ()=>{
-        if (this.state.students.length >= this.state.numberOfStudents) {
-            alert("בבקשה הגדל/י את מספר הסטודנטים לפני המשך הזנה");
-        }
-        else{
-            this.setState((prevState) => ({
-                students: [...prevState.students, {Name:"", Email:"",Picture:"",Id:""}],
-            }),()=>{
-                this.props.setStudents(this.state.students);
-            });
-        }
+        this.setState((prevState) => ({
+            students: [...prevState.students, {Name:"", Email:"",Picture:"",Id:""}],
+        }),()=>{
+            this.props.setStudents(this.state.students);
+        });
     }
     OpenImageModalStudent = (title,id)=>{
         this.props.OpenImageModal(title,id)
@@ -93,21 +82,6 @@ export default class StudentsDetails extends React.Component{
             <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:20,marginTop:'3%',marginBottom:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                                 
                 <SmallHeaderForm title="חברי הצוות"/>
-                <Row dir="rtl" style={{marginTop:'2%'}} >
-                    {/* NUMBER OF STUDENTS */}
-                    <Col sm="4"></Col>
-                    <Col sm="4">
-                        <Form.Label>מספר חברי צוות</Form.Label>
-                        <Form.Control value={this.state.numberOfStudents} onChange={this.ChangeStudentsInputNumber} id="studentsNumber" as="select">
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                        </Form.Control>
-                    </Col>
-                    <Col sm="4"></Col>
-                </Row>
                 <Row dir="rtl" style={{marginTop:'2%'}}>
                     <Col sm="4">
                         <Button onClick={this.addStudent} variant="success">
@@ -150,10 +124,6 @@ export default class StudentsDetails extends React.Component{
                                     </Button>
                                 </Col>
                                 <Col sm="2">
-                                    {/* <Button block onClick={()=>this.OpenPreviewModal(idx)} variant="info" >
-                                        <FaEye/>
-                                        {`  תצוגה`} 
-                                    </Button> */}
                                 </Col>
                             </Form.Group>
                         </div>
