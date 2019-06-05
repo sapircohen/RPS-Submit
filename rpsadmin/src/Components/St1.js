@@ -39,10 +39,11 @@ const sectionNames = {
     projectMovie:'קישור לסרטון הפרויקט ביוטיוב',
     appleLinke:'apple',
     googleLink:'google',
-    Github:'קוד הפרויקט בגיטהאב'
-
+    Github:'קוד הפרויקט בגיטהאב',
+    projectSemester:'סמסטר',
+    projectYear:'שנה'
 }
-class ISProjectTemplate extends React.Component{
+class St1 extends React.Component{
     constructor(props){
         super(props);
         this.state={
@@ -90,7 +91,9 @@ class ISProjectTemplate extends React.Component{
             secondAdvisor:'',
             appleLink:'',
             googleLink:'',
-            Github:''
+            Github:'',
+            Year:'',
+            Semester:''
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
@@ -110,6 +113,8 @@ class ISProjectTemplate extends React.Component{
             })
         }
         this.setState({
+            Year:groupData.Year?groupData.Year:'',
+            Semester:groupData.Semester?groupData.Semester:'',
             Github:groupData.Github?groupData.Github:'',
             CustomerName:groupData.CustomerName?groupData.CustomerName:'',
             Advisor:groupData.Advisor?groupData.Advisor:'',
@@ -336,10 +341,6 @@ class ISProjectTemplate extends React.Component{
     }
     SetProjectOnFirbase = ()=>{
         const arrayOfTags = this.state.tags.map((text)=>text.text);
-        console.log(arrayOfTags)
-        
-        console.log(this.state.tags);
-        console.log(arrayOfTags)
         const project = {
             ProjectName:this.state.ProjectName,
             PDescription:this.state.PDescription,
@@ -349,7 +350,8 @@ class ISProjectTemplate extends React.Component{
             advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
             HashTags:arrayOfTags,
             Technologies:this.state.chosenTechs,
-            Year:(new Date().getFullYear()),
+            Year:this.state.Year,
+            Semester:this.state.Semester,
             isPublished:this.state.isPublished,
             CustomerName:this.state.organization?this.state.CustomerName:'',
             CDescription:this.state.CDescription,
@@ -458,6 +460,16 @@ class ISProjectTemplate extends React.Component{
             alert('בחר נושא פרויקט');
             return false;
         }
+        //project year
+        if (projectData.Year === "" || projectData.Year === "בחר") {
+            alert(' בחרו שנה');
+            return false;
+        }
+        //project semester
+        if (projectData.Semester === "" || projectData.Semester === "בחר") {
+            alert(' בחרו סמסטר');
+            return false;
+        }
         //project Advisors
         if(projectData.Advisor[0]===''){
             alert('מנחה א חסר ');
@@ -562,6 +574,7 @@ class ISProjectTemplate extends React.Component{
             ProjectSite:this.state.projectDetails.ProjectSite,
             isPublished:this.state.projectDetails.isPublished,
             Year:this.state.projectDetails.Year,
+            Semester:this.state.projectDetails.Semester,
             isApproved:1,
             CDescription:this.state.projectDetails.CDescription,
             CStackholders:this.state.projectDetails.CStackholders,
@@ -590,11 +603,13 @@ class ISProjectTemplate extends React.Component{
                 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
+                    templateView:'vt1',
                     ProjectCourse:'פרויקט גמר',
                     ProjectName: this.state.projectDetails.ProjectName,
                     ProjectSite:this.state.projectDetails.ProjectSite,
                     isPublished:this.state.projectDetails.isPublished,
                     Year:this.state.projectDetails.Year,
+                    Semester:this.state.projectDetails.Semester,
                     isApproved:1,
                     CDescription:this.state.projectDetails.CDescription,
                     CStackholders:this.state.projectDetails.CStackholders,
@@ -678,6 +693,12 @@ class ISProjectTemplate extends React.Component{
             case sectionNames.projectSecondAdvisor:
                 this.setState({secondAdvisor:event.target.value})
                 break;
+            case sectionNames.projectSemester:
+                this.setState({Semester:event.target.value})
+                break;
+            case sectionNames.projectYear:
+                this.setState({Year:event.target.value})
+                break;
             default:
                 break;
         }
@@ -754,6 +775,10 @@ class ISProjectTemplate extends React.Component{
                         {/* project Comments */}
                         <TextareaInput defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
                         <Form.Row dir="rtl">
+                            {/* year  */}
+                            <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            {/* semester */}
+                            <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* projectType */}
                             <SelectInput inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}
@@ -847,5 +872,5 @@ class ISProjectTemplate extends React.Component{
         );
     }
 }
-export default ISProjectTemplate;
+export default St1;
 

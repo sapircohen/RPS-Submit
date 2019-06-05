@@ -24,20 +24,16 @@ const sectionNames = {
     projectSmallDesc:"תיאור קצר",
     projectComments:"הערות",
     projectName:"שם הפרויקט",
-    projectStackholders:"בעלי עניין",
-    projectCustCustomers:"משתמשי המערכת",
-    projectCustomerName:'שם הלקוח',
     projectType:'נושא הפרויקט',
-    projectFirstAdvisor:"מנחה חלק א",
-    projectSecondAdvisor:"מנחה חלק ב",
+    projectFirstAdvisor:"מנחה",
     projectLink:'קישור לאתר הפרויקט',
     projectMovie:'קישור לסרטון הפרויקט ביוטיוב',
-    appleLinke:'apple',
-    googleLink:'google',
     projectMajor:'התמחות',
     projectCourse:'סוג הפרויקט',
+    projectSemester:'סמסטר',
+    projectYear:'שנה'
 }
-class BSProjectTemplate extends React.Component{
+class St2 extends React.Component{
     constructor(props){
         super(props);
         this.state = {
@@ -65,7 +61,9 @@ class BSProjectTemplate extends React.Component{
             isReady:true,
             ProjectAdvisor:'',
             projectMajor:'',
-            projectCourse:''
+            projectCourse:'',
+            Year:'',
+            Semester:''
         }
     }
     componentDidMount(){
@@ -73,6 +71,8 @@ class BSProjectTemplate extends React.Component{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
         console.log(groupData);
         this.setState({
+            Year:groupData.Year?groupData.Year:'',
+            Semester:groupData.Semester?groupData.Semester:'',
             ProjectTopic:groupData.ProjectTopic?groupData.ProjectTopic:'',
             projectCourse:groupData.ProjectCourse?groupData.ProjectCourse:'',
             projectMajor:groupData.Major?groupData.Major:'',
@@ -129,8 +129,6 @@ class BSProjectTemplate extends React.Component{
                 })
             })
             .then(()=>{
-                //get list of topics
-              //  console.log(this.state.coursesList)
                 this.getTopicsListForCourses();
             })
             
@@ -227,12 +225,13 @@ class BSProjectTemplate extends React.Component{
             ProjectCourse:this.state.projectCourse,
             ProjectTopic:this.state.ProjectTopic,
             Students:this.state.StudentsDetails,
-            Year:(new Date().getFullYear()),
             isPublished:this.state.isPublished,
             MovieLink:this.state.MovieLink,
             ProjectLogo:this.state.poster[0],
             ProjectPDF:this.state.ProjectPDF,
             CDescription:this.state.CDescription,
+            Year:this.state.Year,
+            Semester:this.state.Semester
         }
         this.setState({
             projectDetails:project,
@@ -264,6 +263,16 @@ class BSProjectTemplate extends React.Component{
         }
         if(projectData.PDescription.length>500){
             alert("תיאור הפרויקט צריך להיות קטן מ-500 תווים");
+            return false;
+        }
+        //project year
+        if(projectData.Year === "" || projectData.Year === "בחר"){
+            alert('יש לבחור שנה');
+            return false;
+        }
+        //project Semester
+        if(projectData.Semester === "" || projectData.Semester === "בחר"){
+            alert('יש לבחור סמסטר');
             return false;
         }
         //project major/experties
@@ -319,6 +328,7 @@ class BSProjectTemplate extends React.Component{
             ProjectName: this.state.projectDetails.ProjectName,
             isPublished:this.state.projectDetails.isPublished,
             Year:this.state.projectDetails.Year,
+            Semester:this.state.projectDetails.Semester,
             isApproved:1,
             Major:this.state.projectMajor,
             CDescription:this.state.projectDetails.CDescription,
@@ -337,9 +347,11 @@ class BSProjectTemplate extends React.Component{
                 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
+                    templateView:'vt2',
                     ProjectName: this.state.projectDetails.ProjectName,
                     isPublished:this.state.projectDetails.isPublished,
                     Year:this.state.projectDetails.Year,
+                    Semester:this.state.projectDetails.Semester,
                     isApproved:1,
                     Major:this.state.projectMajor,
                     CDescription:this.state.projectDetails.CDescription,
@@ -379,6 +391,10 @@ class BSProjectTemplate extends React.Component{
             case sectionNames.projectMajor:this.setState({projectMajor:event.target.value})
                 break;
             case sectionNames.projectCourse:this.setState({projectCourse:event.target.value})
+                break;
+            case sectionNames.projectSemester:this.setState({Semester:event.target.value})
+                break;
+            case sectionNames.projectYear:this.setState({Year:event.target.value})
                 break;
             default:
                 break;
@@ -433,6 +449,10 @@ class BSProjectTemplate extends React.Component{
                             <SelectInput inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                         <Form.Row dir="rtl">
+                                                        {/* year  */}
+                                                        <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            {/* semester */}
+                            <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* Project Course */}
                             <SelectInput inputList={this.state.coursesList} defaultInput={this.state.projectCourse} InputTitle={sectionNames.projectCourse} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/*project topic */}
@@ -482,5 +502,5 @@ class BSProjectTemplate extends React.Component{
     }
      
 }
-export default BSProjectTemplate;
+export default St2;
 

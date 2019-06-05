@@ -87,12 +87,8 @@ class LoginScreen extends React.Component{
           logged = true;          
           localStorage.setItem('groupData', JSON.stringify(project.val()));
           localStorage.setItem('projectKey',JSON.stringify(project.key))
-          if (project.val().Major === 'מערכות מידע') {
-            history.push('/ISproject');
-          }
-          else if(project.val().Department ==='מדעי התנהגות'){
-            history.push('/BSproject');
-          }
+          //history.push('/CourseChoice');
+          history.push('/st3');
         }
     })
     }, (errorObject)=> {
@@ -101,7 +97,6 @@ class LoginScreen extends React.Component{
     .then(()=>{
       this.setState({isReady:true},()=>{
         if (!logged) {
-          //history.push('/Crop');
           alert('נתונים שגויים, נסה שוב');
         }
       });

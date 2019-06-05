@@ -18,7 +18,7 @@ const NavbarProj = (props)=>{
             <Navbar.Collapse className="justify-content-end">
                 <Nav className="ml-auto">
                     <Nav.Link style={{fontSize:17}} href="#features">התנתקות</Nav.Link>
-                    <Nav.Link style={{fontSize:17}} href="#home">כל הפרויקטים</Nav.Link>
+                    <Nav.Link style={{fontSize:17}} href="#home">לאתר הפרויקטים</Nav.Link>
                 </Nav>
             </Navbar.Collapse>
         </Navbar>

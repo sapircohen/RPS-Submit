@@ -9,7 +9,7 @@ const SelectInput = (props)=>{
                 <Form.Control onChange={(e)=>props.ChangeSelectInput(e,props.InputTitle)} defaultValue={props.defaultInput} dir="rtl" as="select">
                     <option>{props.defaultInput?props.defaultInput:'בחר'}</option>
                     {props.inputList.map((a,key)=>
-                        <option>{a}</option>
+                        <option key={key}>{a}</option>
                     )}
             </Form.Control>
         </Form.Group>
