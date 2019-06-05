@@ -5,8 +5,7 @@ import HeaderForm from '../Common/HeaderForm';
 import SmallHeaderForm from '../Common/SmallHeaderForm';
 import ModalImage from '../Common/ImageModal';
 import StudentDetails from '../Common/StudentsDetails';
-import { FaPlusCircle,FaEye } from "react-icons/fa";
-import PreviewModal from "../Common/imagesModalPrevies";
+import { FaPlusCircle } from "react-icons/fa";
 import firebase from 'firebase';
 import SaveAction from '../Common/SaveAction';
 import PDFupload from '../Common/PdfFileUpload';
@@ -41,7 +40,6 @@ class St2 extends React.Component{
             openModal:false,
             modalTitle:'',
             isPublished:true,
-            showPoster:false,
             StudentsDetails:[],
             poster:[],
             picTitle:'',
@@ -96,16 +94,13 @@ class St2 extends React.Component{
     }
     getAdvisorsForDepartment = ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        if (groupData.Department === 'מדעי התנהגות') {
-            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Social and community sciences').child('Departments').child('Behavioral Sciences').child('Advisors');
-            ref.once("value", (snapshot)=> {
-                this.setState({advisorsList:snapshot.val()});
-                //console.log(snapshot.val())
-            }, (errorObject)=> {
-                console.log("The read failed: " + errorObject.code);
-            })
-        }
-
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
+        ref.once("value", (snapshot)=> {
+            this.setState({advisorsList:snapshot.val()});
+            //console.log(snapshot.val())
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
     }
     getCoursesForExpertis = ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
@@ -170,30 +165,6 @@ class St2 extends React.Component{
             console.log(this.state.StudentsDetails);
         })
     }
-    projectLogoShow=()=>{
-        this.setState({
-            showPoster:true,
-            imagesToShowInModal:this.state.poster
-        })
-    }
-    projectLogoClose=()=>{
-        this.setState({showPoster:false})
-    }
-    OpenImagePreviewForStudent = (index)=>{
-        console.log(this.state.StudentsDetails[index].Picture);
-        if(this.state.StudentsDetails[index].Picture !==''){
-            let temp = [];
-            temp.push(this.state.StudentsDetails[index].Picture);
-            console.log(temp);
-            this.setState({
-                showPoster:true, 
-                imagesToShowInModal:temp
-            })
-        }
-        else{
-            alert('לא הועלתה תמונת סטודנט/ית');
-        }
-    }
     savePic=(url,title,index)=>{
         switch (title) {
             case 'Project Logo':this.setState({poster:[url]})
@@ -210,7 +181,6 @@ class St2 extends React.Component{
         console.log(this.state.StudentsDetails);
     }
     savePDF = (url)=>{
-        console.log(url);
         this.setState({
             ProjectPDF:url
         })
@@ -323,25 +293,7 @@ class St2 extends React.Component{
     }
     SaveData = (event)=>{
         event.preventDefault();
-        //validate project inputs
-        let project = {
-            ProjectName: this.state.projectDetails.ProjectName,
-            isPublished:this.state.projectDetails.isPublished,
-            Year:this.state.projectDetails.Year,
-            Semester:this.state.projectDetails.Semester,
-            isApproved:1,
-            Major:this.state.projectMajor,
-            CDescription:this.state.projectDetails.CDescription,
-            Students:this.state.projectDetails.Students,
-            Advisor:this.state.projectDetails.advisor,
-            ProjectLogo:this.state.projectDetails.ProjectLogo,
-            MovieLink:this.state.projectDetails.MovieLink,
-            PDescription:this.state.projectDetails.PDescription,
-            ProjectCourse:this.state.projectDetails.ProjectCourse,
-            ProjectTopic:this.state.projectDetails.ProjectTopic,
-            ProjectPDF:this.state.projectDetails.ProjectPDF,
-        }
-        if(this.ValidateData(project)){
+        if(this.ValidateData(this.state.projectDetails)){
             //save project to firebase.
             this.setState({isReady:false},()=>{
                 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
@@ -429,7 +381,6 @@ class St2 extends React.Component{
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={()=>this.ChangePublish} isPublished={this.state.isPublished}  />
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
-                <PreviewModal onHide={this.projectLogoClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showPoster} title='תצוגה מקדימה'/>
                 {/* preview project card */}
                 <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
@@ -482,25 +433,13 @@ class St2 extends React.Component{
                                 </Col>
                                 <Col sm="4"> </Col>
                             </Row>
-                            <Row dir="rtl" style={{marginTop:'2%'}} >
-                                <Col sm="4"> </Col>
-                                <Col sm="4">
-                                    <Button onClick={()=>this.projectLogoShow('Project Logo')} variant="info">
-                                        <FaEye/>
-                                        {`  הצגת פוסטר`}   
-                                    </Button>
-                                </Col>
-                                <Col sm="4"> </Col>
-                            </Row>
                     </div>
                     {/* Students details */}
-                    <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}  OpenPreviewModal={this.OpenImagePreviewForStudent}/>
-                    
+                    <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
                 </Form>
             </div>
         )
     }
-     
 }
 export default St2;
 

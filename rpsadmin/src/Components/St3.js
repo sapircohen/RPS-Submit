@@ -6,11 +6,16 @@ import SelectInput from '../Common/inputSelect';
 import TextInputs from '../Common/TextInputs';
 import TextareaInput from '../Common/TextAreaInputs';
 import SmallHeaderForm from '../Common/SmallHeaderForm';
-import { FaPlusCircle,FaEye } from "react-icons/fa";
+import { FaPlusCircle } from "react-icons/fa";
 import PDFupload from '../Common/PdfFileUpload';
 import LinkInput from '../Common/Projectlinks';
 import StudentDetails from '../Common/StudentsDetails';
-
+import ModalImage from '../Common/ImageModal';
+import PreviewVt3 from '../Common/PreviewVt3';
+import SaveAction from '../Common/SaveAction';
+import HeaderForm from '../Common/HeaderForm';
+import PublishProject from '../Common/PublishProject';
+import firebase from 'firebase';
 const sectionNames = {
     projectNeed:'הבעיה/הצורך',
     projectDesc : "תיאור הפרויקט",
@@ -41,7 +46,6 @@ export default class St3 extends React.Component{
             openModal:false,
             modalTitle:'',
             isPublished:true,
-            showPoster:false,
             StudentsDetails:[],
             poster:[],
             picTitle:'',
@@ -72,13 +76,338 @@ export default class St3 extends React.Component{
         }
     }
     componentDidMount(){
-
+        //get group data from local storage
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        console.log(groupData);
+        this.setState({
+            Year:groupData.Year?groupData.Year:'',
+            Semester:groupData.Semester?groupData.Semester:'',
+            ProjectTopic:groupData.ProjectTopic?groupData.ProjectTopic:'',
+            projectCourse:groupData.ProjectCourse?groupData.ProjectCourse:'',
+            projectMajor:groupData.Major?groupData.Major:'',
+            MovieLink:groupData.MovieLink?groupData.MovieLink:'',
+            GroupName:groupData.GroupName,
+            ProjectName:groupData.ProjectName?groupData.ProjectName:'',
+            PDescription:groupData.PDescription?groupData.PDescription:'',
+            poster:groupData.ProjectLogo?[groupData.ProjectLogo]:[],
+            ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
+            isPublished:true,
+            StudentDetails:groupData.Students?groupData.Students:[],
+            CDescription:groupData.CDescription?groupData.CDescription:'',
+            ProjectAdvisor:groupData.Advisor?groupData.Advisor:'',
+            projectSolution:groupData.projectSolution?groupData.projectSolution:'',
+            projectFindings:groupData.projectFindings?groupData.projectFindings:'',
+            ProjectConclusion:groupData.ProjectConclusion?groupData.ProjectConclusion:'',
+            ProjectNeed:groupData.ProjectNeed?groupData.ProjectNeed:'',
+        })
+        //get list of advisors from firebase
+        this.getAdvisorsForDepartment();
+        //get list of Experties
+        this.getExperties();
+        //get list of courses
+        this.getCoursesForExpertis();
     }
-    ChangeInputTextarea = (e)=>{
-        //switch-case
+    getAdvisorsForDepartment = ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
+        ref.once("value", (snapshot)=> {
+            this.setState({advisorsList:snapshot.val()});
+            //console.log(snapshot.val())
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
     }
-    getStudentsDetails = ()=>{
+    getCoursesForExpertis = ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.FacultyE).child('Departments').child(groupData.DepartmentE).child('Experties').child(groupData.MajorE).child('Courses');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((course)=> {
+                this.setState({
+                    coursesList:[...this.state.coursesList,course.val().Name]
+                })
+            })
+        })
+        .then(()=>{
+            this.getTopicsListForCourses();
+        })   
+    }
+    getExperties = ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.FacultyE).child('Departments').child(groupData.DepartmentE).child('Experties');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((exp)=> {
+                this.setState({
+                    expertiesList:[...this.state.expertiesList,exp.val().Name]
+                })
+            })
+        })
         
+    }
+    getTopicsListForCourses=()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        this.state.coursesList.forEach((course)=>{
+            let ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.FacultyE).child('Departments').child(groupData.DepartmentE).child('Experties').child(groupData.MajorE).child('Courses').child(course).child('Topics');
+            ref.once("value", (snapshot)=> {
+                snapshot.forEach((topic)=> {
+                    console.log(topic.val().Name)
+                    this.setState({
+                        topicsList:[...this.state.topicsList,topic.val().Name]
+                    })
+                })
+            })
+        })
+    }
+    //text input area details
+    ChangeInputTextarea = (event,textareaTitle)=>{
+        switch (textareaTitle) {
+            case sectionNames.projectDesc:this.setState({PDescription:event.target.value})
+                break;
+            case sectionNames.projectSmallDesc:this.setState({CDescription:event.target.value})
+                    break;
+            case sectionNames.projectName:this.setState({ProjectName:event.target.value})
+                break;
+            case sectionNames.projectFindings:this.setState({projectFindings:event.target.value})
+                break;
+            case sectionNames.projectGoal:this.setState({ProjectGoal:event.target.value})
+                break;
+            case sectionNames.projectSolution:this.setState({projectSolution:event.target.value})
+                break;
+            case sectionNames.ProjectConclusion:this.setState({ProjectConclusion:event.target.value})
+                break;
+            case sectionNames.projectNeed:this.setState({ProjectNeed:event.target.value})
+                break;
+           default:
+               break;
+        }
+    }
+    //select input details
+    ChangeSelectedInputs = (event,selectedTitle)=>{
+        switch (selectedTitle) {
+            case sectionNames.projectType:this.setState({ProjectTopic:event.target.value})
+                break;
+            case sectionNames.projectFirstAdvisor:this.setState({ProjectAdvisor:event.target.value})
+                break;
+            case sectionNames.projectMajor:this.setState({projectMajor:event.target.value})
+                break;
+            case sectionNames.projectCourse:this.setState({projectCourse:event.target.value})
+                break;
+            case sectionNames.projectSemester:this.setState({Semester:event.target.value})
+                break;
+            case sectionNames.projectYear:this.setState({Year:event.target.value})
+                break;
+            default:
+                break;
+        }
+    }
+    //students details
+    getStudentsDetails = (students)=>{
+        this.setState({StudentsDetails:students},()=>{
+            console.log(this.state.StudentsDetails);
+        })
+    }
+    changeStudentImage = (url,index)=>{
+        this.state.StudentsDetails[index].Picture = url;
+        this.forceUpdate();
+        console.log(this.state.StudentsDetails);
+    }
+    //pdf details
+    savePDF = (url)=>{this.setState({ProjectPDF:url})}
+    //image modal
+    OpenImageModal = (title,index)=>this.setState({openModal:true,modalTitle:title,picTitle:index})
+    handleClose = ()=> this.setState({ openModal: false });
+    //save picture
+    savePic=(url,title,index)=>{
+        switch (title) {
+            case 'Project Logo':this.setState({poster:[url]})
+                break;
+            case 'Student Pic': this.changeStudentImage(url,index)
+                break;
+            default:
+                break;
+        }
+    }
+    //show preview
+    //save project to object and show preview
+    SetProjectOnFirbase = ()=>{
+        const project = {
+            ProjectName:this.state.ProjectName,
+            PDescription:this.state.PDescription,
+            advisor:[this.state.ProjectAdvisor],
+            Major:this.state.projectMajor,
+            ProjectCourse:this.state.projectCourse,
+            ProjectTopic:this.state.ProjectTopic,
+            Students:this.state.StudentsDetails,
+            isPublished:this.state.isPublished,
+            MovieLink:this.state.MovieLink,
+            ProjectLogo:this.state.poster[0],
+            ProjectPDF:this.state.ProjectPDF,
+            CDescription:this.state.CDescription,
+            ProjectGoal:this.state.ProjectGoal,
+            ProjectNeed:this.state.ProjectNeed,
+            ProjectConclusion:this.state.ProjectConclusion,
+            projectFindings:this.state.projectFindings,
+            projectSolution:this.state.projectSolution,
+            Year:this.state.Year,
+            Semester:this.state.Semester
+        }
+        this.setState({
+            projectDetails:project,
+        },()=>{
+            this.setState({showPreview:true})
+        })
+    }
+    //close project preview
+    closePreview = ()=>this.setState({showPreview:false})
+    ValidateData = (projectData)=>{
+        console.log(projectData.Advisor[0]);
+        // project name validation
+        if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
+            alert('שם הפרויקט חסר');
+            return false;
+        }
+        // project short description validation
+        if(projectData.CDescription.length<50){
+            alert("תיאור קצר צריך להיות גדול מ-50 תווים");
+            return false;
+        }
+        if(projectData.CDescription.length>150){
+            alert("תיאור קצר צריך להיות קטן מ-150 תווים");
+            return false;
+        }
+        //project long description -->PDescription
+        if(projectData.PDescription.length<200){
+            alert("תיאור הפרויקט צריך להיות גדול מ-200 תווים");
+            return false;
+        }
+        if(projectData.PDescription.length>500){
+            alert("תיאור הפרויקט צריך להיות קטן מ-500 תווים");
+            return false;
+        }
+        //project goal
+        if(projectData.ProjectGoal!==''){
+            if(projectData.ProjectGoal.length>200){
+                alert("תיאור מטרת הפרויקט הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים");
+                return false;
+            }
+        }
+        //project need
+        if(projectData.ProjectNeed!==''){
+            if(projectData.ProjectNeed.length>200){
+                alert("תיאור הבעיה/צורך הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים");
+                return false;
+            }
+        }
+        //projectFindings
+        if(projectData.projectFindings!==''){
+            if(projectData.projectFindings.length>200){
+                alert("תיאור הממצאים הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים");
+                return false;
+            }
+        }
+        //projectSolution
+        if(projectData.projectSolution!==''){
+            if(projectData.projectSolution.length>500){
+                alert("תיאור הפתרון הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים");
+                return false;
+            }
+        }
+        //ProjectConclusion
+        if(projectData.ProjectConclusion!==''){
+            if(projectData.ProjectConclusion.length>500){
+                alert("תיאור המסקנות הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים");
+                return false;
+            }
+        }
+        //project year
+        if(projectData.Year === "" || projectData.Year === "בחר"){
+            alert('יש לבחור שנה');
+            return false;
+        }
+        //project Semester
+        if(projectData.Semester === "" || projectData.Semester === "בחר"){
+            alert('יש לבחור סמסטר');
+            return false;
+        }
+        //project major/experties
+        if(projectData.Major === ""){
+            alert('יש לבחור התמחות');
+            return false;
+        }
+        //project course
+        if(projectData.ProjectCourse === ""){
+            alert('יש לבחור סוג');
+            return false;
+        }
+        //project topic
+        if(projectData.ProjectTopic === ""){
+            alert('יש לבחור נושא');
+            return false;
+        }
+        //project advisor
+        if(projectData.Advisor[0] === ""){
+            alert('יש לבחור מנחה');
+            return false;
+        }
+        //project students
+        if(projectData.Students.length<1){
+            alert('חובה שיהיה לפחות חבר צוות אחת');
+            return false;
+        }
+        else{
+            projectData.Students.forEach((student,index)=>{
+                if(student.Name===''){
+                    alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
+                    return false;
+                }
+                if (student.Picture==='') {
+                    alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
+                    return false;
+                }
+                //id validation
+                //pic validation
+                //email validation
+            })
+        }
+        if(projectData.ProjectPDF ===''){
+            alert('חסר קובץ PDF/WORD');
+            return false;
+        }
+        return true;
+    }
+    SaveData = (event)=>{
+        event.preventDefault();
+        if(this.ValidateData(this.state.projectDetails)){
+            //save project to firebase.
+            this.setState({isReady:false},()=>{
+                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                ref.update({
+                    templateView:'vt3',
+                    ProjectName:this.state.ProjectName,
+                    PDescription:this.state.PDescription,
+                    advisor:[this.state.ProjectAdvisor],
+                    Major:this.state.projectMajor,
+                    ProjectCourse:this.state.projectCourse,
+                    ProjectTopic:this.state.ProjectTopic,
+                    Students:this.state.StudentsDetails,
+                    isPublished:this.state.isPublished,
+                    MovieLink:this.state.MovieLink,
+                    ProjectLogo:this.state.poster[0],
+                    ProjectPDF:this.state.ProjectPDF,
+                    CDescription:this.state.CDescription,
+                    ProjectGoal:this.state.ProjectGoal,
+                    ProjectNeed:this.state.ProjectNeed,
+                    ProjectConclusion:this.state.ProjectConclusion,
+                    projectFindings:this.state.projectFindings,
+                    projectSolution:this.state.projectSolution,
+                    Year:this.state.Year,
+                    Semester:this.state.Semester
+                })
+                .then(()=>{
+                    this.setState({isReady:true,showPreview:false})
+                })
+            })
+        }
     }
     render(){
         if (!this.state.isReady) {
@@ -96,6 +425,13 @@ export default class St3 extends React.Component{
         return(
             <div style={{flex:1}}>
                 <NavbarProjs/>
+                <HeaderForm title={this.state.GroupName}/>
+                <PublishProject ChangePublish={()=>this.ChangePublish} isPublished={this.state.isPublished}  />
+                <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                {/* showPreview */}
+                <SaveAction Save={this.SetProjectOnFirbase}/>
+                <PreviewVt3 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
+                {/* inputs */}
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Project details */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>   
@@ -156,19 +492,9 @@ export default class St3 extends React.Component{
                             </Col>
                             <Col sm="4"> </Col>
                         </Row>
-                        <Row dir="rtl" style={{marginTop:'2%'}} >
-                            <Col sm="4"> </Col>
-                            <Col sm="4">
-                                <Button onClick={()=>this.projectLogoShow('Project Logo')} variant="info">
-                                    <FaEye/>
-                                    {`  הצגת פוסטר`}   
-                                </Button>
-                            </Col>
-                            <Col sm="4"> </Col>
-                        </Row>
                     </div>
                     {/* Students details */}
-                    <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}  OpenPreviewModal={this.OpenImagePreviewForStudent}/>
+                    <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
                     
                 </Form>
             </div>

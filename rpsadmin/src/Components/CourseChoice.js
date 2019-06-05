@@ -13,24 +13,34 @@ export default class CourseChoice extends React.Component{
     }
     componentDidMount(){
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        if(groupData.Major ==='מערכות מידע' && groupData.Department==='הנדסת תעשייה וניהול'){
-            this.coursesFromFirebase('Engineering','Industrial Engineering','Information systems');
-        }
-        else if(groupData.Major ==='יזמות' && groupData.Department==='הנדסת תעשייה וניהול'){
-            this.coursesFromFirebase('Engineering','Industrial Engineering','Entrepreneurship');
-        }
-        else if(groupData.Major ==='ייצור ושירות בסביבה דיגיטלית' && groupData.Department==='הנדסת תעשייה וניהול'){
-            this.coursesFromFirebase('Engineering','Industrial Engineering','Operation and production');
-        }
-        else if(groupData.Major ==='פסיכולוגיה' && groupData.Department==='מדעי התנהגות'){
-            this.coursesFromFirebase('Social and community sciences','Behavioral Sciences','Psychology');
-        }
-        else if(groupData.Major ==='סוציולוגיה ואנתרופולוגיה' && groupData.Department==='מדעי התנהגות'){
-            this.coursesFromFirebase('Social and community sciences','Behavioral Sciences','Sociology and anthropology');
-        }
-        else if(groupData.Major==='מערכות מידע' && groupData.Department==='מנהל עסקים'){
-            this.coursesFromFirebase('Economics and Business Administration','Business Administration','Information systems');
-        }
+        this.coursesFromFirebase(groupData.FacultyE,groupData.DepartmentE,groupData.MajorE);
+        // if(groupData.Major ==='מערכות מידע' && groupData.Department==='הנדסת תעשייה וניהול'){
+        //     this.coursesFromFirebase('Engineering','Industrial Engineering','Information systems');
+        // }
+        // else if(groupData.Major ==='יזמות' && groupData.Department==='הנדסת תעשייה וניהול'){
+        //     this.coursesFromFirebase('Engineering','Industrial Engineering','Entrepreneurship');
+        // }
+        // else if(groupData.Major ==='ייצור ושירות בסביבה דיגיטלית' && groupData.Department==='הנדסת תעשייה וניהול'){
+        //     this.coursesFromFirebase('Engineering','Industrial Engineering','Operation and production');
+        // }
+        // else if(groupData.Major ==='פסיכולוגיה' && groupData.Department==='מדעי התנהגות'){
+        //     this.coursesFromFirebase('Social and community sciences','Behavioral Sciences','Psychology');
+        // }
+        // else if(groupData.Major ==='סוציולוגיה ואנתרופולוגיה' && groupData.Department==='מדעי התנהגות'){
+        //     this.coursesFromFirebase('Social and community sciences','Behavioral Sciences','Sociology and anthropology');
+        // }
+        // else if(groupData.Major==='מערכות מידע' && groupData.Department==='מנהל עסקים'){
+        //     this.coursesFromFirebase('Economics and Business Administration','Business Administration','Information systems');
+        // }
+        // else if(groupData.Major==='ניהול השיווק' && groupData.Department==='מנהל עסקים'){
+        //     this.coursesFromFirebase('Economics and Business Administration','Business Administration','Marketing Management');
+        // }
+        // else if(groupData.Major==='ניהול משאבי אנוש ופיתוח ארגוני' && groupData.Department==='מנהל עסקים'){
+        //     this.coursesFromFirebase('Economics and Business Administration','Business Administration','Human resource management');
+        // }
+        // else if(groupData.Major==='כללי' && groupData.Department==='מנהל עסקים'){
+        //     this.coursesFromFirebase('Economics and Business Administration','Business Administration','General');
+        // }
     }
     changeProjectType = (e)=>{
         console.log(e.target.options.selectedIndex);
@@ -40,7 +50,9 @@ export default class CourseChoice extends React.Component{
     coursesFromFirebase=(fac,dep,exp)=>{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(fac).child('Departments').child(dep).child('Experties').child(exp).child('Courses');
         ref.once("value", (snapshot)=> {
+            
             snapshot.forEach((course)=>{
+                console.log(course.val())
                 this.setState({coursesList:[...this.state.coursesList,course.val().Name]});
                 this.setState({templateList:[...this.state.templateList,course.val()['Submit Template']]});
 

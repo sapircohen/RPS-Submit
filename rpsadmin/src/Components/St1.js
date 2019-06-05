@@ -151,57 +151,40 @@ class St1 extends React.Component{
     }
     getCourses= ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        if (groupData.Department === "הנדסת תעשייה וניהול") {///Ruppin/Faculties/Engineering/Departments/Industrial Engineering/Advisors'
-            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Engineering').child('Departments').child('Industrial Engineering').child('Experties').child('Information systems').child('Courses');
-            ref.once("value", (snapshot)=> {
-                snapshot.forEach((course)=>{
-                    this.setState({coursesList:[...this.state.coursesList,course.val().Name]});
-                    console.log(course.val())
-                })
-            }, (errorObject)=> {
-                console.log("The read failed: " + errorObject.code);
+        // if (groupData.Department === "הנדסת תעשייה וניהול") {///Ruppin/Faculties/Engineering/Departments/Industrial Engineering/Advisors'
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.FacultyE).child('Departments').child(groupData.DepartmentE).child('Experties').child(groupData.MajorE).child('Courses');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((course)=>{
+                this.setState({coursesList:[...this.state.coursesList,course.val().Name]});
+                console.log(course.val())
             })
-        }
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
+        //}
         ///need another one for "מנהל עסקים"
     }
     getTopicForFinalProject = ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        if (groupData.Department === "הנדסת תעשייה וניהול" || groupData.Department === "מנהל עסקים" ) {///Ruppin/Faculties/Engineering/Departments/Industrial Engineering/Advisors'
-            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Engineering').child('Departments').child('Industrial Engineering').child('Experties').child('Information systems').child('Courses').child('Final project').child('Topics');
-            ref.once("value", (snapshot)=> {
-                snapshot.forEach((topicName)=>{
-                    this.setState({topicList:[...this.state.topicList,topicName.val().Name]});
-                    console.log(topicName.val())
-                })
-            }, (errorObject)=> {
-                console.log("The read failed: " + errorObject.code);
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses').child('Final project').child('Topics');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((topicName)=>{
+                this.setState({topicList:[...this.state.topicList,topicName.val().Name]});
+                console.log(topicName.val())
             })
-        }
-        ///need another one for "מנהל עסקים"
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
     }
     getAdvisors = ()=>{
-
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        if (groupData.Department === "הנדסת תעשייה וניהול") {///Ruppin/Faculties/Engineering/Departments/Industrial Engineering/Advisors'
-            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Engineering').child('Departments').child('Industrial Engineering').child('Advisors');
-            ref.once("value", (snapshot)=> {
-                this.setState({advisorsList:snapshot.val()});
-                console.log(snapshot.val())
-            }, (errorObject)=> {
-                console.log("The read failed: " + errorObject.code);
-            })
-        }
-        //need to go to another route, only for the mean time.
-        else if(groupData.Department === "מנהל עסקים"){
-            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Engineering').child('Departments').child('Industrial Engineering').child('Advisors');
-            ref.once("value", (snapshot)=> {
-                this.setState({advisorsList:snapshot.val()});
-                console.log(snapshot.val())
-            }, (errorObject)=> {
-                console.log("The read failed: " + errorObject.code);
-            })
-        }
-
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
+        ref.once("value", (snapshot)=> {
+            this.setState({advisorsList:snapshot.val()});
+            console.log(snapshot.val())
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
     }
     getTechnologies = ()=>{
         const ref = firebase.database().ref('Technologies');
@@ -369,7 +352,8 @@ class St1 extends React.Component{
             CustCustomers:this.state.CustCustomers,
             CStackholders:this.state.CStackholders,
             ScreenShotsNames:this.state.ScreenShotsNames,
-            Github:this.state.Github
+            Github:this.state.Github,
+            isApproved:1,
         }
         console.log(project);
         this.setState({
@@ -471,11 +455,11 @@ class St1 extends React.Component{
             return false;
         }
         //project Advisors
-        if(projectData.Advisor[0]===''){
+        if(projectData.advisor[0]===''){
             alert('מנחה א חסר ');
             return false;
         } 
-        if(projectData.Advisor[1]===''){
+        if(projectData.advisor[1]===''){
             alert('מנחה ב חסר ');
             return false;
         } 
@@ -569,36 +553,7 @@ class St1 extends React.Component{
     }
     SaveData = (event)=>{
         event.preventDefault();
-        const project = {
-            ProjectName: this.state.projectDetails.ProjectName,
-            ProjectSite:this.state.projectDetails.ProjectSite,
-            isPublished:this.state.projectDetails.isPublished,
-            Year:this.state.projectDetails.Year,
-            Semester:this.state.projectDetails.Semester,
-            isApproved:1,
-            CDescription:this.state.projectDetails.CDescription,
-            CStackholders:this.state.projectDetails.CStackholders,
-            ScreenShotsNames:this.state.projectDetails.ScreenShotsNames,
-            ScreenShots:this.state.projectDetails.ScreenShots,
-            Students:this.state.projectDetails.Students,
-            Technologies:this.state.projectDetails.Technologies,
-            CustCustomers:this.state.projectDetails.CustCustomers,
-            Challenges:this.state.projectDetails.Challenges,
-            Comments:this.state.projectDetails.Comments,
-            Advisor:this.state.projectDetails.advisor,
-            CustomerLogo:this.state.projectDetails.CustomerLogo,
-            ProjectLogo:this.state.projectDetails.ProjectLogo,
-            MovieLink:this.state.projectDetails.MovieLink,
-            Goals:this.state.projectDetails.Goals,
-            Module:this.state.projectDetails.Module,
-            GooglePlay:this.state.projectDetails.GooglePlay,
-            AppStore:this.state.projectDetails.AppStore,
-            CustomerName:this.state.projectDetails.CustomerName,
-            HashTags:this.state.projectDetails.HashTags,
-            PDescription:this.state.projectDetails.PDescription,
-            Github:this.state.projectDetails.Github
-        }
-        if(this.ValidateData(project)){
+        if(this.ValidateData(this.state.projectDetails)){
             this.setState({isReady:false},()=>{
                 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);

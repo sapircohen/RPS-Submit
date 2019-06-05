@@ -87,8 +87,8 @@ class LoginScreen extends React.Component{
           logged = true;          
           localStorage.setItem('groupData', JSON.stringify(project.val()));
           localStorage.setItem('projectKey',JSON.stringify(project.key))
-          //history.push('/CourseChoice');
-          history.push('/st3');
+          history.push('/CourseChoice');
+          //history.push('/st3');
         }
     })
     }, (errorObject)=> {
