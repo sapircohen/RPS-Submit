@@ -151,8 +151,7 @@ class St1 extends React.Component{
     }
     getCourses= ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        // if (groupData.Department === "הנדסת תעשייה וניהול") {///Ruppin/Faculties/Engineering/Departments/Industrial Engineering/Advisors'
-        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.FacultyE).child('Departments').child(groupData.DepartmentE).child('Experties').child(groupData.MajorE).child('Courses');
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((course)=>{
                 this.setState({coursesList:[...this.state.coursesList,course.val().Name]});
@@ -161,8 +160,6 @@ class St1 extends React.Component{
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
         })
-        //}
-        ///need another one for "מנהל עסקים"
     }
     getTopicForFinalProject = ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));

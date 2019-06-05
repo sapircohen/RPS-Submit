@@ -13,7 +13,7 @@ export default class CourseChoice extends React.Component{
     }
     componentDidMount(){
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        this.coursesFromFirebase(groupData.FacultyE,groupData.DepartmentE,groupData.MajorE);
+        this.coursesFromFirebase(groupData.Faculty,groupData.Department,groupData.Major);
         // if(groupData.Major ==='מערכות מידע' && groupData.Department==='הנדסת תעשייה וניהול'){
         //     this.coursesFromFirebase('Engineering','Industrial Engineering','Information systems');
         // }

@@ -104,59 +104,53 @@ class St2 extends React.Component{
     }
     getCoursesForExpertis = ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        if (groupData.Department === 'מדעי התנהגות') {
-            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Social and community sciences').child('Departments').child('Behavioral Sciences').child('Experties').child('Psychology').child('Courses');
-            ref.once("value", (snapshot)=> {
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child('Psychology').child('Courses');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((course)=> {
+                this.setState({
+                    coursesList:[...this.state.coursesList,course.val().Name]
+                })
+            })
+        })
+        .then(()=>{
+            const ref2 = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child('Sociology and anthropology').child('Courses');
+            ref2.once("value", (snapshot)=> {
                 snapshot.forEach((course)=> {
                     this.setState({
                         coursesList:[...this.state.coursesList,course.val().Name]
                     })
                 })
             })
-            .then(()=>{
-                const ref2 = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Social and community sciences').child('Departments').child('Behavioral Sciences').child('Experties').child('Sociology and anthropology').child('Courses');
-                ref2.once("value", (snapshot)=> {
-                    snapshot.forEach((course)=> {
-                        this.setState({
-                            coursesList:[...this.state.coursesList,course.val().Name]
-                        })
-                    })
-                })
-            })
-            .then(()=>{
-                this.getTopicsListForCourses();
-            })
-            
-        }      
+        })
+        .then(()=>{
+            this.getTopicsListForCourses();
+        }) 
     }
     getExperties = ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        if (groupData.Department === 'מדעי התנהגות') {
-            const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Social and community sciences').child('Departments').child('Behavioral Sciences').child('Experties');
-            ref.once("value", (snapshot)=> {
-                snapshot.forEach((exp)=> {
-                    this.setState({
-                        expertiesList:[...this.state.expertiesList,exp.val().Name]
-                    })
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((exp)=> {
+                this.setState({
+                    expertiesList:[...this.state.expertiesList,exp.val().Name]
                 })
             })
-        }
+        })
+        
     }
     getTopicsListForCourses=()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        if (groupData.Department === 'מדעי התנהגות') {
-            this.state.coursesList.forEach((course)=>{
-                let ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child('Social and community sciences').child('Departments').child('Behavioral Sciences').child('Experties').child('Psychology').child('Courses').child(course).child('Topics');
-                ref.once("value", (snapshot)=> {
-                    snapshot.forEach((topic)=> {
-                        console.log(topic.val().Name)
-                        this.setState({
-                            topicsList:[...this.state.topicsList,topic.val().Name]
-                        })
+        this.state.coursesList.forEach((course)=>{
+            let ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses').child(course).child('Topics');
+            ref.once("value", (snapshot)=> {
+                snapshot.forEach((topic)=> {
+                    console.log(topic.val().Name)
+                    this.setState({
+                        topicsList:[...this.state.topicsList,topic.val().Name]
                     })
                 })
             })
-        }
+        })
     }
     handleClose = ()=> this.setState({ openModal: false });
     OpenImageModal = (title,index)=>this.setState({openModal:true,modalTitle:title,picTitle:index})
