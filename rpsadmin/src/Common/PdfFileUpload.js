@@ -11,7 +11,7 @@ class PDFupload extends React.Component{
         }
     }
     fileValidate = (file)=>{
-        console.log(file.fileExtension)
+        console.log(file.fileSize)
         if (file.fileExtension !=='pdf') {
             if (file.fileExtension !== 'docx') {
                 alert('ניתן להעלות אך ורק קבצי PDF או Word');
@@ -20,8 +20,16 @@ class PDFupload extends React.Component{
             }
         }
         else{
-            if (file.fileSize > 8000000) {
-                alert('הקובץ עובר את ה1 מגה');
+            console.log(file.fileExtension);
+            console.log(this.props.pdfFileSize);
+
+            if (file.fileExtension ==='pdf' && file.fileSize > this.props.pdfFileSize) {
+                alert('הקובץ עובר את ה20 מגה');
+                file.abortLoad();
+                return false;
+            }
+            else if (file.fileExtension ==='docx' && file.fileSize > this.props.wordFileSize) {
+                alert('הקובץ עובר את ה5 מגה');
                 file.abortLoad();
                 return false;
             }

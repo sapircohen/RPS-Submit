@@ -22,7 +22,7 @@ import LinkInput from '../Common/Projectlinks';
 import AppLinksInput from '../Common/appLinks';
 import HashTags from '../Common/Tag';
 import Techs from '../Common/techs';
-
+import {Years} from '../Common/Years';
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
     projectChallenges:"אתגרי הפרויקט",
@@ -333,7 +333,7 @@ class St1 extends React.Component{
             Year:this.state.Year,
             Semester:this.state.Semester,
             isPublished:this.state.isPublished,
-            CustomerName:this.state.organization?this.state.CustomerName:'',
+            CustomerName:this.state.organization===true?this.state.CustomerName:'',
             CDescription:this.state.CDescription,
             Goals:this.state.projectGoals,
             Module:this.state.projectModules,
@@ -344,7 +344,7 @@ class St1 extends React.Component{
             Students:this.state.StudentsDetails,
             ScreenShots:this.state.ScreenShots,
             ProjectLogo:this.state.logo,
-            CustomerLogo:this.state.organization?this.state.customerLogo:'',
+            CustomerLogo:this.state.organization===true?this.state.customerLogo:'',
             Comments:this.state.comments,
             CustCustomers:this.state.CustCustomers,
             CStackholders:this.state.CStackholders,
@@ -630,8 +630,10 @@ class St1 extends React.Component{
             case sectionNames.projectCustCustomers:
                     this.setState({CustCustomers:event.target.value})
                 break;
-            case sectionNames.CustomerName:
-                    this.setState({CustomerName:event.target.value})
+            case sectionNames.projectCustomerName:
+                    this.setState({CustomerName:event.target.value},()=>{
+                        console.log(this.state.CustomerName)
+                    })
                 break;
             default:
                 break;
@@ -730,7 +732,7 @@ class St1 extends React.Component{
                             {/* year  */}
                             <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput inputList={Years} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* projectType */}
                             <SelectInput inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}

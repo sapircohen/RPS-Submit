@@ -9,6 +9,7 @@ import ReactPlayer from 'react-player'
 import ImagesCarousel from './Carousel';
 import Badge from 'react-bootstrap/Badge';
 import randomColor from 'randomcolor'
+import PreviewParagraph from '../Common/PreviewParagraph';
 
 //CSS:
 import '../css/previewStyle.css';
@@ -108,6 +109,27 @@ class PreviewCard extends React.Component{
                             <Col style={{textAlign:'right'}} sm="5">משתמשי המערכת: {this.props.projectDetails.CustCustomers}</Col>
                             <Col sm="3"></Col>
                         </Row>
+                    }
+
+                    {/* project Customer Name (IS PROJECT)*/}
+                    {
+                        (this.props.projectDetails.CustomerName) &&
+                        <Row dir="rtl" style={{marginTop:'1%'}}>
+                            <Col sm="3"></Col>
+                            <Col style={{textAlign:'center',fontSize:'24px'}} sm="6">לקוח: {this.props.projectDetails.CustomerName}</Col>
+                            <Col sm="3"></Col>
+                        </Row>
+                    }
+                    {/* project Customer logo (IS PROJECT)*/}
+                    {
+                        this.props.projectDetails.CustomerLogo &&
+                        (
+                        <Row style={{justifyContent:'space-between',textAlign:'center',marginTop:'4%'}} className="show-grid">
+                            <Col xs={12}>
+                                <Image style={{maxHeight:'300px'}} src={this.props.projectDetails.CustomerLogo} />
+                            </Col>
+                        </Row>
+                        )
                     }
 
                     {/* project full description */}

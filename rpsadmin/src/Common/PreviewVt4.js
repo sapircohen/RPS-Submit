@@ -7,16 +7,15 @@ import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image'
 import ReactPlayer from 'react-player'
 import ImagesCarousel from './Carousel';
-
 import PreviewParagraph from '../Common/PreviewParagraph';
 
 //CSS:
 import '../css/previewStyle.css';
 
 //ICONS:
-import { FaCameraRetro } from "react-icons/fa";
-import {FiFlag,FiPaperclip,FiEdit2,FiAward,FiYoutube} from 'react-icons/fi';
-import { GiThreeFriends ,GiCrosshair} from "react-icons/gi";
+import {FiFlag,FiPaperclip,FiEdit2,FiAward} from "react-icons/fi";
+import { FaCameraRetro} from "react-icons/fa";
+import { GiClapperboard,GiThreeFriends ,GiCrosshair} from "react-icons/gi";
 import {GoBook} from 'react-icons/go';
 
 class PreviewVt3 extends React.Component{
@@ -87,31 +86,48 @@ class PreviewVt3 extends React.Component{
                             </Row>
                         </Col>
                     </Row>
-                    
-                    {/* project course and topic */}
+                    {/* project Customer Name*/}
                     {
-                        (this.props.projectDetails.ProjectCourse &&this.props.projectDetails.ProjectTopic) &&
+                        (this.props.projectDetails.CustomerName) &&
                         <Row dir="rtl" style={{marginTop:'1%'}}>
-                            <Col style={{textAlign:'right'}} sm="5">קורס: {this.props.projectDetails.ProjectCourse}</Col>
-                            <Col style={{textAlign:'right'}} sm="5">נושא: {this.props.projectDetails.ProjectTopic}</Col>
-                            <Col sm="2"></Col>
+                            <Col sm="3"></Col>
+                            <Col style={{textAlign:'center',fontSize:'24px'}} sm="6">לקוח: {this.props.projectDetails.CustomerName}</Col>
+                            <Col sm="3"></Col>
                         </Row>
                     }
-
+                    {/* project Customer logo (IS PROJECT)*/}
+                    {
+                        this.props.projectDetails.CustomerLogo &&
+                        (
+                        <Row style={{justifyContent:'space-between',textAlign:'center',marginTop:'4%'}} className="show-grid">
+                            <Col xs={12}>
+                                <Image style={{maxHeight:'300px'}} src={this.props.projectDetails.CustomerLogo} />
+                            </Col>
+                        </Row>
+                        )
+                    }
+                    {/* project course and topic */}
+                    {
+                    (this.props.projectDetails.ProjectCourse &&this.props.projectDetails.ProjectTopic) &&
+                    <Row dir="rtl" style={{marginTop:'1%'}}>
+                        <Col style={{textAlign:'right'}} sm="5">קורס: {this.props.projectDetails.ProjectCourse}</Col>
+                        <Col style={{textAlign:'right'}} sm="5">נושא: {this.props.projectDetails.ProjectTopic}</Col>
+                        <Col sm="2"></Col>
+                    </Row>
+                    }
                     {/* project full description */}
-                    <PreviewParagraph Paragraph={this.props.projectDetails.ProjectGoal} Title="תיאור הפרויקט" Icon={GoBook} />                    
+                    <PreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="תיאור הפרויקט" Icon={GoBook} />
+                    
                     {/* project goal */}
                     {
                     this.props.projectDetails.ProjectGoal &&
                     <PreviewParagraph Paragraph={this.props.projectDetails.ProjectGoal} Title="מטרת הפרויקט" Icon={GiCrosshair} />
                     }
-                    
                     {/* project need */}
                     {
                     this.props.projectDetails.ProjectNeed &&
                     <PreviewParagraph Paragraph={this.props.projectDetails.ProjectNeed} Title="הבעיה/צורך" Icon={FiFlag} />
                     }
-                    
                     {/* project findings */}
                     {
                     this.props.projectDetails.projectFindings &&
@@ -127,6 +143,7 @@ class PreviewVt3 extends React.Component{
                     this.props.projectDetails.ProjectConclusion &&
                     <PreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="מסקנות" Icon={GoBook} />
                     }
+                    
                     {/* students details */}
                     <div style={{marginTop:'4%'}} className="Box">
                         <Row dir="rtl" className="show-grid">
@@ -157,7 +174,8 @@ class PreviewVt3 extends React.Component{
                         this.props.projectDetails.MovieLink &&
                         <Col className="Box" style={{marginTop:'6%',textAlign:'center'}}>
                             <Col style={{textAlign:'center'}} sm="12">
-                                <h3>סרטון הפרויקט<FiYoutube size={50}/></h3>
+                                <h3>סרטון הפרויקט<GiClapperboard size={50}/></h3>
+                                
                             </Col>
                             <Row style={{marginTop:'2%',textAlign:'center'}} dir="rtl" className="show-grid">
                                 <Col sm="2"></Col>
@@ -192,7 +210,7 @@ class PreviewVt3 extends React.Component{
                             <Col sm="4"></Col>
                             <Col style={{textAlign:'center'}} sm="4">
                                 <Button dir="rtl" variant="info" href={this.props.projectDetails.ProjectPDF}>
-                                    <FiPaperclip/>  PDF להורדה
+                                    <FiPaperclip/> PDF להורדה
                                 </Button>
                             </Col>
                             <Col sm="4"></Col>

@@ -16,6 +16,8 @@ import SaveAction from '../Common/SaveAction';
 import HeaderForm from '../Common/HeaderForm';
 import PublishProject from '../Common/PublishProject';
 import firebase from 'firebase';
+import {Years} from '../Common/Years';
+
 const sectionNames = {
     projectNeed:'הבעיה/הצורך',
     projectDesc : "תיאור הפרויקט",
@@ -37,7 +39,6 @@ const sectionNames = {
     projectFindings:'ממצאים',
     projectSolution:'פתרון',
 }
-
 export default class St3 extends React.Component{
     constructor(props){
         super(props);
@@ -72,7 +73,10 @@ export default class St3 extends React.Component{
             ProjectNeed:'',
             ProjectConclusion:'',
             projectFindings:'',
-            projectSolution:''
+            projectSolution:'',
+            ScreenShots:[],
+            ScreenShotsNames:[],
+            MovieLink:''
         }
     }
     componentDidMount(){
@@ -99,6 +103,8 @@ export default class St3 extends React.Component{
             projectFindings:groupData.projectFindings?groupData.projectFindings:'',
             ProjectConclusion:groupData.ProjectConclusion?groupData.ProjectConclusion:'',
             ProjectNeed:groupData.ProjectNeed?groupData.ProjectNeed:'',
+            ScreenShots:groupData.ScreenShots?groupData.ScreenShots:[],
+            ScreenShotsNames:groupData.ScreenShotsNames?groupData.ScreenShotsNames:[],
         })
         //get list of advisors from firebase
         this.getAdvisorsForDepartment();
@@ -119,7 +125,7 @@ export default class St3 extends React.Component{
     }
     getCoursesForExpertis = ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.FacultyE).child('Departments').child(groupData.DepartmentE).child('Experties').child(groupData.MajorE).child('Courses');
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((course)=> {
                 this.setState({
@@ -133,7 +139,7 @@ export default class St3 extends React.Component{
     }
     getExperties = ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.FacultyE).child('Departments').child(groupData.DepartmentE).child('Experties');
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((exp)=> {
                 this.setState({
@@ -146,7 +152,7 @@ export default class St3 extends React.Component{
     getTopicsListForCourses=()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
         this.state.coursesList.forEach((course)=>{
-            let ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.FacultyE).child('Departments').child(groupData.DepartmentE).child('Experties').child(groupData.MajorE).child('Courses').child(course).child('Topics');
+            let ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses').child(course).child('Topics');
             ref.once("value", (snapshot)=> {
                 snapshot.forEach((topic)=> {
                     console.log(topic.val().Name)
@@ -216,11 +222,28 @@ export default class St3 extends React.Component{
     OpenImageModal = (title,index)=>this.setState({openModal:true,modalTitle:title,picTitle:index})
     handleClose = ()=> this.setState({ openModal: false });
     //save picture
-    savePic=(url,title,index)=>{
+    savePic=(url,title,index,screenshotName)=>{
         switch (title) {
             case 'Project Logo':this.setState({poster:[url]})
                 break;
             case 'Student Pic': this.changeStudentImage(url,index)
+                break;
+            case 'Screenshots':this.changeScreenshots(url,screenshotName)
+                break;
+            default:
+                break;
+        }
+    }
+    changeScreenshots= (url,name)=>{
+        this.setState({
+            ScreenShots:[...this.state.ScreenShots,url],
+            ScreenShotsNames:[...this.state.ScreenShotsNames,name]
+        })
+    }
+    ChangeLinkInput = (event,linkTitle)=>{
+        switch (linkTitle) {
+            case sectionNames.projectMovie:
+                this.setState({MovieLink:event.target.value})
                 break;
             default:
                 break;
@@ -248,7 +271,9 @@ export default class St3 extends React.Component{
             projectFindings:this.state.projectFindings,
             projectSolution:this.state.projectSolution,
             Year:this.state.Year,
-            Semester:this.state.Semester
+            Semester:this.state.Semester,
+            ScreenShots:this.state.ScreenShots,
+            ScreenShotsNames:this.state.ScreenShotsNames,
         }
         this.setState({
             projectDetails:project,
@@ -259,7 +284,7 @@ export default class St3 extends React.Component{
     //close project preview
     closePreview = ()=>this.setState({showPreview:false})
     ValidateData = (projectData)=>{
-        console.log(projectData.Advisor[0]);
+        console.log(projectData.advisor[0]);
         // project name validation
         if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
             alert('שם הפרויקט חסר');
@@ -304,14 +329,14 @@ export default class St3 extends React.Component{
                 return false;
             }
         }
-        //projectSolution
+        //project Solution
         if(projectData.projectSolution!==''){
             if(projectData.projectSolution.length>500){
                 alert("תיאור הפתרון הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים");
                 return false;
             }
         }
-        //ProjectConclusion
+        //Project Conclusion
         if(projectData.ProjectConclusion!==''){
             if(projectData.ProjectConclusion.length>500){
                 alert("תיאור המסקנות הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים");
@@ -344,7 +369,7 @@ export default class St3 extends React.Component{
             return false;
         }
         //project advisor
-        if(projectData.Advisor[0] === ""){
+        if(projectData.advisor[0] === ""){
             alert('יש לבחור מנחה');
             return false;
         }
@@ -372,6 +397,11 @@ export default class St3 extends React.Component{
             alert('חסר קובץ PDF/WORD');
             return false;
         }
+        //project screenshots
+        if (projectData.ScreenShots.length>5) {
+            alert('מספר תמונות המסך הוא עד 5');
+            return false;
+        }      
         return true;
     }
     SaveData = (event)=>{
@@ -401,7 +431,9 @@ export default class St3 extends React.Component{
                     projectFindings:this.state.projectFindings,
                     projectSolution:this.state.projectSolution,
                     Year:this.state.Year,
-                    Semester:this.state.Semester
+                    Semester:this.state.Semester,
+                    ScreenShots:this.state.ScreenShots,
+                    ScreenShotsNames:this.state.ScreenShotsNames,
                 })
                 .then(()=>{
                     this.setState({isReady:true,showPreview:false})
@@ -460,7 +492,7 @@ export default class St3 extends React.Component{
                         </Form.Row>
                         <Form.Row dir="rtl">
                             {/* year  */}
-                            <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
                             <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* Project Course */}
@@ -478,19 +510,25 @@ export default class St3 extends React.Component{
                             <Col sm="4"></Col>
                             <Col sm="4">
                                 <Form.Label>קובץ PDF</Form.Label>
-                                <PDFupload savePDF={this.savePDF}/>
+                                <PDFupload pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
                             </Col>
                             <Col sm="4"></Col>
                         </Row>
                         <Row dir="rtl" style={{marginTop:'2%'}} >
-                            <Col sm="4"> </Col>
+                            <Col sm="2"> </Col>
+                            <Col sm="4">
+                                <Button variant="primary" onClick={()=>this.OpenImageModal('Screenshots','')}>
+                                    <FaPlusCircle size={15}/>
+                                    {` הוספת תמונות/תרשימים`}
+                                </Button>
+                            </Col>
                             <Col sm="4">
                                 <Button onClick={()=>this.OpenImageModal('Project Logo')} variant="primary">
                                     <FaPlusCircle size={15}/>
                                     {`  הוספת פוסטר`}   
                                 </Button>
                             </Col>
-                            <Col sm="4"> </Col>
+                            <Col sm="2"> </Col>
                         </Row>
                     </div>
                     {/* Students details */}

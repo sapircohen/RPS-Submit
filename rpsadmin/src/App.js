@@ -4,6 +4,7 @@ import LoginPage from "./Components/LoginScreen";
 import St1 from "./Components/St1";
 import St2 from './Components/St2';
 import St3 from './Components/St3';
+import St4 from './Components/St4';
 
 import { withRouter,Route } from "react-router-dom";
 import CourseChoice from './Components/CourseChoice';
@@ -29,6 +30,7 @@ class App extends Component {
         <Route path='/st1'  component={St1}/>
         <Route path='/st2'  component={St2}/>
         <Route path='/st3' component={St3}/>
+        <Route path='/st4' component={St4}/>
       </div>
     );
   }
