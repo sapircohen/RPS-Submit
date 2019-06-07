@@ -298,7 +298,6 @@ export default class St3 extends React.Component{
     //close project preview
     closePreview = ()=>this.setState({showPreview:false})
     ValidateData = (projectData)=>{
-        console.log(projectData.advisor[0]);
         // project name validation
         if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
             alert('שם הפרויקט חסר');
@@ -378,10 +377,10 @@ export default class St3 extends React.Component{
             return false;
         }
         //project topic
-        // if(projectData.ProjectTopic === ""){
-        //     alert('יש לבחור נושא');
-        //     return false;
-        // }
+        if(projectData.ProjectTopic === ""){
+            alert('יש לבחור נושא');
+            return false;
+        }
         //project advisor
         if(projectData.advisor[0] === ""){
             alert('יש לבחור מנחה');
@@ -521,7 +520,7 @@ export default class St3 extends React.Component{
                         <Row dir="rtl" style={{marginTop:'2%'}} >
                             <Col sm="4"></Col>
                             <Col sm="4">
-                                <Form.Label>קובץ PDF</Form.Label>
+                                <Form.Label>קובץ PDF/WORD</Form.Label>
                                 <PDFupload pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
                             </Col>
                             <Col sm="4"></Col>

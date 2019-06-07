@@ -509,7 +509,7 @@ export default class St3 extends React.Component{
                         <Row dir="rtl" style={{marginTop:'2%'}} >
                             <Col sm="4"></Col>
                             <Col sm="4">
-                                <Form.Label>קובץ PDF</Form.Label>
+                                <Form.Label>קובץ PDF/WORD</Form.Label>
                                 <PDFupload pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
                             </Col>
                             <Col sm="4"></Col>
