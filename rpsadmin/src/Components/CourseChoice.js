@@ -8,6 +8,7 @@ import {Button} from 'react-bootstrap';
 export default class CourseChoice extends React.Component{
     state={
         template:'',
+        course:'',
         coursesList:[],
         templateList:[]
     }
@@ -18,7 +19,8 @@ export default class CourseChoice extends React.Component{
     changeProjectType = (e)=>{
         console.log(e.target.options.selectedIndex);
         const template = this.state.templateList[e.target.options.selectedIndex-1];
-        this.setState({template:template})
+        const course = this.state.coursesList[e.target.options.selectedIndex-1];
+        this.setState({template:template,course:course})
     }
     coursesFromFirebase=(fac,dep,exp)=>{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(fac).child('Departments').child(dep).child('Experties').child(exp).child('Courses');
@@ -33,11 +35,15 @@ export default class CourseChoice extends React.Component{
             console.log("The read failed: " + errorObject.code);
         })
     }
+    GoToTemplate = ()=>{
+        localStorage.setItem('course', JSON.stringify(this.state.course));
+        this.props.history.push('/'+this.state.template);
+    }
     render(){
         return(
             <div style={{width:'50%',margin:'20px auto'}}>
                 <SelectInput inputList={this.state.coursesList} InputTitle='בחרו קורס' ChangeSelectInput={this.changeProjectType} />
-                <Button onClick={()=>this.props.history.push('/'+this.state.template)}>
+                <Button onClick={()=>this.GoToTemplate()}>
                     {`אישור`}
                 </Button>
             </div>

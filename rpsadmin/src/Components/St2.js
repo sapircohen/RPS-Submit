@@ -18,6 +18,7 @@ import TextInputs from '../Common/TextInputs';
 import SelectInput from '../Common/inputSelect';
 import LinkInput from '../Common/Projectlinks';
 import {Years} from '../Common/Years';
+import LabelTextPDF from '../Common/LabelText';
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -69,12 +70,14 @@ class St2 extends React.Component{
     componentDidMount(){
         //get group data from local storage
         const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const course = JSON.parse(localStorage.getItem('course'));
+
         console.log(groupData);
         this.setState({
             Year:groupData.Year?groupData.Year:'',
             Semester:groupData.Semester?groupData.Semester:'',
             ProjectTopic:groupData.ProjectTopic?groupData.ProjectTopic:'',
-            projectCourse:groupData.ProjectCourse?groupData.ProjectCourse:'',
+            projectCourse:course,
             projectMajor:groupData.Major?groupData.Major:'',
             MovieLink:groupData.MovieLink?groupData.MovieLink:'',
             GroupName:groupData.GroupName,
@@ -82,7 +85,7 @@ class St2 extends React.Component{
             PDescription:groupData.PDescription?groupData.PDescription:'',
             poster:groupData.ProjectLogo?[groupData.ProjectLogo]:[],
             ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
-            isPublished:true,
+            isPublished:groupData.isPublished?groupData.isPublished:true,
             StudentDetails:groupData.Students?groupData.Students:[],
             CDescription:groupData.CDescription?groupData.CDescription:'',
             ProjectAdvisor:groupData.Advisor?groupData.Advisor:'',
@@ -99,28 +102,18 @@ class St2 extends React.Component{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
-            //console.log(snapshot.val())
+            console.log(snapshot.val())
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
         })
     }
     getCoursesForExpertis = ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child('פסיכולוגיה').child('Courses');
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((course)=> {
                 this.setState({
                     coursesList:[...this.state.coursesList,course.val().Name]
-                })
-            })
-        })
-        .then(()=>{
-            const ref2 = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child('סוציולוגיה ואנתרופולוגיה').child('Courses');
-            ref2.once("value", (snapshot)=> {
-                snapshot.forEach((course)=> {
-                    this.setState({
-                        coursesList:[...this.state.coursesList,course.val().Name]
-                    })
                 })
             })
         })
@@ -295,6 +288,7 @@ class St2 extends React.Component{
                 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
+                    templateSubmit:'st2',
                     templateView:'vt2',
                     ProjectName: this.state.projectDetails.ProjectName,
                     isPublished:this.state.projectDetails.isPublished,
@@ -313,7 +307,9 @@ class St2 extends React.Component{
                     ProjectPDF:this.state.projectDetails.ProjectPDF,
                 })
                 .then(()=>{
-                    this.setState({isReady:true,showPreview:false})
+                    this.setState({isReady:true,showPreview:false},()=>{
+                        alert('הפרויקט נשמר בהצלחה')
+                    })
                 })
             })
         }
@@ -356,7 +352,6 @@ class St2 extends React.Component{
                 break;
         }
     }
-    ChangePublish = ()=>this.setState({isPublished:!this.state.isPublished})
     render(){
         if (!this.state.isReady) {
             return(
@@ -373,9 +368,9 @@ class St2 extends React.Component{
         return(
             <div style={{flex:1}}>
                 <NavbarProjs/>
-                <SaveAction Save={this.SetProjectOnFirbase}/>
+                <SaveAction  style={{zIndex:26}} Save={this.SetProjectOnFirbase}/>
                 <HeaderForm title={this.state.GroupName}/>
-                <PublishProject ChangePublish={()=>this.ChangePublish} isPublished={this.state.isPublished}  />
+                <PublishProject ChangePublish={()=>this.setState({isPublished:!this.state.isPublished},()=>console.log(this.state.isPublished))} isPublished={this.state.isPublished}  />
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview project card */}
                 <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
@@ -384,26 +379,26 @@ class St2 extends React.Component{
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>   
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* project name */}
-                        <TextInputs defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
+                        <TextInputs IsMandatory={true}  defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* project small description */}
-                        <TextareaInput defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <TextareaInput  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <TextareaInput IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         <Form.Row dir="rtl">
                             {/* project major */}
-                            <SelectInput inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true}  inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* project advisor */}
-                            <SelectInput inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true}  inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                         <Form.Row dir="rtl">
                             {/* year  */}
-                            <SelectInput inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.Semester}  inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* Project Course */}
-                            <SelectInput inputList={this.state.coursesList} defaultInput={this.state.projectCourse} InputTitle={sectionNames.projectCourse} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            {/* <SelectInput inputList={this.state.coursesList} defaultInput={this.state.projectCourse} InputTitle={sectionNames.projectCourse} ChangeSelectInput={this.ChangeSelectedInputs} /> */}
                             {/*project topic */}
-                            <SelectInput inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true}  inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                     </div>
                     {/* FILES UPLOAD */}
@@ -414,8 +409,8 @@ class St2 extends React.Component{
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Col sm="4"></Col>
                                 <Col sm="4">
-                                    <Form.Label>קובץ PDF/WORD</Form.Label>
-                                    <PDFupload pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
+                                <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={true} />
+                                <PDFupload pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
                                 </Col>
                                 <Col sm="4"></Col>
                             </Row>
@@ -424,7 +419,7 @@ class St2 extends React.Component{
                                 <Col sm="4">
                                     <Button onClick={()=>this.OpenImageModal('Project Logo')} variant="primary">
                                         <FaPlusCircle size={15}/>
-                                        {`  הוספת פוסטר`}   
+                                        {this.state.poster?`  עריכת פוסטר`:`  הוספת פוסטר`}
                                     </Button>
                                 </Col>
                                 <Col sm="4"> </Col>

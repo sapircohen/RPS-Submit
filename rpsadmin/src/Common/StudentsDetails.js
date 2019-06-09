@@ -98,11 +98,13 @@ export default class StudentsDetails extends React.Component{
                         <div key={idx}>
                             <SmallHeaderForm title={`#סטודנט/ית ${idx+1}`}/>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="studentName">
-                                <Form.Label column sm="2">שם הסטודנט/ית</Form.Label>
+                                <Form.Label column sm="2">
+                                    <span style={{color:'red'}}>*</span>
+                                    שם הסטודנט/ית
+                                </Form.Label>
                                 <Col sm="2">
                                 <Form.Control defaultValue={students[idx].Name} onChange={(e)=>this.changeName(idx,e)} type="text" dir="rtl"/>
                                 </Col>
-
                                 <Form.Label column sm="2">אימייל</Form.Label>
                                 <Col sm="4">
                                 <Form.Control defaultValue={students[idx].Email} onChange={(e)=>this.changeEmail(idx,e)} type="text" dir="rtl"/>
@@ -112,15 +114,18 @@ export default class StudentsDetails extends React.Component{
                                 </Button>
                             </Form.Group>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="studentName">
-                                <Form.Label  column sm="2">תעודת זהות</Form.Label>
+                                <Form.Label column sm="2">תעודת זהות</Form.Label>
                                 <Col sm="2">
                                 <Form.Control defaultValue={students[idx].Id} onChange={(e)=>this.changeId(idx,e)} type="text" dir="rtl"/>
                                 </Col>
-                                <Col sm="2"></Col>
+                                <Col sm="2">
+                                
+                                </Col>
                                 <Col sm="2">
                                     <Button block onClick={()=>this.OpenImageModalStudent(`Student Pic`,idx)} variant="primary">
                                         <FaCameraRetro/>
-                                        {`  תמונה`} 
+                                        {`  תמונה  `} 
+                                        <span style={{color:'red'}}>*</span>
                                     </Button>
                                 </Col>
                                 <Col sm="2">

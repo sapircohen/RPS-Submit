@@ -5,13 +5,11 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image'
-import ReactPlayer from 'react-player'
+import VideoPlayer from '../Common/VideoPlayer';
 import ImagesCarousel from './Carousel';
 import PreviewParagraph from '../Common/PreviewParagraph';
-
 //CSS:
 import '../css/previewStyle.css';
-
 //ICONS:
 import {FiFlag,FiPaperclip,FiEdit2,FiAward} from "react-icons/fi";
 import { FaCameraRetro} from "react-icons/fa";
@@ -180,8 +178,7 @@ class PreviewVt3 extends React.Component{
                             <Row style={{marginTop:'2%',textAlign:'center'}} dir="rtl" className="show-grid">
                                 <Col sm="2"></Col>
                                 <Col sm="8" style={{textAlign:'center'}}>
-                                
-                                <ReactPlayer controls loop url={this.props.projectDetails.MovieLink} playing />
+                                    <VideoPlayer MovieLink={this.props.projectDetails.MovieLink} />
                                 </Col>
                                 <Col sm="2"></Col>
                             </Row>
@@ -210,7 +207,7 @@ class PreviewVt3 extends React.Component{
                             <Col sm="4"></Col>
                             <Col style={{textAlign:'center'}} sm="4">
                                 <Button dir="rtl" variant="info" href={this.props.projectDetails.ProjectPDF}>
-                                    <FiPaperclip/> PDF להורדה
+                                <FiPaperclip/>  PDF/WORD להורדה
                                 </Button>
                             </Col>
                             <Col sm="4"></Col>
@@ -232,5 +229,4 @@ class PreviewVt3 extends React.Component{
           );
     }
 }
-
 export default PreviewVt3;

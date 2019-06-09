@@ -6,9 +6,12 @@ const TextareaInput = (props)=>{
         //project textarea type inputs
         <Form.Group as={Row}>
             <Col  sm="10">
-                <Form.Control style={props.isMandatory&&{borderColor:'red'}} as="textarea" value={props.defaultInput} onChange={(e)=>props.ChangeInputTextarea(e,props.InputTitle)} dir="rtl" rows={3} />
+                <Form.Control as="textarea" value={props.defaultInput} onChange={(e)=>props.ChangeInputTextarea(e,props.InputTitle)} dir="rtl" rows={3} />
             </Col>
-            <Form.Label style={{textAlign:'right'}} column sm="2">{props.InputTitle}</Form.Label>
+            <Form.Label style={{textAlign:'right'}} column sm="2">
+            {props.IsMandatory&&<span style={{color:'red'}}>*</span>}
+            {props.InputTitle}
+            </Form.Label>
         </Form.Group>
     
     )

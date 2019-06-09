@@ -15,8 +15,6 @@ import 'firebase/storage';
 import { FirebaseProdConfig } from './Constants/APIkeys';
 //import { FirebaseTestConfig } from './Constants/APIkeys';
 
-//import UserGeneratedPills from './Common/Tag'
-
 firebase.initializeApp(FirebaseProdConfig);
 //firebase.initializeApp(FirebaseTestConfig);
 export const storage =  firebase.storage();

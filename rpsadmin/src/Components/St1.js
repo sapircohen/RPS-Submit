@@ -102,6 +102,7 @@ class St1 extends React.Component{
     componentDidMount(){
         //get group data from local storage
         const groupData = JSON.parse(localStorage.getItem('groupData'));
+
         let tagsList = [];
         if(groupData.HashTags){
             groupData.HashTags.forEach((tag)=>{
@@ -136,6 +137,7 @@ class St1 extends React.Component{
             ScreenShotsNames:groupData.ScreenShotsNames?groupData.ScreenShotsNames:[],
             projectModules:groupData.Module?groupData.Module:[],
             projectGoals:groupData.Goals?groupData.Goals:[],
+            isPublished:groupData.isPublished?groupData.isPublished:true,
             StudentDetails:groupData.Students?groupData.Students:[],
             chosenTechs:groupData.Technologies?groupData.Technologies:[],
             tags:tagsList
@@ -252,45 +254,7 @@ class St1 extends React.Component{
     OpenImagePreview = (title)=>{
         switch (title) {
             case 'Screenshots':
-                this.setState({
-                    modalTitle:title,
-                    showImagesMode:true,
-                    imagesToShowInModal:this.state.ScreenShots
-                })
-                break;
-            case 'Project Logo':
-                if(this.state.logo[0]!==undefined){
-                    this.setState({
-                        showImagesMode:true,
-                        modalTitle:title,
-                        imagesToShowInModal:this.state.logo
-                    })
-                }
-                else{
-                    this.setState({
-                        showImagesMode:true,
-                        modalTitle:title,
-                        imagesToShowInModal:undefined
-                    })
-                }
-                break;
-            case 'Customer Logo':
-                if(this.state.customerLogo[0]!==undefined){
-                    this.setState({
-                        showImagesMode:true,
-                        modalTitle:title,
-                        //showCustomerLogoPreview:true,
-                        imagesToShowInModal:this.state.customerLogo
-                    })
-                }
-                else{
-                    this.setState({
-                        showImagesMode:true,
-                        modalTitle:title,
-                        //showProjectLogoPreview:true,
-                        imagesToShowInModal:undefined
-                    })
-                }
+                this.setState({modalTitle:title,showImagesMode:true,imagesToShowInModal:this.state.ScreenShots})
                 break;
             default:
                 break;
@@ -320,13 +284,14 @@ class St1 extends React.Component{
         })
     }
     SetProjectOnFirbase = ()=>{
+        const course = JSON.parse(localStorage.getItem('course'));
         const arrayOfTags = this.state.tags.map((text)=>text.text);
         const project = {
             ProjectName:this.state.ProjectName,
             PDescription:this.state.PDescription,
             Challenges:this.state.Challenges,
             ProjectTopic:this.state.organization===true?'ארגוני':'יזמי',
-            ProjectCourse:'פרויקט גמר',
+            ProjectCourse:course,
             advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
             HashTags:arrayOfTags,
             Technologies:this.state.chosenTechs,
@@ -550,13 +515,15 @@ class St1 extends React.Component{
     }
     SaveData = (event)=>{
         event.preventDefault();
+        const course = JSON.parse(localStorage.getItem('course'));
         if(this.ValidateData(this.state.projectDetails)){
             this.setState({isReady:false},()=>{
                 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
+                    templateSubmit:'st1',
                     templateView:'vt1',
-                    ProjectCourse:'פרויקט גמר',
+                    ProjectCourse:course,
                     ProjectName: this.state.projectDetails.ProjectName,
                     ProjectSite:this.state.projectDetails.ProjectSite,
                     isPublished:this.state.projectDetails.isPublished,
@@ -586,7 +553,9 @@ class St1 extends React.Component{
                     Github:this.state.projectDetails.Github
                 })
                 .then(()=>{
-                    this.setState({isReady:true,showPreview:false})
+                    this.setState({isReady:true,showPreview:false},()=>{
+                        alert('הפרויקט נשמר בהצלחה')
+                    })
                 })
             })
         } 
@@ -715,37 +684,37 @@ class St1 extends React.Component{
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* projectName */}
-                        <TextInputs defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
+                        <TextInputs IsMandatory={true} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* stalkholders */}
-                        <TextInputs defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectStackholders} inputSize="lg" />
+                        <TextInputs IsMandatory={true}  defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectStackholders} inputSize="lg" />
                         {/* CustCustomers */}
-                        <TextInputs  defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
+                        <TextInputs IsMandatory={true}  defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
                         {/* project Small Description */}
-                        <TextareaInput  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <TextareaInput  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <TextareaInput IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         {/* project Challenges  */}
-                        <TextareaInput  defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectChallenges} />
+                        <TextareaInput IsMandatory={true}  defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectChallenges} />
                         {/* project Comments */}
                         <TextareaInput defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
                         <Form.Row dir="rtl">
                             {/* year  */}
-                            <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput inputList={Years} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true}  inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* projectType */}
-                            <SelectInput inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
+                            <SelectInput IsMandatory={true}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}
-                            <SelectInput defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true}  defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* second advisor */}
-                            <SelectInput defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true}  defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                     
                         {/* if the topic is organization */}
                         {this.state.organization &&
                         (<div>
                             {/* projectCustomerName */}
-                            <TextInputs defaultInput={this.state.CustomerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustomerName} inputSize="lg" />
+                            <TextInputs IsMandatory={true} defaultInput={this.state.CustomerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustomerName} inputSize="lg" />
                         </div>)}
                     </div>
                     <ProjectGoals initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
@@ -785,7 +754,7 @@ class St1 extends React.Component{
                                 <Col sm="4">
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Project Logo','Plogo')}>
                                         <FaCameraRetro/>
-                                        {`  הוספת לוגו פרויקט`}
+                                        {this.state.logo?`  עריכת לוגו פרויקט`:`  הוספת לוגו פרויקט`}
                                     </Button>
                                 </Col>
                                 <Col sm="4">
@@ -798,7 +767,7 @@ class St1 extends React.Component{
                                 <Col sm="4">
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Customer Logo','Clogo')}>
                                          <FaCameraRetro/>
-                                        {` הוספת לוגו לקוח`}
+                                         {this.state.customerLogo?`  עריכת לוגו לקוח`:`  הוספת לוגו לקוח`}
                                     </Button>
                                 </Col>
                                 :
@@ -813,11 +782,7 @@ class St1 extends React.Component{
                                         {`  עריכת תמונות מסך`}
                                     </Button>
                                 </Col>
-                                {this.state.organization ?
                                 <Col sm="4"></Col>
-                                :
-                                <Col sm="4"></Col>
-                                }
                             </Row>
                     </div>
                     <StudentDetails setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>

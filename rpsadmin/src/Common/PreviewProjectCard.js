@@ -1,27 +1,19 @@
 import React from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Image from 'react-bootstrap/Image'
-import ReactPlayer from 'react-player'
+import {Modal,Button,Container,Row,Col,Image,Badge} from 'react-bootstrap';
+import VideoPlayer from '../Common/VideoPlayer';
 import ImagesCarousel from './Carousel';
-import Badge from 'react-bootstrap/Badge';
 import randomColor from 'randomcolor'
-import PreviewParagraph from '../Common/PreviewParagraph';
-
+import LinkButton from '../Common/LinkToWeb';
 //CSS:
 import '../css/previewStyle.css';
-
 //ICONS:
 import { FaGoogle,FaAppleAlt,FaCameraRetro } from "react-icons/fa";
-import {FiLayers} from 'react-icons/fi';
+import {FiLayers,FiPaperclip} from 'react-icons/fi';
 import { GiClapperboard,GiThreeFriends ,GiCrosshair} from "react-icons/gi";
-import {GoBook,GoTag} from 'react-icons/go';
+import {GoBook,GoTag,GoMarkGithub} from 'react-icons/go';
 import {IoIosLaptop,IoIosDesktop} from 'react-icons/io';
 
-class PreviewCard extends React.Component{
+export default class PreviewCard extends React.Component{
     state={
         isIS:false,
         isBS:false,
@@ -131,7 +123,6 @@ class PreviewCard extends React.Component{
                         </Row>
                         )
                     }
-
                     {/* project full description */}
                     <Row  style={{marginTop:'3%'}} className="show-grid Box">
                                 <Col style={{textAlign:'center'}} sm="12">
@@ -205,14 +196,12 @@ class PreviewCard extends React.Component{
                         this.props.projectDetails.MovieLink &&
                         <Col className="Box" style={{marginTop:'6%',textAlign:'center'}}>
                             <Col style={{textAlign:'center'}} sm="12">
-                                <h3>סרטון הפרויקט<GiClapperboard size={50}/></h3>
-                                
+                                <h3>סרטון הפרויקט<GiClapperboard size={45}/></h3>
                             </Col>
                             <Row style={{marginTop:'2%',textAlign:'center'}} dir="rtl" className="show-grid">
                                 <Col sm="2"></Col>
-                                <Col sm="8" style={{textAlign:'center'}}>
-                                
-                                <ReactPlayer controls loop url={this.props.projectDetails.MovieLink} playing />
+                                <Col sm="8" style={{padding:'50px'}}>
+                                    <VideoPlayer MovieLink={this.props.projectDetails.MovieLink} />
                                 </Col>
                                 <Col sm="2"></Col>
                             </Row>
@@ -225,7 +214,7 @@ class PreviewCard extends React.Component{
                             <Col sm="4"></Col>
                             <Col style={{textAlign:'center'}} sm="4">
                                 <Button dir="rtl" variant="info" href={this.props.projectDetails.ProjectPDF}>
-                                    PDF להורדה
+                                    <FiPaperclip/>  PDF/WORD להורדה
                                 </Button>
                             </Col>
                             <Col sm="4"></Col>
@@ -317,31 +306,20 @@ class PreviewCard extends React.Component{
                     {/* project links (for IS project) */}
                     <Row dir="rtl" style={{justifyContent:'space-between',marginTop:'4%'}}>
                         {
-                            this.props.projectDetails.ProjectSite&&
-                            (<Col sm="4" style={{textAlign:'center'}}>
-                                <Button variant='info' href={this.props.projectDetails.ProjectSite}>
-                                    <IoIosDesktop/>
-                                       {`  לאתר הפרויקט`}
-                                </Button>
-                            </Col>)
+                            this.props.projectDetails.AppStore&&
+                            <LinkButton href={this.props.projectDetails.AppStore} Icon={FaAppleAlt} Title={`  Appstore`} />
                         }
                         {
-                            this.props.projectDetails.AppStore&&
-                            (<Col sm="4">
-                                <Button variant='info' href={this.props.projectDetails.AppStore}>
-                                    <FaAppleAlt/>
-                                    {`  Appstore`}  
-                                </Button>
-                            </Col>)
+                            this.props.projectDetails.ProjectSite&&
+                            <LinkButton color='#A9C1C9' href={this.props.projectDetails.ProjectSite} Icon={IoIosDesktop} Title={`  לאתר הפרויקט`} />
+                        }
+                        {
+                            this.props.projectDetails.Github&&
+                            <LinkButton color='black' href={this.props.projectDetails.Github} Icon={GoMarkGithub} Title={`  Github`} />
                         }
                         {
                             this.props.projectDetails.GooglePlay&&
-                            (<Col sm="4">
-                                <Button variant='info' href={this.props.projectDetails.AppStore}>
-                                    <FaGoogle/>
-                                    GooglePlay
-                                </Button>
-                            </Col>)
+                            <LinkButton href={this.props.projectDetails.GooglePlay} Icon={FaGoogle} Title={`  GooglePlay`} />
                         }
                         </Row>
                 </Container>
@@ -361,4 +339,3 @@ class PreviewCard extends React.Component{
     }
 }
 
-export default PreviewCard;

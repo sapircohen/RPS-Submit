@@ -7,8 +7,9 @@ const PublishProject = (props)=>{
         <label>
             <p dir="rtl">{`  האם לפרסם את הפרויקט?`}</p>
                 <Toggle
+                onClick={props.ChangePublish}
                 defaultChecked={props.isPublished}
-                onChange={props.ChangePublish}                    
+                                   
                 />
         </label>
     )

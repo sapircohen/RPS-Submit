@@ -85,10 +85,13 @@ class LoginScreen extends React.Component{
 
         if (parseInt(this.state.password) === project.val().Password && this.state.groupName === project.val().GroupName) {
           logged = true;          
+          console.log(project.val())
           localStorage.setItem('groupData', JSON.stringify(project.val()));
           localStorage.setItem('projectKey',JSON.stringify(project.key))
-          history.push('/CourseChoice');
-          //history.push('/st4');
+          if(project.val().templateSubmit){
+              history.push('/'+project.val().templateSubmit);
+          }
+          else history.push('/CourseChoice');
         }
     })
     }, (errorObject)=> {

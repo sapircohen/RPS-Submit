@@ -6,7 +6,7 @@ import SelectInput from '../Common/inputSelect';
 import TextInputs from '../Common/TextInputs';
 import TextareaInput from '../Common/TextAreaInputs';
 import SmallHeaderForm from '../Common/SmallHeaderForm';
-import { FaPlusCircle } from "react-icons/fa";
+import { FaPlusCircle,FaCameraRetro } from "react-icons/fa";
 import PDFupload from '../Common/PdfFileUpload';
 import LinkInput from '../Common/Projectlinks';
 import StudentDetails from '../Common/StudentsDetails';
@@ -17,6 +17,8 @@ import HeaderForm from '../Common/HeaderForm';
 import PublishProject from '../Common/PublishProject';
 import firebase from 'firebase';
 import {Years} from '../Common/Years';
+import LabelTextPDF from '../Common/LabelText';
+import PreviewModal from '../Common/imagesModalPrevies'
 
 const sectionNames = {
     projectNeed:'הבעיה/הצורך',
@@ -80,19 +82,21 @@ export default class St3 extends React.Component{
             customerLogo:'',
             ScreenShots:[],
             ScreenShotsNames:[],
-            MovieLink:''
-
+            MovieLink:'',
+            showImagesMode:false,
         }
     }
     componentDidMount(){
         //get group data from local storage
         const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const course = JSON.parse(localStorage.getItem('course'));
+
         console.log(groupData);
         this.setState({
             Year:groupData.Year?groupData.Year:'',
             Semester:groupData.Semester?groupData.Semester:'',
             ProjectTopic:groupData.ProjectTopic?groupData.ProjectTopic:'',
-            projectCourse:groupData.ProjectCourse?groupData.ProjectCourse:'',
+            projectCourse:course,
             projectMajor:groupData.Major?groupData.Major:'',
             MovieLink:groupData.MovieLink?groupData.MovieLink:'',
             GroupName:groupData.GroupName,
@@ -100,7 +104,7 @@ export default class St3 extends React.Component{
             PDescription:groupData.PDescription?groupData.PDescription:'',
             poster:groupData.ProjectLogo?[groupData.ProjectLogo]:[],
             ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
-            isPublished:true,
+            isPublished:groupData.isPublished?groupData.isPublished:true,
             StudentDetails:groupData.Students?groupData.Students:[],
             CDescription:groupData.CDescription?groupData.CDescription:'',
             ProjectAdvisor:groupData.Advisor?groupData.Advisor:'',
@@ -234,6 +238,39 @@ export default class St3 extends React.Component{
         this.state.StudentsDetails[index].Picture = url;
         this.forceUpdate();
         console.log(this.state.StudentsDetails);
+    }
+    //screenshots preview
+    OpenImagePreview = (title)=>{
+        switch (title) {
+            case 'Screenshots':
+                this.setState({
+                    modalTitle:title,
+                    showImagesMode:true,
+                    imagesToShowInModal:this.state.ScreenShots
+                })
+                break;
+            default:
+                break;
+        }
+    }
+    //close screenshots modal
+    imagesModalClose = ()=>this.setState({showImagesMode:false})
+    //delete image from screenshots
+    DeletePic = (picURL)=>{
+        console.log(picURL)
+        const desertRef = firebase.storage().refFromURL(picURL);
+        // Delete the file
+        desertRef.delete().then(()=> {
+            alert('התמונה נמחקה');
+            const index = this.state.ScreenShots.indexOf(picURL);
+            console.log(index)
+            const array = this.state.ScreenShots.splice(index,1);
+            console.log(array);
+            this.setState({ScreenShots:array},()=>console.log(this.state.ScreenShots));
+            
+        }).catch((error)=> {
+            console.log(error)
+        });
     }
     //pdf details
     savePDF = (url)=>{this.setState({ProjectPDF:url})}
@@ -418,6 +455,7 @@ export default class St3 extends React.Component{
                 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
+                    templateSubmit:'st4',
                     templateView:'vt4',
                     ProjectName:this.state.ProjectName,
                     PDescription:this.state.PDescription,
@@ -444,7 +482,9 @@ export default class St3 extends React.Component{
                     ScreenShotsNames:this.state.ScreenShotsNames,
                 })
                 .then(()=>{
-                    this.setState({isReady:true,showPreview:false})
+                    this.setState({isReady:true,showPreview:false},()=>{
+                        alert('הפרויקט נשמר בהצלחה')
+                    })
                 })
             })
         }
@@ -468,8 +508,10 @@ export default class St3 extends React.Component{
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={()=>this.ChangePublish} isPublished={this.state.isPublished}  />
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                {/* preview for screenshots  */}
+                <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 {/* showPreview */}
-                <SaveAction Save={this.SetProjectOnFirbase}/>
+                <SaveAction  style={{zIndex:26}} Save={this.SetProjectOnFirbase}/>
                 <PreviewVt4 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
                 {/* inputs */}
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
@@ -477,13 +519,13 @@ export default class St3 extends React.Component{
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>   
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* project name */}
-                        <TextInputs defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
+                        <TextInputs IsMandatory={true}  defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* customer name */}
-                        <TextInputs defaultInput={this.state.customerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.customerName} inputSize="lg" />
+                        <TextInputs IsMandatory={true} defaultInput={this.state.customerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.customerName} inputSize="lg" />
                         {/* project small description */}
-                        <TextareaInput defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <TextareaInput  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <TextareaInput IsMandatory={true}   defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         {/* project Goal */}
                         <TextareaInput  defaultInput={this.state.ProjectGoal} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectGoal} />
                         {/* project need */}
@@ -496,19 +538,19 @@ export default class St3 extends React.Component{
                         <TextareaInput  defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
                         <Form.Row dir="rtl">
                             {/* project major */}
-                            <SelectInput inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true}  inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* project advisor */}
-                            <SelectInput inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true}  inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                         <Form.Row dir="rtl">
                             {/* year  */}
-                            <SelectInput inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true}  inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* Project Course */}
-                            <SelectInput inputList={this.state.coursesList} defaultInput={this.state.projectCourse} InputTitle={sectionNames.projectCourse} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            {/* <SelectInput inputList={this.state.coursesList} defaultInput={this.state.projectCourse} InputTitle={sectionNames.projectCourse} ChangeSelectInput={this.ChangeSelectedInputs} /> */}
                             {/*project topic */}
-                            <SelectInput inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true}  inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                     </div>
                     
@@ -520,7 +562,7 @@ export default class St3 extends React.Component{
                         <Row dir="rtl" style={{marginTop:'2%'}} >
                             <Col sm="4"></Col>
                             <Col sm="4">
-                                <Form.Label>קובץ PDF/WORD</Form.Label>
+                                <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={true} />
                                 <PDFupload pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
                             </Col>
                             <Col sm="4"></Col>
@@ -535,7 +577,7 @@ export default class St3 extends React.Component{
                             <Col sm="4">
                                 <Button onClick={()=>this.OpenImageModal('Project Logo')} variant="primary">
                                     <FaPlusCircle size={15}/>
-                                    {`  הוספת פוסטר`}   
+                                    {this.state.poster?`  עריכת פוסטר`:`  הוספת פוסטר`}   
                                 </Button>
                             </Col>
                             <Col sm="4">
@@ -544,6 +586,16 @@ export default class St3 extends React.Component{
                                     {`  הוספת לוגו לקוח`}   
                                 </Button>
                             </Col>
+                        </Row>
+                        <Row dir="rtl" style={{marginTop:'2%'}} >
+                            <Col sm="4">
+                                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.OpenImagePreview('Screenshots')}>
+                                    <FaCameraRetro/>
+                                    {`  עריכת תמונות/תרשימים`}
+                                </Button>
+                            </Col>
+                            <Col sm="4"></Col>
+                            <Col sm="4"></Col>
                         </Row>
                     </div>
                     {/* Students details */}

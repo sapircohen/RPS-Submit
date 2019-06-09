@@ -5,14 +5,11 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image'
-import ReactPlayer from 'react-player'
 import ImagesCarousel from './Carousel';
-
+import VideoPlayer from '../Common/VideoPlayer';
 import PreviewParagraph from '../Common/PreviewParagraph';
-
 //CSS:
 import '../css/previewStyle.css';
-
 //ICONS:
 import { FaCameraRetro } from "react-icons/fa";
 import {FiFlag,FiPaperclip,FiEdit2,FiAward,FiYoutube} from 'react-icons/fi';
@@ -90,7 +87,7 @@ class PreviewVt3 extends React.Component{
                     
                     {/* project course and topic */}
                     {
-                        (this.props.projectDetails.ProjectCourse &&this.props.projectDetails.ProjectTopic) &&
+                        (this.props.projectDetails.ProjectCourse && this.props.projectDetails.ProjectTopic) &&
                         <Row dir="rtl" style={{marginTop:'1%'}}>
                             <Col style={{textAlign:'right'}} sm="5">קורס: {this.props.projectDetails.ProjectCourse}</Col>
                             <Col style={{textAlign:'right'}} sm="5">נושא: {this.props.projectDetails.ProjectTopic}</Col>
@@ -138,8 +135,8 @@ class PreviewVt3 extends React.Component{
                         <Row style={{justifyContent:'space-between',alignContent:'center',marginTop:'2%'}} className="show-grid">
                             {
                                 this.props.projectDetails.Students &&
-                                this.props.projectDetails.Students.map((student)=>
-                                    <Col style={{textAlign:'center'}} xs={12/this.props.projectDetails.Students.length}>
+                                this.props.projectDetails.Students.map((student,key)=>
+                                    <Col key={key} style={{textAlign:'center'}} xs={12/this.props.projectDetails.Students.length}>
                                         <Row style={{justifyContent:'center'}}>
                                             <a href={`mailto:${student.Email}`} dir="rtl" style={{textAlign:'center',fontSize:'large'}}>{student.Name}</a>
                                         </Row>
@@ -162,8 +159,7 @@ class PreviewVt3 extends React.Component{
                             <Row style={{marginTop:'2%',textAlign:'center'}} dir="rtl" className="show-grid">
                                 <Col sm="2"></Col>
                                 <Col sm="8" style={{textAlign:'center'}}>
-                                
-                                <ReactPlayer controls loop url={this.props.projectDetails.MovieLink} playing />
+                                    <VideoPlayer MovieLink={this.props.projectDetails.MovieLink} />
                                 </Col>
                                 <Col sm="2"></Col>
                             </Row>
@@ -192,7 +188,7 @@ class PreviewVt3 extends React.Component{
                             <Col sm="4"></Col>
                             <Col style={{textAlign:'center'}} sm="4">
                                 <Button dir="rtl" variant="info" href={this.props.projectDetails.ProjectPDF}>
-                                    <FiPaperclip/>  PDF להורדה
+                                    <FiPaperclip/>  PDF/WORD להורדה
                                 </Button>
                             </Col>
                             <Col sm="4"></Col>
