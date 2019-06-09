@@ -85,10 +85,12 @@ class St2 extends React.Component{
             PDescription:groupData.PDescription?groupData.PDescription:'',
             poster:groupData.ProjectLogo?[groupData.ProjectLogo]:[],
             ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
-            isPublished:groupData.isPublished?groupData.isPublished:true,
+            isPublished:groupData.isPublished!==undefined?groupData.isPublished:true,
             StudentDetails:groupData.Students?groupData.Students:[],
             CDescription:groupData.CDescription?groupData.CDescription:'',
             ProjectAdvisor:groupData.Advisor?groupData.Advisor:'',
+        },()=>{
+            console.log('is published? ',this.state.isPublished)
         })
         //get list of advisors from firebase
         this.getAdvisorsForDepartment();
@@ -352,6 +354,13 @@ class St2 extends React.Component{
                 break;
         }
     }
+    changePublished = ()=>{
+        const temp = !this.state.isPublished;
+        this.setState(
+            {isPublished:temp},
+            ()=>console.log(this.state.isPublished)
+        )
+    }
     render(){
         if (!this.state.isReady) {
             return(
@@ -370,7 +379,7 @@ class St2 extends React.Component{
                 <NavbarProjs/>
                 <SaveAction  style={{zIndex:26}} Save={this.SetProjectOnFirbase}/>
                 <HeaderForm title={this.state.GroupName}/>
-                <PublishProject ChangePublish={()=>this.setState({isPublished:!this.state.isPublished},()=>console.log(this.state.isPublished))} isPublished={this.state.isPublished}  />
+                <PublishProject ChangePublish={this.changePublished} isPublished={this.state.isPublished}  />
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview project card */}
                 <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
