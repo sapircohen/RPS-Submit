@@ -2,7 +2,7 @@ import React from 'react';
 import { FilePond } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 import {storage} from '../App';
-
+import firebase from 'firebase';
 class PDFupload extends React.Component{
     AddPDF = (error, file)=>{
         console.log(file)
@@ -46,10 +46,6 @@ class PDFupload extends React.Component{
         }
     }
     saveToFirebaseStorage = (file)=>{
-        console.log(file);
-        // const fileExtension = file.name.split(".");
-        // console.log(fileExtension);
-
         const groupData = JSON.parse(localStorage.getItem('groupData'));
         const uploadPic = storage.ref('images/'+groupData.GroupName+'/ProjectDocument/'+file.name).put(file);
         uploadPic.on('state_changed',
@@ -60,14 +56,13 @@ class PDFupload extends React.Component{
         ()=>{
             storage.ref('images/'+groupData.GroupName+'/ProjectDocument/'+file.name).getDownloadURL()
             .then((url)=>{
-                console.log(url)
                 this.props.savePDF(url);
             })
         })
     }
     render(){
         return(
-            <FilePond allowMultiple={false} onaddfile={this.AddPDF} labelIdlE='PDF UPLOAD'/>
+            <FilePond onremovefile={this.props.DeletePdf} allowMultiple={false} onaddfile={this.AddPDF} labelIdlE='PDF UPLOAD'/>
         )
     }
 }

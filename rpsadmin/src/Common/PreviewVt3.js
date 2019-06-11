@@ -96,7 +96,7 @@ class PreviewVt3 extends React.Component{
                     }
 
                     {/* project full description */}
-                    <PreviewParagraph Paragraph={this.props.projectDetails.ProjectGoal} Title="תיאור הפרויקט" Icon={GoBook} />                    
+                    <PreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="תיאור הפרויקט" Icon={GoBook} />                    
                     {/* project goal */}
                     {
                     this.props.projectDetails.ProjectGoal &&

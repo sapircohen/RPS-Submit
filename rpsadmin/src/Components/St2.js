@@ -20,6 +20,8 @@ import LinkInput from '../Common/Projectlinks';
 import {Years} from '../Common/Years';
 import LabelTextPDF from '../Common/LabelText';
 
+const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+const groupData = JSON.parse(localStorage.getItem('groupData'));
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
     projectChallenges:"אתגרי הפרויקט",
@@ -68,8 +70,10 @@ class St2 extends React.Component{
         }
     }
     componentDidMount(){
+       this.GetData();
+    }
+    GetData=()=>{
         //get group data from local storage
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         const course = JSON.parse(localStorage.getItem('course'));
         console.log(groupData);
         this.setState({
@@ -86,7 +90,6 @@ class St2 extends React.Component{
             ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
             isPublished:groupData.isPublished!==undefined?groupData.isPublished:true,
             StudentDetails:groupData.Students?groupData.Students:[],
-            //CDescription:groupData.CDescription?groupData.CDescription:'',
             ProjectAdvisor:groupData.Advisor?groupData.Advisor:'',
         },()=>{
             console.log('is published? ',this.state.isPublished)
@@ -97,9 +100,8 @@ class St2 extends React.Component{
         this.getExperties();
         //get list of courses
         this.getCoursesForExpertis();
-    }
+   }
     getAdvisorsForDepartment = ()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
@@ -109,7 +111,6 @@ class St2 extends React.Component{
         })
     }
     getCoursesForExpertis = ()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((course)=> {
@@ -123,7 +124,6 @@ class St2 extends React.Component{
         }) 
     }
     getExperties = ()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((exp)=> {
@@ -135,7 +135,6 @@ class St2 extends React.Component{
         
     }
     getTopicsListForCourses=()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         this.state.coursesList.forEach((course)=>{
             let ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses').child(course).child('Topics');
             ref.once("value", (snapshot)=> {
@@ -178,8 +177,14 @@ class St2 extends React.Component{
         console.log(this.state.StudentsDetails);
     }
     savePDF = (url)=>{
+        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
         this.setState({
             ProjectPDF:url
+        },()=>{
+            console.log(this.state.ProjectPDF)
+            ref.update({
+                ProjectPDF:this.state.ProjectPDF,
+            })
         })
     }
     //save project to object and show preview
@@ -206,9 +211,7 @@ class St2 extends React.Component{
         })
     }
     closePreview = ()=>this.setState({showPreview:false})
-    ValidateData = (projectData)=>{
-        const course = JSON.parse(localStorage.getItem('course'));
-        
+    ValidateData = (projectData)=>{        
         // project name validation
         if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
             alert('שם הפרויקט חסר');
@@ -286,13 +289,12 @@ class St2 extends React.Component{
         })
         return true;
     }
+    //save project to firebase.
     SaveData = (event)=>{
         event.preventDefault();
+        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
         if(this.ValidateData(this.state.projectDetails)){
-            //save project to firebase.
             this.setState({isReady:false},()=>{
-                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
-                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
                     templateSubmit:'st2',
                     templateView:'vt2',
@@ -313,18 +315,37 @@ class St2 extends React.Component{
                 })
                 .then(()=>{
                     this.setState({isReady:true,showPreview:false},()=>{
-                        alert('הפרויקט נשמר בהצלחה')
+                        alert('הפרויקט נשמר בהצלחה');
+                        this.GetData();
                     })
                 })
             })
+        }
+    }
+    //delete pdf/word file
+    DeletePdf=()=>{
+        console.log(this.state.ProjectPDF)
+        if(this.state.ProjectPDF!==''){
+            const desertRef = firebase.storage().refFromURL(this.state.ProjectPDF);
+            // Delete the file
+            desertRef.delete().then(()=> { 
+                this.setState({
+                    ProjectPDF:''
+                },()=>{
+                    const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                    ref.update({
+                        ProjectPDF:this.state.ProjectPDF,
+                    })
+                })            
+            }).catch((error)=> {
+                console.log(error)
+            });
         }
     }
     ChangeInputTextarea = (event,textareaTitle)=>{
         switch (textareaTitle) {
             case sectionNames.projectDesc:this.setState({PDescription:event.target.value})
                 break;
-            // case sectionNames.projectSmallDesc:this.setState({CDescription:event.target.value})
-            //         break;
             case sectionNames.projectName:this.setState({ProjectName:event.target.value})
                 break;
            default:
@@ -359,11 +380,9 @@ class St2 extends React.Component{
     }
     changePublished = ()=>{
         const temp = !this.state.isPublished;
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
         this.setState({isPublished:temp},()=>{
             if(this.state.isSaved===true || groupData.ProjectName!==undefined){
-                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
-                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
                     isPublished:this.state.isPublished,
                 })
@@ -421,26 +440,32 @@ class St2 extends React.Component{
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Col sm="4"></Col>
                                 <Col sm="4">
-                                <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={false} />
-                                <PDFupload pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
+                                    <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={false} />
+                                    <PDFupload DeletePdf={this.DeletePdf} pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
                                 </Col>
                                 <Col sm="4"></Col>
                             </Row>
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Col sm="4"> </Col>
                                 <Col sm="4">
+                                    {
+                                        this.state.ProjectPDF!==''&&
+                                        <Button onClick={this.DeletePdf} variant="danger">
+                                            {` מחיקת המסמך`}
+                                        </Button>
+                                    }
+                                </Col>
+                                <Col sm="4">
                                     <Button onClick={()=>this.OpenImageModal('Project Logo')} variant="primary">
                                         <FaPlusCircle size={15}/>
                                         {this.state.poster.length!==0?`  עריכת תמונה מייצגת`:`  הוספת תמונה מייצגת`}
                                     </Button>
                                 </Col>
-                                <Col sm="4"> </Col>
                             </Row>
                     </div>
                     {/* Students details */}
                     <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
                 </Form>
-                
             </div>
         )
     }

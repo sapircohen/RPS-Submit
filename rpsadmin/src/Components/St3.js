@@ -20,6 +20,9 @@ import {Years} from '../Common/Years';
 import LabelTextPDF from '../Common/LabelText';
 import PreviewModal from '../Common/imagesModalPrevies'
 
+const groupData = JSON.parse(localStorage.getItem('groupData'));
+const course = JSON.parse(localStorage.getItem('course'));
+const projectKey = JSON.parse(localStorage.getItem('projectKey'));
 const sectionNames = {
     projectNeed:'הבעיה/הצורך',
     projectDesc : "תיאור הפרויקט",
@@ -85,9 +88,10 @@ export default class St3 extends React.Component{
         }
     }
     componentDidMount(){
+        this.GetData();
+    }
+    GetData=()=>{
         //get group data from local storage
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
-        const course = JSON.parse(localStorage.getItem('course'));
         console.log(groupData);
         this.setState({
             Year:groupData.Year?groupData.Year:'',
@@ -120,7 +124,6 @@ export default class St3 extends React.Component{
         this.getCoursesForExpertis();
     }
     getAdvisorsForDepartment = ()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
@@ -130,7 +133,6 @@ export default class St3 extends React.Component{
         })
     }
     getCoursesForExpertis = ()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((course)=> {
@@ -144,7 +146,6 @@ export default class St3 extends React.Component{
         })   
     }
     getExperties = ()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((exp)=> {
@@ -156,7 +157,6 @@ export default class St3 extends React.Component{
         
     }
     getTopicsListForCourses=()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         this.state.coursesList.forEach((course)=>{
             let ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses').child(course).child('Topics');
             ref.once("value", (snapshot)=> {
@@ -256,7 +256,17 @@ export default class St3 extends React.Component{
         console.log(this.state.StudentsDetails);
     }
     //pdf details
-    savePDF = (url)=>{this.setState({ProjectPDF:url})}
+    savePDF = (url)=>{
+        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+        this.setState({
+            ProjectPDF:url
+        },()=>{
+            console.log(this.state.ProjectPDF)
+            ref.update({
+                ProjectPDF:this.state.ProjectPDF,
+            })
+        })
+    }
     //image modal
     OpenImageModal = (title,index,fileSize)=>{
         if(title==='Project Logo'){
@@ -459,7 +469,6 @@ export default class St3 extends React.Component{
         if(this.ValidateData(this.state.projectDetails)){
             //save project to firebase.
             this.setState({isReady:false},()=>{
-                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
                     templateSubmit:'st3',
@@ -494,13 +503,30 @@ export default class St3 extends React.Component{
             })
         }
     }
+    //delete pdf/word file
+    DeletePdf=()=>{
+        console.log(this.state.ProjectPDF)
+        if(this.state.ProjectPDF!==''){
+            const desertRef = firebase.storage().refFromURL(this.state.ProjectPDF);
+            // Delete the file
+            desertRef.delete().then(()=> { 
+                this.setState({
+                    ProjectPDF:''
+                },()=>{
+                    const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                    ref.update({
+                        ProjectPDF:this.state.ProjectPDF,
+                    })
+                })            
+            }).catch((error)=> {
+                console.log(error)
+            });
+        }
+    }
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
-
         this.setState({isPublished:temp},()=>{
             if(this.state.isSaved===true || groupData.ProjectName!==undefined){
-                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
                     isPublished:this.state.isPublished,
@@ -572,7 +598,7 @@ export default class St3 extends React.Component{
                             <SelectInput IsMandatory={true}  inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                     </div>
-                        {/* FILES UPLOAD */}
+                    {/* FILES UPLOAD */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="הוספת קבצים"/>
                         {/* project movie link */}
@@ -581,12 +607,24 @@ export default class St3 extends React.Component{
                             <Col sm="4"></Col>
                             <Col sm="4">
                                 <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={true} />
-                                <PDFupload pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
+                                <PDFupload DeletePdf={this.DeletePdf} pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
                             </Col>
                             <Col sm="4"></Col>
                         </Row>
                         <Row dir="rtl" style={{marginTop:'2%'}} >
-                            <Col sm="2"> </Col>
+                            <Col sm="4"></Col>
+                            <Col sm="4">
+                                {
+                                    this.state.ProjectPDF!==''&&
+                                    <Button onClick={this.DeletePdf} variant="danger">
+                                        {` מחיקת המסמך`}
+                                    </Button>
+                                }
+                            </Col>
+                            <Col sm="4"></Col>
+                        </Row>
+                        <Row dir="rtl" style={{marginTop:'2%'}} >
+                            <Col sm="2"></Col> 
                             <Col sm="4">
                                 <Button variant="primary" onClick={()=>this.OpenImageModal('Screenshots','')}>
                                     <FaPlusCircle size={15}/>
