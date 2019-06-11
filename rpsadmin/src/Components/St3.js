@@ -45,6 +45,7 @@ export default class St3 extends React.Component{
     constructor(props){
         super(props);
         this.state = {
+            fileSize:0,
             isSaved:false,
             imageAspect:4/3,
             openModal:false,
@@ -257,9 +258,15 @@ export default class St3 extends React.Component{
     //pdf details
     savePDF = (url)=>{this.setState({ProjectPDF:url})}
     //image modal
-    OpenImageModal = (title,index)=>this.setState({openModal:true,modalTitle:title,picTitle:index})
+    OpenImageModal = (title,index,fileSize)=>{
+        if(title==='Project Logo'){
+            this.setState({modalTitle:title,picTitle:index,fileSize:fileSize,openModal:true})
+        }
+        else{
+            this.setState({openModal:true,modalTitle:title,picTitle:index,fileSize:0})
+        }
+    }
     handleClose = ()=> this.setState({ openModal: false });
-    
     //save picture
     savePic=(url,title,index,screenshotName)=>{
         switch (title) {
@@ -466,7 +473,7 @@ export default class St3 extends React.Component{
                     Students:this.state.StudentsDetails,
                     isPublished:this.state.isPublished,
                     MovieLink:this.state.MovieLink,
-                    ProjectLogo:this.state.poster[0],
+                    ProjectLogo:this.state.poster[0]?this.state.poster[0]:'',
                     ProjectPDF:this.state.ProjectPDF,
                     CDescription:this.state.CDescription,
                     ProjectGoal:this.state.ProjectGoal,
@@ -522,7 +529,7 @@ export default class St3 extends React.Component{
                 <NavbarProjs/>
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
-                <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <ModalImage fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview for screenshots  */}
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
 
@@ -561,8 +568,6 @@ export default class St3 extends React.Component{
                             <SelectInput IsMandatory={true}  inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
                             <SelectInput IsMandatory={true}  inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
-                            {/* Project Course */}
-                            {/* <SelectInput IsMandatory={true}  inputList={this.state.coursesList} defaultInput={this.state.projectCourse} InputTitle={sectionNames.projectCourse} ChangeSelectInput={this.ChangeSelectedInputs} /> */}
                             {/*project topic */}
                             <SelectInput IsMandatory={true}  inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
@@ -591,7 +596,7 @@ export default class St3 extends React.Component{
                             <Col sm="4">
                                 <Button onClick={()=>this.OpenImageModal('Project Logo')} variant="primary">
                                     <FaPlusCircle size={15}/>
-                                    {this.state.poster.length!==0?`  עריכת פוסטר`:`  הוספת פוסטר`}   
+                                    {this.state.poster.length!==0?`  עריכת תמונה מייצגת`:`  הוספת תמונה מייצגת`}   
                                 </Button>
                             </Col>
                             <Col sm="2"> </Col>
