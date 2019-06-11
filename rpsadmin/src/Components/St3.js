@@ -45,6 +45,7 @@ export default class St3 extends React.Component{
     constructor(props){
         super(props);
         this.state = {
+            isSaved:false,
             imageAspect:4/3,
             openModal:false,
             modalTitle:'',
@@ -417,19 +418,20 @@ export default class St3 extends React.Component{
             return false;
         }
         else{
+            let flag = true;
             projectData.Students.forEach((student,index)=>{
                 if(student.Name===''){
                     alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
-                    return false;
+                    flag = false;
                 }
                 if (student.Picture==='') {
                     alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
-                    return false;
+                    flag = false;
                 }
-                //id validation
-                //pic validation
-                //email validation
             })
+            if (!flag) {
+                return false;
+            }
         }
         if(projectData.ProjectPDF ===''){
             alert('חסר קובץ PDF/WORD');
@@ -440,6 +442,9 @@ export default class St3 extends React.Component{
             alert('מספר תמונות המסך הוא עד 5');
             return false;
         }      
+        this.setState({
+            isSaved:true
+        })
         return true;
     }
     SaveData = (event)=>{
@@ -482,6 +487,23 @@ export default class St3 extends React.Component{
             })
         }
     }
+    ChangePublish = ()=>{
+        const temp = !this.state.isPublished;
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+
+        this.setState({isPublished:temp},()=>{
+            if(this.state.isSaved===true || groupData.ProjectName!==undefined){
+                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                ref.update({
+                    isPublished:this.state.isPublished,
+                })
+                .then(()=>{
+                    this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
+                })
+            }
+        })
+    }
     render(){
         if (!this.state.isReady) {
             return(
@@ -499,7 +521,7 @@ export default class St3 extends React.Component{
             <div style={{flex:1}}>
                 <NavbarProjs/>
                 <HeaderForm title={this.state.GroupName}/>
-                <PublishProject ChangePublish={()=>this.ChangePublish} isPublished={this.state.isPublished}  />
+                <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview for screenshots  */}
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
@@ -569,7 +591,7 @@ export default class St3 extends React.Component{
                             <Col sm="4">
                                 <Button onClick={()=>this.OpenImageModal('Project Logo')} variant="primary">
                                     <FaPlusCircle size={15}/>
-                                    {this.state.poster?`  עריכת פוסטר`:`  הוספת פוסטר`}   
+                                    {this.state.poster.length!==0?`  עריכת פוסטר`:`  הוספת פוסטר`}   
                                 </Button>
                             </Col>
                             <Col sm="2"> </Col>

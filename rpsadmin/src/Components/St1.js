@@ -47,6 +47,7 @@ class St1 extends React.Component{
     constructor(props){
         super(props);
         this.state={
+            isSaved:false,
             imageAspect:4/3,
             showPreview:false,
             imagesToShowInModal:[],
@@ -431,24 +432,28 @@ class St1 extends React.Component{
             return false;
         }
         else{
+            let flag = true;
             projectData.Goals.forEach((goal,index)=>{
                 if (goal.GoalDescription.length<10) {
                     alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות גדול מ10 תווים ");
-                    return false;
+                    flag= false;
                 }
                 if (goal.GoalDescription.length>100) {
                     alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
-                    return false;
+                    flag= false;
                 }
                 if(goal.GoalStatus.length<4){
                     alert(" סטטוס מטרה מספר " +(index+1)+"צריך להיות גדול מ4 תווים ");
-                    return false;
+                    flag= false;
                 }
                 if(goal.GoalStatus.length>100){
                     alert(" סטטוס מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
-                    return false;
+                    flag= false;
                 }
             })
+            if (!flag) {
+                return false;
+            }
         }
         //project modules -->Module
         if(projectData.Module.length<2){
@@ -456,28 +461,33 @@ class St1 extends React.Component{
             return false;
         }
         else{
+            let flag = true;
             projectData.Module.forEach((mod,index)=>{
                 if (mod.ModuleDescription.length<20) {
                     alert(" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ");
-                    return false;
+                    flag= false;
                 }
                 if (mod.ModuleDescription.length>200) {
                     alert(" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ");
-                    return false;
+                    flag= false;
                 }
                 if(mod.ModuleName.length<3){
                     alert(" שם מודול מספר " +(index+1)+"צריך להיות גדול מ3 תווים ");
-                    return false;
+                    flag= false;
                 }
                 if(mod.ModuleName.length>70){
                     alert(" שם מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
-                    return false;
+                    flag= false;
                 }
             })
+            if (!flag) {
+                return false;
+            }
         }
         //project technologies -->Technologies
         if(projectData.Technologies.length<5){
             alert('מספר הטכנולוגיות צריך להיות לפחות 5');
+            return false;
         }
         //project screenshots
         if (projectData.ScreenShots.length<5) {
@@ -495,22 +505,24 @@ class St1 extends React.Component{
             return false;
         }
         else{
+            let flag = true;
             projectData.Students.forEach((student,index)=>{
                 if(student.Name===''){
                     alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
-                    return false;
+                    flag = false;
                 }
                 if (student.Picture==='') {
                     alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
-                    return false;
+                    flag = false;
                 }
-                //id validation
-                //pic validation
-                //email validation
             })
+            if (!flag) {
+                return false;
+            }
         }
-        
-        
+        this.setState({
+            isSaved:true
+        })
         return true;
     }
     SaveData = (event)=>{
@@ -654,7 +666,23 @@ class St1 extends React.Component{
     }
     closePreview = ()=>this.setState({showPreview:false})
     imagesModalClose = ()=>this.setState({showImagesMode:false})
-    ChangePublish = ()=>this.setState({isPublished:!this.state.isPublished})
+    ChangePublish = ()=>{
+        const temp = !this.state.isPublished;
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+
+        this.setState({isPublished:temp},()=>{
+            if(this.state.isSaved===true || groupData.ProjectName!==undefined){
+                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                ref.update({
+                    isPublished:this.state.isPublished,
+                })
+                .then(()=>{
+                    this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
+                })
+            }
+        })
+    }
     render(){
         if (!this.state.isReady) {
             return(
@@ -678,7 +706,7 @@ class St1 extends React.Component{
                 {/* preview project card */}
                 <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
                 {/*publish project? */}
-                <PublishProject ChangePublish={()=>this.ChangePublish} isPublished={this.state.isPublished}  />
+                <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Poject details */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>

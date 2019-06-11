@@ -29,7 +29,7 @@ class PreviewVt3 extends React.Component{
     }
     render(){  
         return (
-            <Modal style={{backgroundColor:'#C1DEE6',fontFamily:'Calibri'}} onHide={this.props.close} show={this.props.openPreview} size="xl" aria-labelledby="contained-modal-title-vcenter">
+            <Modal style={{backgroundColor:'transparent',fontFamily:'Calibri'}} onHide={this.props.close} show={this.props.openPreview} size="xl" aria-labelledby="contained-modal-title-vcenter">
               <Modal.Header style={{margin:'0px auto'}} closeButton>
                 <Modal.Title>
                     {

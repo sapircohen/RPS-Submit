@@ -37,10 +37,17 @@ class ModalImage extends React.Component{
         if(files && files.length>0){
             const currentFile = files[0];
             const currentFileType =currentFile.type;
-            //const currentFileSize = currentFile.size;
+            const currentFileSize = currentFile.size;
             if (!acceptedFileTypeArray.includes(currentFileType)) {
-                alert('this file type is not allowed!');
+                alert('סוג זה של קובץ אינו מורשה!');
                 return false;
+            }
+            if(this.props.fileSize!==undefined){
+                if(this.props.fileSize!==0) {
+                    const checkSize = currentFileSize/1000;
+                    alert('גודל התמונה צריך להיות עד 100KB');
+                    return this.props.fileSize>checkSize?true:false;
+                }
             }
             return true;
         }
@@ -62,11 +69,8 @@ class ModalImage extends React.Component{
                     this.setState({
                         imgSrc:reader.result
                     })
-                    console.log(reader.result);
                 },false)
-                //console.log(reader)
                 reader.readAsDataURL(currentFile);
-
             }
         }
     }

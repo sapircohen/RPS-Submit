@@ -26,7 +26,7 @@ export default class PreviewCard extends React.Component{
     }
     render(){  
         return (
-            <Modal style={{backgroundColor:'#C1DEE6',fontFamily:'Calibri'}} onHide={this.props.close} show={this.props.openPreview} size="xl" aria-labelledby="contained-modal-title-vcenter">
+            <Modal style={{backgroundColor:'transparent',fontFamily:'Calibri'}} onHide={this.props.close} show={this.props.openPreview} size="xl" aria-labelledby="contained-modal-title-vcenter">
               <Modal.Header style={{margin:'0px auto'}} closeButton>
                 <Modal.Title>
                     {
@@ -214,7 +214,7 @@ export default class PreviewCard extends React.Component{
                             <Col sm="4"></Col>
                             <Col style={{textAlign:'center'}} sm="4">
                                 <Button dir="rtl" variant="info" href={this.props.projectDetails.ProjectPDF}>
-                                    <FiPaperclip/>  PDF/WORD להורדה
+                                    <FiPaperclip/>  PDF להורדה
                                 </Button>
                             </Col>
                             <Col sm="4"></Col>

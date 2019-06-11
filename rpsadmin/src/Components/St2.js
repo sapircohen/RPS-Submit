@@ -23,7 +23,6 @@ import LabelTextPDF from '../Common/LabelText';
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
     projectChallenges:"אתגרי הפרויקט",
-    projectSmallDesc:"תיאור קצר",
     projectComments:"הערות",
     projectName:"שם הפרויקט",
     projectType:'נושא הפרויקט',
@@ -39,6 +38,8 @@ class St2 extends React.Component{
     constructor(props){
         super(props);
         this.state = {
+            isSaved:false,
+            fileSize:0,
             imageAspect:4/3,
             openModal:false,
             modalTitle:'',
@@ -57,7 +58,6 @@ class St2 extends React.Component{
             expertiesList:[],
             projectDetails:{},
             showPreview:false,
-            CDescription:'',
             ProjectTopic:'',
             isReady:true,
             ProjectAdvisor:'',
@@ -71,7 +71,6 @@ class St2 extends React.Component{
         //get group data from local storage
         const groupData = JSON.parse(localStorage.getItem('groupData'));
         const course = JSON.parse(localStorage.getItem('course'));
-
         console.log(groupData);
         this.setState({
             Year:groupData.Year?groupData.Year:'',
@@ -87,7 +86,7 @@ class St2 extends React.Component{
             ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
             isPublished:groupData.isPublished!==undefined?groupData.isPublished:true,
             StudentDetails:groupData.Students?groupData.Students:[],
-            CDescription:groupData.CDescription?groupData.CDescription:'',
+            //CDescription:groupData.CDescription?groupData.CDescription:'',
             ProjectAdvisor:groupData.Advisor?groupData.Advisor:'',
         },()=>{
             console.log('is published? ',this.state.isPublished)
@@ -150,7 +149,14 @@ class St2 extends React.Component{
         })
     }
     handleClose = ()=> this.setState({ openModal: false });
-    OpenImageModal = (title,index)=>this.setState({openModal:true,modalTitle:title,picTitle:index})
+    OpenImageModal = (title,index,fileSize)=>{
+        if(title==='Project Logo'){
+            this.setState({modalTitle:title,picTitle:index,fileSize:fileSize,openModal:true})
+        }
+        else{
+            this.setState({openModal:true,modalTitle:title,picTitle:index,fileSize:0})
+        }
+    }
     getStudentsDetails = (students)=>{
         this.setState({StudentsDetails:students},()=>{
             console.log(this.state.StudentsDetails);
@@ -188,9 +194,8 @@ class St2 extends React.Component{
             Students:this.state.StudentsDetails,
             isPublished:this.state.isPublished,
             MovieLink:this.state.MovieLink,
-            ProjectLogo:this.state.poster[0],
+            ProjectLogo:this.state.poster?this.state.poster[0]:[],
             ProjectPDF:this.state.ProjectPDF,
-            CDescription:this.state.CDescription,
             Year:this.state.Year,
             Semester:this.state.Semester
         }
@@ -202,19 +207,11 @@ class St2 extends React.Component{
     }
     closePreview = ()=>this.setState({showPreview:false})
     ValidateData = (projectData)=>{
-        console.log(projectData.advisor[0]);
+        const course = JSON.parse(localStorage.getItem('course'));
+        
         // project name validation
         if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
             alert('שם הפרויקט חסר');
-            return false;
-        }
-        // project short description validation
-        if(projectData.CDescription.length<50){
-            alert("תיאור קצר צריך להיות גדול מ-50 תווים");
-            return false;
-        }
-        if(projectData.CDescription.length>150){
-            alert("תיאור קצר צריך להיות קטן מ-150 תווים");
             return false;
         }
         //project long description -->PDescription
@@ -262,24 +259,31 @@ class St2 extends React.Component{
             return false;
         }
         else{
+            let flag = true;
             projectData.Students.forEach((student,index)=>{
                 if(student.Name===''){
                     alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
-                    return false;
+                    flag= false;
                 }
                 if (student.Picture==='') {
                     alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
-                    return false;
+                    flag= false;
                 }
-                //id validation
-                //pic validation
-                //email validation
             })
+            if (!flag) {
+                return false;
+            }
         }
-        if(projectData.ProjectPDF ===''){
-            alert('חסר קובץ PDF/WORD');
-            return false;
-        }
+        //project pdf file
+        // if(course.indexOf('פרקטיקום')===-1){
+        //     if(projectData.ProjectPDF ===''){
+        //         alert('חסר קובץ PDF');
+        //         return false;
+        //     }
+        // }
+        this.setState({
+            isSaved:true
+        })
         return true;
     }
     SaveData = (event)=>{
@@ -298,15 +302,14 @@ class St2 extends React.Component{
                     Semester:this.state.projectDetails.Semester,
                     isApproved:1,
                     Major:this.state.projectMajor,
-                    CDescription:this.state.projectDetails.CDescription,
                     Students:this.state.projectDetails.Students,
                     Advisor:this.state.projectDetails.advisor,
-                    ProjectLogo:this.state.projectDetails.ProjectLogo,
+                    ProjectLogo:this.state.projectDetails.ProjectLogo?this.state.projectDetails.ProjectLogo:'',
                     MovieLink:this.state.projectDetails.MovieLink,
                     PDescription:this.state.projectDetails.PDescription,
                     ProjectCourse:this.state.projectDetails.ProjectCourse,
                     ProjectTopic:this.state.projectDetails.ProjectTopic,
-                    ProjectPDF:this.state.projectDetails.ProjectPDF,
+                    ProjectPDF:this.state.projectDetails.ProjectPDF?this.state.projectDetails.ProjectPDF:'',
                 })
                 .then(()=>{
                     this.setState({isReady:true,showPreview:false},()=>{
@@ -320,8 +323,8 @@ class St2 extends React.Component{
         switch (textareaTitle) {
             case sectionNames.projectDesc:this.setState({PDescription:event.target.value})
                 break;
-            case sectionNames.projectSmallDesc:this.setState({CDescription:event.target.value})
-                    break;
+            // case sectionNames.projectSmallDesc:this.setState({CDescription:event.target.value})
+            //         break;
             case sectionNames.projectName:this.setState({ProjectName:event.target.value})
                 break;
            default:
@@ -356,21 +359,25 @@ class St2 extends React.Component{
     }
     changePublished = ()=>{
         const temp = !this.state.isPublished;
-        this.setState(
-            {isPublished:temp},
-            ()=>console.log(this.state.isPublished)
-        )
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        this.setState({isPublished:temp},()=>{
+            if(this.state.isSaved===true || groupData.ProjectName!==undefined){
+                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                ref.update({
+                    isPublished:this.state.isPublished,
+                })
+                .then(()=>{
+                    this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
+                })
+            }
+        })
     }
     render(){
         if (!this.state.isReady) {
             return(
                 <div style={{flex:1,backgroundColor:'#eee'}}>
-                    <Loader 
-                    type="Watch"
-                    color="#58947B"
-                    height="100"	
-                    width="100"
-                    /> 
+                    <Loader type="Watch" color="#58947B" height="100" width="100"/> 
                 </div>
             )
         }
@@ -380,7 +387,7 @@ class St2 extends React.Component{
                 <SaveAction  style={{zIndex:26}} Save={this.SetProjectOnFirbase}/>
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={this.changePublished} isPublished={this.state.isPublished}  />
-                <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <ModalImage fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview project card */}
                 <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
@@ -389,8 +396,6 @@ class St2 extends React.Component{
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* project name */}
                         <TextInputs IsMandatory={true}  defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
-                        {/* project small description */}
-                        <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
                         <TextareaInput IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         <Form.Row dir="rtl">
@@ -403,9 +408,7 @@ class St2 extends React.Component{
                             {/* year  */}
                             <SelectInput IsMandatory={true} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.Semester}  inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
-                            {/* Project Course */}
-                            {/* <SelectInput inputList={this.state.coursesList} defaultInput={this.state.projectCourse} InputTitle={sectionNames.projectCourse} ChangeSelectInput={this.ChangeSelectedInputs} /> */}
+                            <SelectInput IsMandatory={true} defaultInput={this.state.Semester} inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/*project topic */}
                             <SelectInput IsMandatory={true}  inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
@@ -418,7 +421,7 @@ class St2 extends React.Component{
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Col sm="4"></Col>
                                 <Col sm="4">
-                                <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={true} />
+                                <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={false} />
                                 <PDFupload pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
                                 </Col>
                                 <Col sm="4"></Col>
@@ -428,7 +431,7 @@ class St2 extends React.Component{
                                 <Col sm="4">
                                     <Button onClick={()=>this.OpenImageModal('Project Logo')} variant="primary">
                                         <FaPlusCircle size={15}/>
-                                        {this.state.poster?`  עריכת פוסטר`:`  הוספת פוסטר`}
+                                        {this.state.poster.length!==0?`  עריכת תמונה מייצגת`:`  הוספת תמונה מייצגת`}
                                     </Button>
                                 </Col>
                                 <Col sm="4"> </Col>
@@ -437,6 +440,7 @@ class St2 extends React.Component{
                     {/* Students details */}
                     <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
                 </Form>
+                
             </div>
         )
     }
