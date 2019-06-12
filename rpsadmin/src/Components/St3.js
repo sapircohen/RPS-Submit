@@ -11,7 +11,7 @@ import PDFupload from '../Common/PdfFileUpload';
 import LinkInput from '../Common/Projectlinks';
 import StudentDetails from '../Common/StudentsDetails';
 import ModalImage from '../Common/ImageModal';
-import PreviewVt3 from '../Common/PreviewVt3';
+import PreviewVt3 from './PreviewVt3';
 import SaveAction from '../Common/SaveAction';
 import HeaderForm from '../Common/HeaderForm';
 import PublishProject from '../Common/PublishProject';

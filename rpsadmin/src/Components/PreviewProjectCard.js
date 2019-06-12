@@ -1,9 +1,11 @@
 import React from 'react';
 import {Modal,Button,Container,Row,Col,Image,Badge} from 'react-bootstrap';
 import VideoPlayer from '../Common/VideoPlayer';
-import ImagesCarousel from './Carousel';
+import ImagesCarousel from '../Common/Carousel';
 import randomColor from 'randomcolor'
 import LinkButton from '../Common/LinkToWeb';
+import PreviewParagraph from '../Common/PreviewParagraph';
+
 //CSS:
 import '../css/previewStyle.css';
 //ICONS:
@@ -30,9 +32,7 @@ export default class PreviewCard extends React.Component{
               <Modal.Header style={{margin:'0px auto'}} closeButton>
                 <Modal.Title>
                     {
-                        this.props.projectDetails.ProjectName?
-                        this.props.projectDetails.ProjectName:
-                        'שם הפרויקט'
+                        this.props.projectDetails.ProjectName?this.props.projectDetails.ProjectName:'שם הפרויקט'
                     }
                 </Modal.Title>
               </Modal.Header>
@@ -49,7 +49,6 @@ export default class PreviewCard extends React.Component{
                             )
                         }
                     </Row>
-
                     {/* project advisors */}
                     <Row className="show-grid"  style={{marginTop:'3%'}}>
                         <Col xs={12}>
@@ -92,7 +91,6 @@ export default class PreviewCard extends React.Component{
                             <Col sm="2"></Col>
                         </Row>
                     }
-
                     {/* project Stalkholders and users (IS PROJECT)*/}
                     {
                         (this.props.projectDetails.CStackholders && this.props.projectDetails.CustCustomers) &&
@@ -102,7 +100,6 @@ export default class PreviewCard extends React.Component{
                             <Col sm="3"></Col>
                         </Row>
                     }
-
                     {/* project Customer Name (IS PROJECT)*/}
                     {
                         (this.props.projectDetails.CustomerName) &&
@@ -124,20 +121,7 @@ export default class PreviewCard extends React.Component{
                         )
                     }
                     {/* project full description */}
-                    <Row  style={{marginTop:'3%'}} className="show-grid Box">
-                                <Col style={{textAlign:'center'}} sm="12">
-                                <h3>תיאור הפרויקט<GoBook size={50}/></h3>
-                                </Col>
-                        <Col xs={12} style={{marginTop:'1%'}}>
-                            <Row dir="rtl">
-                                <Col sm="2"></Col>
-                                <Col sm="8">
-                                <p style={{overflowWrap: 'break-word',textAlign:'right'}}>{this.props.projectDetails.PDescription}</p>
-                                </Col>
-                                <Col sm="2"></Col>
-                            </Row>
-                        </Col>
-                    </Row>
+                    <PreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="תיאור הפרויקט" Icon={GoBook} />
                     
                     {/* project goals (for IS project) */}
                     {

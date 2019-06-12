@@ -9,7 +9,7 @@ import { FaPlusCircle } from "react-icons/fa";
 import firebase from 'firebase';
 import SaveAction from '../Common/SaveAction';
 import PDFupload from '../Common/PdfFileUpload';
-import PreviewCard from '../Common/PreviewProjectCard';
+import PreviewCard from './PreviewProjectCard';
 import Loader from 'react-loader-spinner';
 //commons
 import PublishProject from '../Common/PublishProject';

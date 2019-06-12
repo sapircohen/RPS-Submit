@@ -11,7 +11,7 @@ import ProjectModules from '../Common/ProjectModules';
 import ProjectGoals from '../Common/ProjectGoals';
 import PreviewModal from "../Common/imagesModalPrevies";
 import SaveAction from '../Common/SaveAction';
-import PreviewCard from '../Common/PreviewProjectCard';
+import PreviewCard from './PreviewProjectCard';
 import Loader from 'react-loader-spinner';
 //commons
 import PublishProject from '../Common/PublishProject';
@@ -100,10 +100,13 @@ class St1 extends React.Component{
         this.handleAddition = this.handleAddition.bind(this);
         this.TechsChosen = this.TechsChosen.bind(this);
     }
+
     componentDidMount(){
+        this.GetData();
+    }
+    GetData = ()=>{
         //get group data from local storage
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-
         let tagsList = [];
         if(groupData.HashTags){
             groupData.HashTags.forEach((tag)=>{
@@ -566,7 +569,8 @@ class St1 extends React.Component{
                 })
                 .then(()=>{
                     this.setState({isReady:true,showPreview:false},()=>{
-                        alert('הפרויקט נשמר בהצלחה')
+                        alert('הפרויקט נשמר בהצלחה');
+                        this.GetData();
                     })
                 })
             })
