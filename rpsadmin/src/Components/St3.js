@@ -19,6 +19,7 @@ import firebase from 'firebase';
 import {Years} from '../Common/Years';
 import LabelTextPDF from '../Common/LabelText';
 import PreviewModal from '../Common/imagesModalPrevies'
+import RichText from '../Common/RichText2';
 
 const groupData = JSON.parse(localStorage.getItem('groupData'));
 const course = JSON.parse(localStorage.getItem('course'));
@@ -91,37 +92,44 @@ export default class St3 extends React.Component{
         this.GetData();
     }
     GetData=()=>{
-        //get group data from local storage
-        console.log(groupData);
-        this.setState({
-            Year:groupData.Year?groupData.Year:'',
-            Semester:groupData.Semester?groupData.Semester:'',
-            ProjectTopic:groupData.ProjectTopic?groupData.ProjectTopic:'',
-            projectCourse:course,
-            projectMajor:groupData.Major?groupData.Major:'',
-            MovieLink:groupData.MovieLink?groupData.MovieLink:'',
-            GroupName:groupData.GroupName,
-            ProjectName:groupData.ProjectName?groupData.ProjectName:'',
-            PDescription:groupData.PDescription?groupData.PDescription:'',
-            poster:groupData.ProjectLogo?[groupData.ProjectLogo]:[],
-            ProjectPDF:groupData.ProjectPDF?groupData.ProjectPDF:'',
-            isPublished:groupData.isPublished?groupData.isPublished:true,
-            StudentDetails:groupData.Students?groupData.Students:[],
-            CDescription:groupData.CDescription?groupData.CDescription:'',
-            ProjectAdvisor:groupData.Advisor?groupData.Advisor:'',
-            projectSolution:groupData.projectSolution?groupData.projectSolution:'',
-            projectFindings:groupData.projectFindings?groupData.projectFindings:'',
-            ProjectConclusion:groupData.ProjectConclusion?groupData.ProjectConclusion:'',
-            ProjectNeed:groupData.ProjectNeed?groupData.ProjectNeed:'',
-            ScreenShots:groupData.ScreenShots?groupData.ScreenShots:[],
-            ScreenShotsNames:groupData.ScreenShotsNames?groupData.ScreenShotsNames:[],
+        const ref = firebase.database().ref('RuppinProjects').child(projectKey);
+        let dataForGroup ={};
+        ref.once("value", (snapshot)=> {
+            dataForGroup=snapshot.val();
+            console.log(dataForGroup)
         })
-        //get list of advisors from firebase
-        this.getAdvisorsForDepartment();
-        //get list of Experties
-        this.getExperties();
-        //get list of courses
-        this.getCoursesForExpertis();
+        .then(()=>{
+            this.setState({
+                Year:dataForGroup.Year?dataForGroup.Year:'',
+                Semester:dataForGroup.Semester?dataForGroup.Semester:'',
+                ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'',
+                projectCourse:course,
+                projectMajor:dataForGroup.Major?dataForGroup.Major:'',
+                MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
+                GroupName:dataForGroup.GroupName,
+                ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
+                PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
+                poster:dataForGroup.ProjectLogo?[dataForGroup.ProjectLogo]:[],
+                ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
+                isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
+                StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
+                CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
+                ProjectAdvisor:dataForGroup.Advisor?dataForGroup.Advisor:'',
+                projectSolution:dataForGroup.projectSolution?dataForGroup.projectSolution:'',
+                projectFindings:dataForGroup.projectFindings?dataForGroup.projectFindings:'',
+                ProjectConclusion:dataForGroup.ProjectConclusion?dataForGroup.ProjectConclusion:'',
+                ProjectNeed:dataForGroup.ProjectNeed?dataForGroup.ProjectNeed:'',
+                ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
+                ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
+            })
+            //get list of advisors from firebase
+            this.getAdvisorsForDepartment();
+            //get list of Experties
+            this.getExperties();
+            //get list of courses
+            this.getCoursesForExpertis();
+        })
+        
     }
     getAdvisorsForDepartment = ()=>{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
@@ -172,21 +180,21 @@ export default class St3 extends React.Component{
     //text input area details
     ChangeInputTextarea = (event,textareaTitle)=>{
         switch (textareaTitle) {
-            case sectionNames.projectDesc:this.setState({PDescription:event.target.value})
+            case sectionNames.projectDesc:this.setState({PDescription:event})
                 break;
             case sectionNames.projectSmallDesc:this.setState({CDescription:event.target.value})
                     break;
             case sectionNames.projectName:this.setState({ProjectName:event.target.value})
                 break;
-            case sectionNames.projectFindings:this.setState({projectFindings:event.target.value})
+            case sectionNames.projectFindings:this.setState({projectFindings:event})
                 break;
-            case sectionNames.projectGoal:this.setState({ProjectGoal:event.target.value})
+            case sectionNames.projectGoal:this.setState({ProjectGoal:event})
                 break;
-            case sectionNames.projectSolution:this.setState({projectSolution:event.target.value})
+            case sectionNames.projectSolution:this.setState({projectSolution:event})
                 break;
-            case sectionNames.ProjectConclusion:this.setState({ProjectConclusion:event.target.value})
+            case sectionNames.ProjectConclusion:this.setState({ProjectConclusion:event})
                 break;
-            case sectionNames.projectNeed:this.setState({ProjectNeed:event.target.value})
+            case sectionNames.projectNeed:this.setState({ProjectNeed:event})
                 break;
            default:
                break;
@@ -572,17 +580,17 @@ export default class St3 extends React.Component{
                         {/* project small description */}
                         <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <TextareaInput IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <RichText IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         {/* project Goal */}
-                        <TextareaInput  defaultInput={this.state.ProjectGoal} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectGoal} />
+                        <RichText  defaultInput={this.state.ProjectGoal} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectGoal} />
                         {/* project need */}
-                        <TextareaInput  defaultInput={this.state.ProjectNeed} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectNeed} />
+                        <RichText  defaultInput={this.state.ProjectNeed} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectNeed} />
                         {/* Project Findings*/}
-                        <TextareaInput  defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
+                        <RichText  defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
                         {/* Project solution*/}
-                        <TextareaInput  defaultInput={this.state.projectSolution} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSolution} />
+                        <RichText  defaultInput={this.state.projectSolution} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSolution} />
                         {/* Project Conclusion*/}
-                        <TextareaInput  defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
+                        <RichText  defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
                         <Form.Row dir="rtl">
                             {/* project major */}
                             <SelectInput IsMandatory={true}  inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />

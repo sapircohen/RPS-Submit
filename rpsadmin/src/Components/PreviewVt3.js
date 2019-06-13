@@ -8,6 +8,8 @@ import Image from 'react-bootstrap/Image'
 import ImagesCarousel from '../Common/Carousel';
 import VideoPlayer from '../Common/VideoPlayer';
 import PreviewParagraph from '../Common/PreviewParagraph';
+import RichTextPreviewParagraph from '../Common/RichTextPreviewP';
+ 
 //CSS:
 import '../css/previewStyle.css';
 //ICONS:
@@ -96,7 +98,7 @@ class PreviewVt3 extends React.Component{
                     }
 
                     {/* project full description */}
-                    <PreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="תיאור הפרויקט" Icon={GoBook} />                    
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="תיאור הפרויקט" Icon={GoBook} />                    
                     {/* project goal */}
                     {
                     this.props.projectDetails.ProjectGoal &&
@@ -187,7 +189,7 @@ class PreviewVt3 extends React.Component{
                         <Row style={{marginTop:'5%',textAlign:'center'}}>
                             <Col sm="4"></Col>
                             <Col style={{textAlign:'center'}} sm="4">
-                                <Button dir="rtl" variant="info" href={this.props.projectDetails.ProjectPDF}>
+                                <Button onClick={()=>window.open(this.props.projectDetails.ProjectPDF,"_blank")} dir="rtl" variant="info">
                                     <FiPaperclip/>  PDF/WORD להורדה
                                 </Button>
                             </Col>

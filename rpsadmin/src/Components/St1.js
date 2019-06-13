@@ -14,6 +14,7 @@ import SaveAction from '../Common/SaveAction';
 import PreviewCard from './PreviewProjectCard';
 import Loader from 'react-loader-spinner';
 //commons
+import RichText from '../Common/RichText2';
 import PublishProject from '../Common/PublishProject';
 import TextareaInput from '../Common/TextAreaInputs';
 import TextInputs from '../Common/TextInputs';
@@ -23,6 +24,12 @@ import AppLinksInput from '../Common/appLinks';
 import HashTags from '../Common/Tag';
 import Techs from '../Common/techs';
 import {Years} from '../Common/Years';
+
+
+const course = JSON.parse(localStorage.getItem('course'));
+const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+const groupData = JSON.parse(localStorage.getItem('groupData'));
+
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
     projectChallenges:"אתגרי הפרויקט",
@@ -94,7 +101,8 @@ class St1 extends React.Component{
             googleLink:'',
             Github:'',
             Year:'',
-            Semester:''
+            Semester:'',
+            ProjectCourse:''
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
@@ -106,54 +114,63 @@ class St1 extends React.Component{
     }
     GetData = ()=>{
         //get group data from local storage
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
-        let tagsList = [];
-        if(groupData.HashTags){
-            groupData.HashTags.forEach((tag)=>{
-                let t = {
-                    'id':tag,
-                    'text':tag
-                }
-                tagsList.push(t);
-            })
-        }
-        this.setState({
-            Year:groupData.Year?groupData.Year:'',
-            Semester:groupData.Semester?groupData.Semester:'',
-            Github:groupData.Github?groupData.Github:'',
-            CustomerName:groupData.CustomerName?groupData.CustomerName:'',
-            Advisor:groupData.Advisor?groupData.Advisor:'',
-            firstAdvisor:groupData.Advisor?(groupData.Advisor.length?groupData.Advisor[0]:''):'',
-            secondAdvisor:groupData.Advisor?(groupData.Advisor.length===2?groupData.Advisor[1]:''):'',
-            Challenges:groupData.Challenges?groupData.Challenges:'',
-            GroupName:groupData.GroupName,
-            ProjectName:groupData.ProjectName?groupData.ProjectName:'',
-            PDescription:groupData.PDescription?groupData.PDescription:'',
-            ProjectSite:groupData.ProjectSite?groupData.ProjectSite:'',
-            MovieLink:groupData.MovieLink?groupData.MovieLink:'',
-            ScreenShots:groupData.ScreenShots?groupData.ScreenShots:[],
-            logo:groupData.ProjectLogo?[groupData.ProjectLogo]:[],
-            customerLogo:groupData.CustomerLogo?[groupData.CustomerLogo]:[],
-            comments:groupData.Comments?groupData.Comments:'',
-            CustCustomers:groupData.CustCustomers?groupData.CustCustomers:'',
-            CStackholders:groupData.CStackholders?groupData.CStackholders:'',
-            CDescription:groupData.CDescription?groupData.CDescription:'',
-            ScreenShotsNames:groupData.ScreenShotsNames?groupData.ScreenShotsNames:[],
-            projectModules:groupData.Module?groupData.Module:[],
-            projectGoals:groupData.Goals?groupData.Goals:[],
-            isPublished:groupData.isPublished?groupData.isPublished:true,
-            StudentDetails:groupData.Students?groupData.Students:[],
-            chosenTechs:groupData.Technologies?groupData.Technologies:[],
-            tags:tagsList
-        },()=>console.log(this.state.StudentDetails))
-        //get list of advisors from firebase
-        this.getAdvisors();
-        //get technologies from firebase
-        this.getTechnologies();
-        //get courses from firebase
-        this.getCourses();
-        //get topics for Final project from firebase
-        this.getTopicForFinalProject();
+        const ref = firebase.database().ref('RuppinProjects').child(projectKey);
+        let dataForGroup ={};
+        ref.once("value", (snapshot)=> {
+            dataForGroup=snapshot.val();
+            console.log(dataForGroup)
+        })
+        .then(()=>{
+            let tagsList = [];
+            if(dataForGroup.HashTags){
+                dataForGroup.HashTags.forEach((tag)=>{
+                    let t = {
+                        'id':tag,
+                        'text':tag
+                    }
+                    tagsList.push(t);
+                })
+            }
+            this.setState({
+                Year:dataForGroup.Year?dataForGroup.Year:'',
+                Semester:dataForGroup.Semester?dataForGroup.Semester:'',
+                Github:dataForGroup.Github?dataForGroup.Github:'',
+                CustomerName:dataForGroup.CustomerName?dataForGroup.CustomerName:'',
+                Advisor:dataForGroup.Advisor?dataForGroup.Advisor:'',
+                firstAdvisor:dataForGroup.Advisor?(dataForGroup.Advisor.length?dataForGroup.Advisor[0]:''):'',
+                secondAdvisor:dataForGroup.Advisor?(dataForGroup.Advisor.length===2?dataForGroup.Advisor[1]:''):'',
+                Challenges:dataForGroup.Challenges?dataForGroup.Challenges:'',
+                GroupName:dataForGroup.GroupName,
+                ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
+                PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
+                ProjectSite:dataForGroup.ProjectSite?dataForGroup.ProjectSite:'',
+                MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
+                ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
+                logo:dataForGroup.ProjectLogo?[dataForGroup.ProjectLogo]:[],
+                customerLogo:dataForGroup.CustomerLogo?[dataForGroup.CustomerLogo]:[],
+                comments:dataForGroup.Comments?dataForGroup.Comments:'',
+                CustCustomers:dataForGroup.CustCustomers?dataForGroup.CustCustomers:'',
+                CStackholders:dataForGroup.CStackholders?dataForGroup.CStackholders:'',
+                CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
+                ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
+                projectModules:dataForGroup.Module?dataForGroup.Module:[],
+                projectGoals:dataForGroup.Goals?dataForGroup.Goals:[],
+                isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
+                StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
+                chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
+                ProjectCourse:course,
+                tags:tagsList
+            },()=>console.log(this.state.StudentDetails))
+            //get list of advisors from firebase
+            this.getAdvisors();
+            //get technologies from firebase
+            this.getTechnologies();
+            //get courses from firebase
+            this.getCourses();
+            //get topics for Final project from firebase
+            this.getTopicForFinalProject();
+        })
+        
     }
     getCourses= ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
@@ -168,7 +185,6 @@ class St1 extends React.Component{
         })
     }
     getTopicForFinalProject = ()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses').child('Final project').child('Topics');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((topicName)=>{
@@ -180,7 +196,6 @@ class St1 extends React.Component{
         })
     }
     getAdvisors = ()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
@@ -288,7 +303,6 @@ class St1 extends React.Component{
         })
     }
     SetProjectOnFirbase = ()=>{
-        const course = JSON.parse(localStorage.getItem('course'));
         const arrayOfTags = this.state.tags.map((text)=>text.text);
         const project = {
             ProjectName:this.state.ProjectName,
@@ -533,7 +547,6 @@ class St1 extends React.Component{
         const course = JSON.parse(localStorage.getItem('course'));
         if(this.ValidateData(this.state.projectDetails)){
             this.setState({isReady:false},()=>{
-                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
                     templateSubmit:'st1',
@@ -595,7 +608,7 @@ class St1 extends React.Component{
     ChangeInputTextarea = (event,textareaTitle)=>{
         switch (textareaTitle) {
             case sectionNames.projectDesc:
-                this.setState({PDescription:event.target.value})
+                this.setState({PDescription:event})
                 break;
             case sectionNames.projectChallenges:
                     this.setState({Challenges:event.target.value})
@@ -672,11 +685,8 @@ class St1 extends React.Component{
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
-
         this.setState({isPublished:temp},()=>{
             if(this.state.isSaved===true || groupData.ProjectName!==undefined){
-                const projectKey = JSON.parse(localStorage.getItem('projectKey'));
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
                     isPublished:this.state.isPublished,
@@ -724,7 +734,7 @@ class St1 extends React.Component{
                         {/* project Small Description */}
                         <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <TextareaInput IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <RichText IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         {/* project Challenges  */}
                         <TextareaInput IsMandatory={true}  defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectChallenges} />
                         {/* project Comments */}
