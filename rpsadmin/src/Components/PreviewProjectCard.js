@@ -4,7 +4,6 @@ import VideoPlayer from '../Common/VideoPlayer';
 import ImagesCarousel from '../Common/Carousel';
 import randomColor from 'randomcolor'
 import LinkButton from '../Common/LinkToWeb';
-import PreviewParagraph from '../Common/PreviewParagraph';
 import RichTextPreviewParagraph from '../Common/RichTextPreviewP';
 //CSS:
 import '../css/previewStyle.css';

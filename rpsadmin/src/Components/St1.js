@@ -113,7 +113,6 @@ class St1 extends React.Component{
         this.GetData();
     }
     GetData = ()=>{
-        //get group data from local storage
         const ref = firebase.database().ref('RuppinProjects').child(projectKey);
         let dataForGroup ={};
         ref.once("value", (snapshot)=> {
