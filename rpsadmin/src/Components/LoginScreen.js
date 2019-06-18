@@ -76,8 +76,6 @@ class LoginScreen extends React.Component{
       })
       return;
     }
-    //check user on firebase. 
-    //need to add to each group a name and a password!!!
     let logged = false;
     const ref = firebase.database().ref('RuppinProjects');
     ref.once("value", (snapshot)=> {
