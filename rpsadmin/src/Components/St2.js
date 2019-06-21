@@ -224,8 +224,8 @@ class St2 extends React.Component{
             return false;
         }
         //project long description -->PDescription
-        if(projectData.PDescription.length<200){
-            alert("תיאור הפרויקט צריך להיות גדול מ-200 תווים");
+        if(projectData.PDescription.length===0){
+            alert("תיאור הפרויקט הוא שדה חובה");
             return false;
         }
         if(projectData.PDescription.length>5000){
@@ -267,22 +267,22 @@ class St2 extends React.Component{
             alert('חייב שיהיה לפחות חבר צוות אחת');
             return false;
         }
-        else{
-            let flag = true;
-            projectData.Students.forEach((student,index)=>{
-                if(student.Name===''){
-                    alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
-                    flag= false;
-                }
-                if (student.Picture==='') {
-                    alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
-                    flag= false;
-                }
-            })
-            if (!flag) {
-                return false;
-            }
-        }
+        //else{
+        //     let flag = true;
+        //     projectData.Students.forEach((student,index)=>{
+        //         // if(student.Name===''){
+        //         //     alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
+        //         //     flag= false;
+        //         // }
+        //         // if (student.Picture==='') {
+        //         //     alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
+        //         //     flag= false;
+        //         // }
+        //     })
+        //     if (!flag) {
+        //         return false;
+        //     }
+        // }
         //project pdf file
         // if(course.indexOf('פרקטיקום')===-1){
         //     if(projectData.ProjectPDF ===''){
@@ -471,7 +471,7 @@ class St2 extends React.Component{
                             </Row>
                     </div>
                     {/* Students details */}
-                    <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
+                    <StudentDetails isMandatory={false} setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
                 </Form>
             </div>
         )

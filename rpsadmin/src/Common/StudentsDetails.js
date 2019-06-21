@@ -125,7 +125,7 @@ export default class StudentsDetails extends React.Component{
                                     <Button block onClick={()=>this.OpenImageModalStudent(`Student Pic`,idx)} variant="primary">
                                         <FaCameraRetro/>
                                         {`  תמונה  `} 
-                                        <span style={{color:'red'}}>*</span>
+                                        {this.props.isMandatory&&<span style={{color:'red'}}>*</span>}
                                     </Button>
                                 </Col>
                                 <Col sm="2">
