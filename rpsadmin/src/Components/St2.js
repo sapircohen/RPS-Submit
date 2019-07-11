@@ -98,7 +98,7 @@ class St2 extends React.Component{
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 ProjectAdvisor:dataForGroup.Advisor?dataForGroup.Advisor:'',
             },()=>{
-                console.log('students ',dataForGroup.Students)
+                this.setState({projectDetails:this.getProjectDetails()})
             })
             //get list of advisors from firebase
             this.getAdvisorsForDepartment();
@@ -107,7 +107,24 @@ class St2 extends React.Component{
             //get list of courses
             this.getCoursesForExpertis();
         })
-        
+    }
+    getProjectDetails=()=>{
+        const project = {
+            ProjectName:this.state.ProjectName,
+            PDescription:this.state.PDescription,
+            advisor:[this.state.ProjectAdvisor],
+            Major:this.state.projectMajor,
+            ProjectCourse:this.state.projectCourse,
+            ProjectTopic:this.state.ProjectTopic,
+            Students:this.state.StudentsDetails,
+            isPublished:this.state.isPublished,
+            MovieLink:this.state.MovieLink,
+            ProjectLogo:this.state.poster?this.state.poster[0]:[],
+            ProjectPDF:this.state.ProjectPDF,
+            Year:this.state.Year,
+            Semester:this.state.Semester
+        }
+        return project;
     }
     getAdvisorsForDepartment = ()=>{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
@@ -195,21 +212,7 @@ class St2 extends React.Component{
     }
     //save project to object and show preview
     SetProjectOnFirbase = ()=>{
-        const project = {
-            ProjectName:this.state.ProjectName,
-            PDescription:this.state.PDescription,
-            advisor:[this.state.ProjectAdvisor],
-            Major:this.state.projectMajor,
-            ProjectCourse:this.state.projectCourse,
-            ProjectTopic:this.state.ProjectTopic,
-            Students:this.state.StudentsDetails,
-            isPublished:this.state.isPublished,
-            MovieLink:this.state.MovieLink,
-            ProjectLogo:this.state.poster?this.state.poster[0]:[],
-            ProjectPDF:this.state.ProjectPDF,
-            Year:this.state.Year,
-            Semester:this.state.Semester
-        }
+        const project = this.getProjectDetails();
         this.setState({
             projectDetails:project,
         },()=>{
@@ -217,89 +220,91 @@ class St2 extends React.Component{
         })
     }
     closePreview = ()=>this.setState({showPreview:false})
-    ValidateData = (projectData)=>{        
-        // project name validation
-        if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-            alert('שם הפרויקט חסר');
-            return false;
-        }
-        //project long description -->PDescription
-        if(projectData.PDescription.length===0){
-            alert("תיאור הפרויקט הוא שדה חובה");
-            return false;
-        }
-        if(projectData.PDescription.length>5000){
-            alert("תיאור הפרויקט צריך להיות קטן מ-5000 תווים");
-            return false;
-        }
-        //project year
-        if(projectData.Year === "" || projectData.Year === "בחר"){
-            alert('יש לבחור שנה');
-            return false;
-        }
-        //project Semester
-        if(projectData.Semester === "" || projectData.Semester === "בחר"){
-            alert('יש לבחור סמסטר');
-            return false;
-        }
-        //project major/experties
-        if(projectData.Major === ""){
-            alert('יש לבחור התמחות');
-            return false;
-        }
-        //project course
-        if(projectData.ProjectCourse === ""){
-            alert('יש לבחור סוג');
-            return false;
-        }
-        //project topic
-        if(projectData.ProjectTopic === ""){
-            alert('יש לבחור נושא');
-            return false;
-        }
-        //project advisor
-        if(projectData.advisor[0] === ""){
-            alert('יש לבחור מנחה');
-            return false;
-        }
-        //project students
-        if(projectData.Students.length<1){
-            alert('חייב שיהיה לפחות חבר צוות אחת');
-            return false;
-        }
-        //else{
-        //     let flag = true;
-        //     projectData.Students.forEach((student,index)=>{
-        //         // if(student.Name===''){
-        //         //     alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
-        //         //     flag= false;
-        //         // }
-        //         // if (student.Picture==='') {
-        //         //     alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
-        //         //     flag= false;
-        //         // }
-        //     })
-        //     if (!flag) {
-        //         return false;
-        //     }
-        // }
-        //project pdf file
-        // if(course.indexOf('פרקטיקום')===-1){
-        //     if(projectData.ProjectPDF ===''){
-        //         alert('חסר קובץ PDF');
-        //         return false;
-        //     }
-        // }
-        this.setState({
-            isSaved:true
-        })
-        return true;
+    ValidateData = (projectData)=>{          
+            // project name validation
+            if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
+                alert('שם הפרויקט חסר');
+                return false;
+            }
+            //project long description -->PDescription
+            if(projectData.PDescription.length===0){
+                alert("תיאור הפרויקט הוא שדה חובה");
+                return false;
+            }
+            if(projectData.PDescription.length>5000){
+                alert("תיאור הפרויקט צריך להיות קטן מ-5000 תווים");
+                return false;
+            }
+            //project year
+            if(projectData.Year === "" || projectData.Year === "בחר"){
+                alert('יש לבחור שנה');
+                return false;
+            }
+            //project Semester
+            if(projectData.Semester === "" || projectData.Semester === "בחר"){
+                alert('יש לבחור סמסטר');
+                return false;
+            }
+            //project major/experties
+            if(projectData.Major === ""){
+                alert('יש לבחור התמחות');
+                return false;
+            }
+            //project course
+            if(projectData.ProjectCourse === ""){
+                alert('יש לבחור סוג');
+                return false;
+            }
+            //project topic
+            if(projectData.ProjectTopic === ""){
+                alert('יש לבחור נושא');
+                return false;
+            }
+            //project advisor
+            if(projectData.advisor[0] === ""){
+                alert('יש לבחור מנחה');
+                return false;
+            }
+            //project students
+            if(projectData.Students.length<1){
+                alert('חייב שיהיה לפחות חבר צוות אחת');
+                return false;
+            }
+            //else{
+            //     let flag = true;
+            //     projectData.Students.forEach((student,index)=>{
+            //         // if(student.Name===''){
+            //         //     alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
+            //         //     flag= false;
+            //         // }
+            //         // if (student.Picture==='') {
+            //         //     alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
+            //         //     flag= false;
+            //         // }
+            //     })
+            //     if (!flag) {
+            //         return false;
+            //     }
+            // }
+            //project pdf file
+            // if(course.indexOf('פרקטיקום')===-1){
+            //     if(projectData.ProjectPDF ===''){
+            //         alert('חסר קובץ PDF');
+            //         return false;
+            //     }
+            // }
+            this.setState({
+                isSaved:true
+            })
+            return true;
+        
+        
     }
     //save project to firebase.
     SaveData = (event)=>{
         event.preventDefault();
         const ref = firebase.database().ref('RuppinProjects/'+projectKey);
-        if(this.ValidateData(this.state.projectDetails)){
+        //if(this.ValidateData(this.state.projectDetails)){
             this.setState({isReady:false},()=>{
                 ref.update({
                     templateSubmit:'st2',
@@ -326,7 +331,7 @@ class St2 extends React.Component{
                     })
                 })
             })
-        }
+        //}
     }
     //delete pdf/word file
     DeletePdf=()=>{
@@ -388,16 +393,18 @@ class St2 extends React.Component{
     changePublished = ()=>{
         const temp = !this.state.isPublished;
         const ref = firebase.database().ref('RuppinProjects/'+projectKey);
-        this.setState({isPublished:temp},()=>{
-            if(this.state.isSaved===true || groupData.ProjectName!==undefined){
-                ref.update({
-                    isPublished:this.state.isPublished,
-                })
-                .then(()=>{
-                    this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
-                })
-            }
-        })
+        if(this.ValidateData(this.state.projectDetails)){
+            this.setState({isPublished:temp},()=>{
+                if(this.state.isSaved===true || groupData.ProjectName!==undefined){
+                    ref.update({
+                        isPublished:this.state.isPublished,
+                    })
+                    .then(()=>{
+                        this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
+                    })
+                }
+            })
+        }
     }
     render(){
         if (!this.state.isReady) {

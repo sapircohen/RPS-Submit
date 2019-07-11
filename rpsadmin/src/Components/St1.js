@@ -46,9 +46,10 @@ const sectionNames = {
     projectMovie:'קישור לסרטון הפרויקט ביוטיוב',
     appleLinke:'apple',
     googleLink:'google',
-    Github:'קוד הפרויקט בגיטהאב',
+    Github:'קישור לפרויקט בגיטהאב',
     projectSemester:'סמסטר',
-    projectYear:'שנה'
+    projectYear:'שנה',
+    projectFunctionalityMovie:'קישור לסרטון שימושיות ביוטיוב'
 }
 class St1 extends React.Component{
     constructor(props){
@@ -102,13 +103,13 @@ class St1 extends React.Component{
             Github:'',
             Year:'',
             Semester:'',
-            ProjectCourse:''
+            ProjectCourse:'',
+            functionalityMovie:'',
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
         this.TechsChosen = this.TechsChosen.bind(this);
     }
-
     componentDidMount(){
         this.GetData();
     }
@@ -158,8 +159,12 @@ class St1 extends React.Component{
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
                 ProjectCourse:course,
-                tags:tagsList
-            },()=>console.log(this.state.StudentDetails))
+                tags:tagsList,
+                functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:''
+                
+            },()=>{
+                this.setState({projectDetails:this.getProjectDetails()})
+            })
             //get list of advisors from firebase
             this.getAdvisors();
             //get technologies from firebase
@@ -170,6 +175,42 @@ class St1 extends React.Component{
             this.getTopicForFinalProject();
         })
         
+    }
+    getProjectDetails=()=>{
+        const arrayOfTags = this.state.tags.map((text)=>text.text);
+        const project = {
+            ProjectName:this.state.ProjectName,
+            PDescription:this.state.PDescription,
+            Challenges:this.state.Challenges,
+            ProjectTopic:this.state.organization===true?'ארגוני':'יזמי',
+            ProjectCourse:course,
+            advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
+            HashTags:arrayOfTags,
+            Technologies:this.state.chosenTechs,
+            Year:this.state.Year,
+            Semester:this.state.Semester,
+            isPublished:this.state.isPublished,
+            CustomerName:this.state.organization===true?this.state.CustomerName:'',
+            CDescription:this.state.CDescription,
+            Goals:this.state.projectGoals,
+            Module:this.state.projectModules,
+            ProjectSite:this.state.ProjectSite,
+            MovieLink:this.state.MovieLink,
+            GooglePlay:this.state.appExists?this.state.googleLink:'',
+            AppStore:this.state.appExists?this.state.appleLink:'',
+            Students:this.state.StudentsDetails,
+            ScreenShots:this.state.ScreenShots,
+            ProjectLogo:this.state.logo,
+            CustomerLogo:this.state.organization===true?this.state.customerLogo:'',
+            Comments:this.state.comments,
+            CustCustomers:this.state.CustCustomers,
+            CStackholders:this.state.CStackholders,
+            ScreenShotsNames:this.state.ScreenShotsNames,
+            Github:this.state.Github,
+            isApproved:1,
+            functionalityMovie:this.state.functionalityMovie
+        }
+        return project;
     }
     getCourses= ()=>{
         const groupData = JSON.parse(localStorage.getItem('groupData'));
@@ -237,9 +278,7 @@ class St1 extends React.Component{
         const { tags } = this.state;
         this.setState({tags: tags.filter((tag, index) => index !== i),});
     }
-    handleAddition(tag){
-        this.setState(state => ({ tags: [...state.tags, tag] }));
-    }
+    handleAddition(tag){this.setState(state => ({ tags: [...state.tags, tag] }));}
     changeProjectType = (e)=>{
         if (e.target.value==='ארגוני') {
             this.setState({organization:true})
@@ -278,12 +317,8 @@ class St1 extends React.Component{
                 break;
         }
     }
-    handleClose = ()=> {
-        this.setState({ openModal: false });
-    }
-    handlePublishedChange = ()=>{
-        this.setState({isPublished:!this.state.isPublished})
-    }
+    handleClose = ()=> {this.setState({ openModal: false });}
+    handlePublishedChange = ()=>{this.setState({isPublished:!this.state.isPublished})}
     getStudentsDetails = (students)=>{
         
         this.setState({StudentsDetails:students},()=>{
@@ -291,6 +326,7 @@ class St1 extends React.Component{
         })
         
     }
+    
     getProjectGoals = (goals)=>{
         this.setState({projectGoals:goals},()=>{
             console.log(this.state.projectGoals)
@@ -302,38 +338,7 @@ class St1 extends React.Component{
         })
     }
     SetProjectOnFirbase = ()=>{
-        const arrayOfTags = this.state.tags.map((text)=>text.text);
-        const project = {
-            ProjectName:this.state.ProjectName,
-            PDescription:this.state.PDescription,
-            Challenges:this.state.Challenges,
-            ProjectTopic:this.state.organization===true?'ארגוני':'יזמי',
-            ProjectCourse:course,
-            advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
-            HashTags:arrayOfTags,
-            Technologies:this.state.chosenTechs,
-            Year:this.state.Year,
-            Semester:this.state.Semester,
-            isPublished:this.state.isPublished,
-            CustomerName:this.state.organization===true?this.state.CustomerName:'',
-            CDescription:this.state.CDescription,
-            Goals:this.state.projectGoals,
-            Module:this.state.projectModules,
-            ProjectSite:this.state.ProjectSite,
-            MovieLink:this.state.MovieLink,
-            GooglePlay:this.state.appExists?this.state.googleLink:'',
-            AppStore:this.state.appExists?this.state.appleLink:'',
-            Students:this.state.StudentsDetails,
-            ScreenShots:this.state.ScreenShots,
-            ProjectLogo:this.state.logo,
-            CustomerLogo:this.state.organization===true?this.state.customerLogo:'',
-            Comments:this.state.comments,
-            CustCustomers:this.state.CustCustomers,
-            CStackholders:this.state.CStackholders,
-            ScreenShotsNames:this.state.ScreenShotsNames,
-            Github:this.state.Github,
-            isApproved:1,
-        }
+        const project = this.getProjectDetails();
         console.log(project);
         this.setState({
             projectDetails:project,
@@ -371,180 +376,185 @@ class St1 extends React.Component{
     }
     ValidateData = (projectData)=>{
         console.log(projectData);
-        // project name validation
-        if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-            alert('שם הפרויקט חסר');
-            return false;
-        }
-        //project custCustomers(משתמשי המערכת)
-        if(projectData.CustCustomers===''){
-            alert('חסר שדה משתמשי המערכת');
-            return false;
-        }
-        //project stackholders(בעלי ענייןs)
-        if(projectData.CStackholders===''){
-            alert('חסר שדה בעלי עניין');
-            return false;
-        }
-        // project short description validation
-        if(projectData.CDescription.length<50){
-            alert("תיאור קצר צריך להיות גדול מ-50 תווים");
-            return false;
-        }
-        if(projectData.CDescription.length>150){
-            alert("תיאור קצר צריך להיות קטן מ-150 תווים");
-            return false;
-        }
-        //project long description -->PDescription
-        if(projectData.PDescription.length<200){
-            alert("תיאור הפרויקט צריך להיות גדול מ-200 תווים");
-            return false;
-        }
-        if(projectData.PDescription.length>500){
-            alert("תיאור הפרויקט צריך להיות קטן מ-500 תווים");
-            return false;
-        }
-        // project Challenges -->Challenges
-        if(projectData.Challenges.length<50){
-            alert("שדה אתגרי הפרויקט צריך להיות גדול מ-50 תווים");
-            return false;
-        }
-        if(projectData.Challenges.length>200){
-            alert("שדה אתגרי הפרויקט צריך להיות קטן מ-200 תווים");
-            return false;
-        }
-        //project comments
-        if(projectData.Comments.length<5 && projectData.Comments!==''){
-            alert("שדה הערות צריך להיות גדול מ-5 תווים");
-            return false;
-        }
-        //project Topic 
-        if (projectData.ProjectTopic==='') {
-            alert('בחר נושא פרויקט');
-            return false;
-        }
-        //project year
-        if (projectData.Year === "" || projectData.Year === "בחר") {
-            alert(' בחרו שנה');
-            return false;
-        }
-        //project semester
-        if (projectData.Semester === "" || projectData.Semester === "בחר") {
-            alert(' בחרו סמסטר');
-            return false;
-        }
-        //project Advisors
-        if(projectData.advisor[0]===''){
-            alert('מנחה א חסר ');
-            return false;
-        } 
-        if(projectData.advisor[1]===''){
-            alert('מנחה ב חסר ');
-            return false;
-        } 
-        //project goals-->Goals
-        if(projectData.Goals.length<2){
-            alert('מספר מטרות הפרויקט צריך להיות לפחות 2');
-            return false;
-        }
-        else{
-            let flag = true;
-            projectData.Goals.forEach((goal,index)=>{
-                if (goal.GoalDescription.length<10) {
-                    alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות גדול מ10 תווים ");
-                    flag= false;
-                }
-                if (goal.GoalDescription.length>100) {
-                    alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
-                    flag= false;
-                }
-                if(goal.GoalStatus.length<4){
-                    alert(" סטטוס מטרה מספר " +(index+1)+"צריך להיות גדול מ4 תווים ");
-                    flag= false;
-                }
-                if(goal.GoalStatus.length>100){
-                    alert(" סטטוס מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
-                    flag= false;
-                }
-            })
-            if (!flag) {
+            // project name validation
+            if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
+                alert('שם הפרויקט חסר');
                 return false;
             }
-        }
-        //project modules -->Module
-        if(projectData.Module.length<2){
-            alert('מספר מודולי הפרויקט צריך להיות לפחות 2');
-            return false;
-        }
-        else{
-            let flag = true;
-            projectData.Module.forEach((mod,index)=>{
-                if (mod.ModuleDescription.length<20) {
-                    alert(" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ");
-                    flag= false;
-                }
-                if (mod.ModuleDescription.length>200) {
-                    alert(" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ");
-                    flag= false;
-                }
-                if(mod.ModuleName.length<3){
-                    alert(" שם מודול מספר " +(index+1)+"צריך להיות גדול מ3 תווים ");
-                    flag= false;
-                }
-                if(mod.ModuleName.length>70){
-                    alert(" שם מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
-                    flag= false;
-                }
-            })
-            if (!flag) {
+            //project custCustomers(משתמשי המערכת)
+            if(projectData.CustCustomers===''){
+                alert('חסר שדה משתמשי המערכת');
                 return false;
             }
-        }
-        //project technologies -->Technologies
-        if(projectData.Technologies.length<5){
-            alert('מספר הטכנולוגיות צריך להיות לפחות 5');
-            return false;
-        }
-        //project screenshots
-        if (projectData.ScreenShots.length<5) {
-            alert('מספר תמונות המסך צריך להיות לפחות 5');
-            return false;
-        }        
-        //project logo
-        if (projectData.ProjectLogo<1) {
-            alert('חסר לוגו הפרויקט');
-            return false;
-        }
-        //project students
-        if(projectData.Students.length<1){
-            alert('חייב שיהיה לפחות חבר צוות אחת');
-            return false;
-        }
-        else{
-            let flag = true;
-            projectData.Students.forEach((student,index)=>{
-                if(student.Name===''){
-                    alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
-                    flag = false;
-                }
-                if (student.Picture==='') {
-                    alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
-                    flag = false;
-                }
-            })
-            if (!flag) {
+            //project stackholders(בעלי ענייןs)
+            if(projectData.CStackholders===''){
+                alert('חסר שדה בעלי עניין');
                 return false;
             }
-        }
-        this.setState({
-            isSaved:true
-        })
-        return true;
+            // project short description validation
+            if(projectData.CDescription.length<50){
+                alert("תיאור קצר צריך להיות גדול מ-50 תווים");
+                return false;
+            }
+            if(projectData.CDescription.length>150){
+                alert("תיאור קצר צריך להיות קטן מ-150 תווים");
+                return false;
+            }
+            //project long description -->PDescription
+            if(projectData.PDescription.length<200){
+                alert("תיאור הפרויקט צריך להיות גדול מ-200 תווים");
+                return false;
+            }
+            if(projectData.PDescription.length>500){
+                alert("תיאור הפרויקט צריך להיות קטן מ-500 תווים");
+                return false;
+            }
+            // project Challenges -->Challenges
+            if(projectData.Challenges.length<50){
+                alert("שדה אתגרי הפרויקט צריך להיות גדול מ-50 תווים");
+                return false;
+            }
+            if(projectData.Challenges.length>200){
+                alert("שדה אתגרי הפרויקט צריך להיות קטן מ-200 תווים");
+                return false;
+            }
+            //project comments
+            if(projectData.Comments.length<5 && projectData.Comments!==''){
+                alert("שדה הערות צריך להיות גדול מ-5 תווים");
+                return false;
+            }
+            //project Topic 
+            if (projectData.ProjectTopic==='') {
+                alert('בחר נושא פרויקט');
+                return false;
+            }
+            //project year
+            if (projectData.Year === "" || projectData.Year === "בחר") {
+                alert(' בחרו שנה');
+                return false;
+            }
+            //project semester
+            if (projectData.Semester === "" || projectData.Semester === "בחר") {
+                alert(' בחרו סמסטר');
+                return false;
+            }
+            //project Advisors
+            if(projectData.advisor[0]===''){
+                alert('מנחה א חסר ');
+                return false;
+            } 
+            if(projectData.advisor[1]===''){
+                alert('מנחה ב חסר ');
+                return false;
+            } 
+            //project goals-->Goals
+            if(projectData.Goals.length<2){
+                alert('מספר מטרות הפרויקט צריך להיות לפחות 2');
+                return false;
+            }
+            else{
+                let flag = true;
+                projectData.Goals.forEach((goal,index)=>{
+                    if (goal.GoalDescription.length<10) {
+                        alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות גדול מ2 תווים ");
+                        flag= false;
+                    }
+                    if (goal.GoalDescription.length>100) {
+                        alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                        flag= false;
+                    }
+                    if(goal.GoalStatus.length<4){
+                        alert(" סטטוס מטרה מספר " +(index+1)+"צריך להיות גדול מ2 תווים ");
+                        flag= false;
+                    }
+                    if(goal.GoalStatus.length>100){
+                        alert(" סטטוס מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                        flag= false;
+                    }
+                })
+                if (!flag) {
+                    return false;
+                }
+            }
+            //project modules -->Module
+            if(projectData.Module.length<2){
+                alert('מספר מודולי הפרויקט צריך להיות לפחות 2');
+                return false;
+            }
+            else{
+                let flag = true;
+                projectData.Module.forEach((mod,index)=>{
+                    if (mod.ModuleDescription.length<20) {
+                        alert(" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ");
+                        flag= false;
+                    }
+                    if (mod.ModuleDescription.length>200) {
+                        alert(" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ");
+                        flag= false;
+                    }
+                    if(mod.ModuleName.length<3){
+                        alert(" שם מודול מספר " +(index+1)+"צריך להיות גדול מ3 תווים ");
+                        flag= false;
+                    }
+                    if(mod.ModuleName.length>70){
+                        alert(" שם מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                        flag= false;
+                    }
+                })
+                if (!flag) {
+                    return false;
+                }
+            }
+            //project technologies -->Technologies
+            if(projectData.Technologies.length<5){
+                alert('מספר הטכנולוגיות צריך להיות לפחות 5');
+                return false;
+            }
+            //project screenshots
+            if (projectData.ScreenShots.length<5) {
+                alert('מספר תמונות המסך צריך להיות לפחות 5');
+                return false;
+            }        
+            //project logo
+            if (projectData.ProjectLogo<1) {
+                alert('חסר לוגו הפרויקט');
+                return false;
+            }
+            //project github
+            if(projectData.Github===''){
+                alert('חסר קישור לפרויקט בגיטהאב');
+                return false;
+            }
+            //project students
+            if(projectData.Students.length<1){
+                alert('חייב שיהיה לפחות חבר צוות אחת');
+                return false;
+            }
+            else{
+                let flag = true;
+                projectData.Students.forEach((student,index)=>{
+                    if(student.Name===''){
+                        alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
+                        flag = false;
+                    }
+                    if (student.Picture==='') {
+                        alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
+                        flag = false;
+                    }
+                })
+                if (!flag) {
+                    return false;
+                }
+            }
+            this.setState({
+                isSaved:true
+            })
+            return true;
     }
     SaveData = (event)=>{
         event.preventDefault();
         const course = JSON.parse(localStorage.getItem('course'));
-        if(this.ValidateData(this.state.projectDetails)){
+        //if(this.ValidateData(this.state.projectDetails)){
             this.setState({isReady:false},()=>{
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                 ref.update({
@@ -577,7 +587,8 @@ class St1 extends React.Component{
                     CustomerName:this.state.projectDetails.CustomerName,
                     HashTags:this.state.projectDetails.HashTags,
                     PDescription:this.state.projectDetails.PDescription,
-                    Github:this.state.projectDetails.Github
+                    Github:this.state.projectDetails.Github,
+                    functionalityMovie:this.state.projectDetails.functionalityMovie
                 })
                 .then(()=>{
                     this.setState({isReady:true,showPreview:false},()=>{
@@ -586,7 +597,7 @@ class St1 extends React.Component{
                     })
                 })
             })
-        } 
+        //} 
     }
     DeletePic = (picURL)=>{
         console.log(picURL)
@@ -668,9 +679,12 @@ class St1 extends React.Component{
             case sectionNames.googleLink:
                 this.setState({googleLink:event.target.value})
                 break;
-                case sectionNames.Github:
-                    this.setState({Github:event.target.value})
-                    break;
+            case sectionNames.Github:
+                this.setState({Github:event.target.value})
+                break;
+            case sectionNames.projectFunctionalityMovie:
+                this.setState({functionalityMovie:event.target.value})
+                break;
             default:
                 break;
         }
@@ -684,17 +698,20 @@ class St1 extends React.Component{
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        this.setState({isPublished:temp},()=>{
-            if(this.state.isSaved===true || groupData.ProjectName!==undefined){
-                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
-                ref.update({
-                    isPublished:this.state.isPublished,
-                })
-                .then(()=>{
-                    this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
-                })
-            }
-        })
+        if(this.ValidateData(this.state.projectDetails)){
+            this.setState({isPublished:temp},()=>{
+                    if(this.state.isSaved===true || groupData.ProjectName!==undefined){
+                        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                        ref.update({
+                            isPublished:this.state.isPublished,
+                        })
+                        .then(()=>{
+                            this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
+                        })
+                    }
+                
+            })
+        }
     }
     render(){
         if (!this.state.isReady) {
@@ -740,17 +757,16 @@ class St1 extends React.Component{
                         <TextareaInput defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
                         <Form.Row dir="rtl">
                             {/* year  */}
-                            <SelectInput IsMandatory={true} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput IsMandatory={true}  inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.Semester}   inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* projectType */}
-                            <SelectInput IsMandatory={true}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.organization?'ארגוני':'יזמי'}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}
                             <SelectInput IsMandatory={true}  defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* second advisor */}
                             <SelectInput IsMandatory={true}  defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
-                    
                         {/* if the topic is organization */}
                         {this.state.organization &&
                         (<div>
@@ -770,9 +786,11 @@ class St1 extends React.Component{
                         {/* project site link */}
                         <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.ProjectSite} InputTitle={sectionNames.projectLink} inputSize="sm" placeholder="http://proj.ruppin.ac.il/..."/>
                         {/* project movie link */}
-                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com"/>
+                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
+                        {/* project usability movie link */}
+                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.functionalityMovie} InputTitle={sectionNames.projectFunctionalityMovie} inputSize="sm" placeholder="www.youtube.com.."/>
                         {/* project github link */}
-                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.Github} InputTitle={sectionNames.Github} inputSize="sm" placeholder="www.github.com"/>
+                        <LinkInput IsMandatory={true} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.Github} InputTitle={sectionNames.Github} inputSize="sm" placeholder="www.github.com"/>
                         <Form.Group dir="rtl" style={{marginTop:15}} as={Row}>
                             <Col sm="1">
                             <Form.Check onChange={this.appExisting} id="projectApplication" type="checkbox"/> 
@@ -795,7 +813,7 @@ class St1 extends React.Component{
                                 <Col sm="4">
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Project Logo','Plogo')}>
                                         <FaCameraRetro/>
-                                        {this.state.logo?`  עריכת לוגו פרויקט`:`  הוספת לוגו פרויקט`}
+                                        {this.state.logo.length!==0?`  עריכת לוגו פרויקט`:`  הוספת לוגו פרויקט`}
                                     </Button>
                                 </Col>
                                 <Col sm="4">

@@ -126,7 +126,7 @@ export default class St3 extends React.Component{
                 customerLogo:dataForGroup.CustomerLogo?dataForGroup.CustomerLogo:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
-            })
+            },()=>this.setState({projectDetails:this.getProjectDetails()}))
             //get list of advisors from firebase
             this.getAdvisorsForDepartment();
             //get list of Experties
@@ -135,6 +135,34 @@ export default class St3 extends React.Component{
             this.getCoursesForExpertis();
         })
         
+    }
+    getProjectDetails = ()=>{
+        const project = {
+            ProjectName:this.state.ProjectName,
+            PDescription:this.state.PDescription,
+            advisor:[this.state.ProjectAdvisor],
+            Major:this.state.projectMajor,
+            ProjectCourse:this.state.projectCourse,
+            ProjectTopic:this.state.ProjectTopic,
+            Students:this.state.StudentsDetails,
+            isPublished:this.state.isPublished,
+            MovieLink:this.state.MovieLink,
+            ProjectLogo:this.state.poster[0],
+            ProjectPDF:this.state.ProjectPDF,
+            CDescription:this.state.CDescription,
+            ProjectGoal:this.state.ProjectGoal,
+            ProjectNeed:this.state.ProjectNeed,
+            ProjectConclusion:this.state.ProjectConclusion,
+            projectFindings:this.state.projectFindings,
+            projectSolution:this.state.projectSolution,
+            CustomerName:this.state.customerName,
+            CustomerLogo:this.state.customerLogo,
+            Year:this.state.Year,
+            Semester:this.state.Semester,
+            ScreenShots:this.state.ScreenShots,
+            ScreenShotsNames:this.state.ScreenShotsNames,
+        }
+        return project;
     }
     getAdvisorsForDepartment = ()=>{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
@@ -344,31 +372,7 @@ export default class St3 extends React.Component{
     }
     //save project to object and show preview
     SetProjectOnFirbase = ()=>{
-        const project = {
-            ProjectName:this.state.ProjectName,
-            PDescription:this.state.PDescription,
-            advisor:[this.state.ProjectAdvisor],
-            Major:this.state.projectMajor,
-            ProjectCourse:this.state.projectCourse,
-            ProjectTopic:this.state.ProjectTopic,
-            Students:this.state.StudentsDetails,
-            isPublished:this.state.isPublished,
-            MovieLink:this.state.MovieLink,
-            ProjectLogo:this.state.poster[0],
-            ProjectPDF:this.state.ProjectPDF,
-            CDescription:this.state.CDescription,
-            ProjectGoal:this.state.ProjectGoal,
-            ProjectNeed:this.state.ProjectNeed,
-            ProjectConclusion:this.state.ProjectConclusion,
-            projectFindings:this.state.projectFindings,
-            projectSolution:this.state.projectSolution,
-            CustomerName:this.state.customerName,
-            CustomerLogo:this.state.customerLogo,
-            Year:this.state.Year,
-            Semester:this.state.Semester,
-            ScreenShots:this.state.ScreenShots,
-            ScreenShotsNames:this.state.ScreenShotsNames,
-        }
+        const project = this.getProjectDetails();
         this.setState({
             projectDetails:project,
         },()=>{
@@ -499,7 +503,7 @@ export default class St3 extends React.Component{
     }
     SaveData = (event)=>{
         event.preventDefault();
-        if(this.ValidateData(this.state.projectDetails)){
+        //if(this.ValidateData(this.state.projectDetails)){
             //save project to firebase.
             this.setState({isReady:false},()=>{
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
@@ -536,21 +540,23 @@ export default class St3 extends React.Component{
                     })
                 })
             })
-        }
+        //}
     }
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        this.setState({isPublished:temp},()=>{
-            if(this.state.isSaved===true || groupData.ProjectName!==undefined){
-                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
-                ref.update({
-                    isPublished:this.state.isPublished,
-                })
-                .then(()=>{
-                    this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
-                })
-            }
-        })
+        if(this.ValidateData(this.state.projectDetails)){
+            this.setState({isPublished:temp},()=>{
+                if(this.state.isSaved===true || groupData.ProjectName!==undefined){
+                    const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                    ref.update({
+                        isPublished:this.state.isPublished,
+                    })
+                    .then(()=>{
+                        this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
+                    })
+                }
+            })
+        }
     }
     render(){
         if (!this.state.isReady) {

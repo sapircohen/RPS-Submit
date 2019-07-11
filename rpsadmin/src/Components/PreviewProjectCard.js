@@ -190,6 +190,22 @@ export default class PreviewCard extends React.Component{
                             </Row>
                         </Col>
                     }
+                    {/* projet usability video */}
+                    {
+                        this.props.projectDetails.functionalityMovie &&
+                        <Col className="Box" style={{marginTop:'6%',textAlign:'center'}}>
+                            <Col style={{textAlign:'center'}} sm="12">
+                                <h3>סרטון שימושיות<GiClapperboard size={45}/></h3>
+                            </Col>
+                            <Row style={{marginTop:'2%',textAlign:'center'}} dir="rtl" className="show-grid">
+                                <Col sm="2"></Col>
+                                <Col sm="8" style={{padding:'50px'}}>
+                                    <VideoPlayer MovieLink={this.props.projectDetails.functionalityMovie} />
+                                </Col>
+                                <Col sm="2"></Col>
+                            </Row>
+                        </Col>
+                    }
                     {/* project PDF */}
                     {
                         this.props.projectDetails.ProjectPDF &&
