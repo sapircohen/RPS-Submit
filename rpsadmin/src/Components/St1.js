@@ -112,6 +112,9 @@ class St1 extends React.Component{
     }
     componentDidMount(){
         this.GetData();
+        window.setInterval(()=>{
+            this.SaveData();
+        },3000)
     }
     GetData = ()=>{
         const ref = firebase.database().ref('RuppinProjects').child(projectKey);
@@ -276,9 +279,9 @@ class St1 extends React.Component{
     }
     handleDelete(i){
         const { tags } = this.state;
-        this.setState({tags: tags.filter((tag, index) => index !== i),});
+        this.setState({tags: tags.filter((tag, index) => index !== i),})
     }
-    handleAddition(tag){this.setState(state => ({ tags: [...state.tags, tag] }));}
+    handleAddition(tag){this.setState(state => ({ tags: [...state.tags, tag] }))}
     changeProjectType = (e)=>{
         if (e.target.value==='ארגוני') {
             this.setState({organization:true})
@@ -546,53 +549,45 @@ class St1 extends React.Component{
             })
             return true;
     }
-    SaveData = (event)=>{
-        event.preventDefault();
-        //const course = JSON.parse(localStorage.getItem('course'));
-        //if(this.ValidateData(this.state.projectDetails)){
-            this.setState({isReady:false},()=>{
-                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
-                ref.update({
-                    templateSubmit:'st1',
-                    templateView:'vt1',
-                    ProjectCourse:course,
-                    ProjectName: this.state.projectDetails.ProjectName,
-                    ProjectSite:this.state.projectDetails.ProjectSite,
-                    isPublished:this.state.projectDetails.isPublished,
-                    Year:this.state.projectDetails.Year,
-                    Semester:this.state.projectDetails.Semester,
-                    isApproved:1,
-                    CDescription:this.state.projectDetails.CDescription,
-                    CStackholders:this.state.projectDetails.CStackholders,
-                    ScreenShotsNames:this.state.projectDetails.ScreenShotsNames,
-                    ScreenShots:this.state.projectDetails.ScreenShots,
-                    Students:this.state.projectDetails.Students,
-                    Technologies:this.state.projectDetails.Technologies,
-                    CustCustomers:this.state.projectDetails.CustCustomers,
-                    Challenges:this.state.projectDetails.Challenges,
-                    Comments:this.state.projectDetails.Comments,
-                    Advisor:this.state.projectDetails.advisor,
-                    CustomerLogo:this.state.projectDetails.CustomerLogo,
-                    ProjectLogo:this.state.projectDetails.ProjectLogo,
-                    MovieLink:this.state.projectDetails.MovieLink,
-                    Goals:this.state.projectDetails.Goals,
-                    Module:this.state.projectDetails.Module,
-                    GooglePlay:this.state.projectDetails.GooglePlay,
-                    AppStore:this.state.projectDetails.AppStore,
-                    CustomerName:this.state.projectDetails.CustomerName,
-                    HashTags:this.state.projectDetails.HashTags,
-                    PDescription:this.state.projectDetails.PDescription,
-                    Github:this.state.projectDetails.Github,
-                    functionalityMovie:this.state.projectDetails.functionalityMovie
-                })
-                .then(()=>{
-                    this.setState({isReady:true,showPreview:false},()=>{
-                        alert('הפרויקט נשמר בהצלחה');
-                        this.GetData();
-                    })
-                })
-            })
-        //} 
+    SaveData = ()=>{
+        console.log('saved')
+        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+        ref.update({
+            templateSubmit:'st1',
+            templateView:'vt1',
+            ProjectCourse:course,
+            ProjectName: this.state.ProjectName,
+            ProjectSite:this.state.ProjectSite,
+            isPublished:this.state.isPublished,
+            Year:this.state.Year,
+            Semester:this.state.Semester,
+            isApproved:1,
+            CDescription:this.state.CDescription,
+            CStackholders:this.state.CStackholders,
+            ScreenShotsNames:this.state.ScreenShotsNames,
+            ScreenShots:this.state.ScreenShots,
+            Students:this.state.StudentsDetails,
+            Technologies:this.state.chosenTechs,
+            CustCustomers:this.state.CustCustomers,
+            Challenges:this.state.Challenges,
+            Comments:this.state.comments,
+            Advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
+            CustomerLogo:this.state.customerLogo,
+            ProjectLogo:this.state.logo,
+            MovieLink:this.state.MovieLink,
+            Goals:this.state.projectGoals,
+            Module:this.state.projectModules,
+            GooglePlay:this.state.googleLink,
+            AppStore:this.state.appleLink,
+            CustomerName:this.state.CustomerName,
+            HashTags:this.state.HashTags,
+            PDescription:this.state.PDescription,
+            Github:this.state.Github,
+            functionalityMovie:this.state.functionalityMovie
+        })
+        .then(()=>{
+            console.log('saved');
+        })
     }
     DeletePic = (picURL)=>{
         console.log(picURL)
@@ -692,7 +687,7 @@ class St1 extends React.Component{
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        if(this.ValidateData(this.state.projectDetails)){
+        if(this.ValidateData(this.getProjectDetails())){
             this.setState({isPublished:temp},()=>{
                     if(this.state.isSaved===true || groupData.ProjectName!==undefined){
                         const ref = firebase.database().ref('RuppinProjects/'+projectKey);
@@ -703,7 +698,6 @@ class St1 extends React.Component{
                             this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
                         })
                     }
-                
             })
         }
     }
