@@ -64,7 +64,7 @@ class St1 extends React.Component{
             ScreenShotsNames:[],
             logo:[],
             customerLogo:[],
-            isPublished:true,
+            isPublished:false,
             Advisor:'',
             Challenges:'',
             CustomerName:'',
@@ -320,13 +320,10 @@ class St1 extends React.Component{
     handleClose = ()=> {this.setState({ openModal: false });}
     handlePublishedChange = ()=>{this.setState({isPublished:!this.state.isPublished})}
     getStudentsDetails = (students)=>{
-        
         this.setState({StudentsDetails:students},()=>{
             console.log(this.state.StudentsDetails);
         })
-        
     }
-    
     getProjectGoals = (goals)=>{
         this.setState({projectGoals:goals},()=>{
             console.log(this.state.projectGoals)
@@ -347,7 +344,6 @@ class St1 extends React.Component{
         })
     }
     savePic=(url,title,index,screenshotName)=>{
-
         console.log(screenshotName)
         switch (title) {
             case 'Customer Logo':this.setState({customerLogo:[url]})
@@ -361,7 +357,6 @@ class St1 extends React.Component{
             default:
                 break;
         }
-        
     }
     changeScreenshots= (url,name)=>{
         this.setState({
@@ -553,7 +548,7 @@ class St1 extends React.Component{
     }
     SaveData = (event)=>{
         event.preventDefault();
-        const course = JSON.parse(localStorage.getItem('course'));
+        //const course = JSON.parse(localStorage.getItem('course'));
         //if(this.ValidateData(this.state.projectDetails)){
             this.setState({isReady:false},()=>{
                 const ref = firebase.database().ref('RuppinProjects/'+projectKey);
@@ -610,7 +605,6 @@ class St1 extends React.Component{
             const array = this.state.ScreenShots.splice(index,1);
             console.log(array);
             this.setState({ScreenShots:array},()=>console.log(this.state.ScreenShots));
-            
         }).catch((error)=> {
             console.log(error)
         });

@@ -45,7 +45,7 @@ class St2 extends React.Component{
             imageAspect:4/3,
             openModal:false,
             modalTitle:'',
-            isPublished:true,
+            isPublished:false,
             StudentsDetails:[],
             poster:[],
             picTitle:'',

@@ -5,6 +5,7 @@ import St1 from "./Components/St1";
 import St2 from './Components/St2';
 import St3 from './Components/St3';
 import St4 from './Components/St4';
+import St5 from './Components/St5';
 
 import { withRouter,Route } from "react-router-dom";
 import CourseChoice from './Components/CourseChoice';
@@ -23,12 +24,13 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <Route path='/' exact component={LoginPage}/>
+        <Route path='/' exact component={St5}/>
         <Route path='/CourseChoice'  component={CourseChoice}/>
         <Route path='/st1'  component={St1}/>
         <Route path='/st2'  component={St2}/>
         <Route path='/st3' component={St3}/>
         <Route path='/st4' component={St4}/>
+        <Route path='/st5' component={St5}/>
       </div>
     );
   }
