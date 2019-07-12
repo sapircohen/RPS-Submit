@@ -71,6 +71,15 @@ class St2 extends React.Component{
     }
     componentDidMount(){
        this.GetData();
+       window.setInterval(()=>{
+        this.SaveData();
+        if(this.state.isPublished){
+            if(!this.ValidateData(this.getProjectDetails())){
+                this.setState({isPublished:false});
+                alert('הפרויקט לא יפורסם')
+            }
+        }
+       },3000)
     }
     GetData=()=>{
         //get group data from local storage
@@ -98,6 +107,7 @@ class St2 extends React.Component{
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 ProjectAdvisor:dataForGroup.Advisor?dataForGroup.Advisor:'',
             },()=>{
+                console.log(this.state.StudentsDetails)
                 this.setState({projectDetails:this.getProjectDetails()})
             })
             //get list of advisors from firebase
@@ -270,29 +280,6 @@ class St2 extends React.Component{
                 alert('חייב שיהיה לפחות חבר צוות אחת');
                 return false;
             }
-            //else{
-            //     let flag = true;
-            //     projectData.Students.forEach((student,index)=>{
-            //         // if(student.Name===''){
-            //         //     alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
-            //         //     flag= false;
-            //         // }
-            //         // if (student.Picture==='') {
-            //         //     alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
-            //         //     flag= false;
-            //         // }
-            //     })
-            //     if (!flag) {
-            //         return false;
-            //     }
-            // }
-            //project pdf file
-            // if(course.indexOf('פרקטיקום')===-1){
-            //     if(projectData.ProjectPDF ===''){
-            //         alert('חסר קובץ PDF');
-            //         return false;
-            //     }
-            // }
             this.setState({
                 isSaved:true
             })
@@ -301,37 +288,30 @@ class St2 extends React.Component{
         
     }
     //save project to firebase.
-    SaveData = (event)=>{
-        event.preventDefault();
+    SaveData = ()=>{
+        //event.preventDefault();
         const ref = firebase.database().ref('RuppinProjects/'+projectKey);
-        //if(this.ValidateData(this.state.projectDetails)){
-            this.setState({isReady:false},()=>{
                 ref.update({
                     templateSubmit:'st2',
                     templateView:'vt2',
-                    ProjectName: this.state.projectDetails.ProjectName,
-                    isPublished:this.state.projectDetails.isPublished,
-                    Year:this.state.projectDetails.Year,
-                    Semester:this.state.projectDetails.Semester,
+                    ProjectName: this.state.ProjectName,
+                    isPublished:this.state.isPublished,
+                    Year:this.state.Year,
+                    Semester:this.state.Semester,
                     isApproved:1,
                     Major:this.state.projectMajor,
-                    Students:this.state.projectDetails.Students,
-                    Advisor:this.state.projectDetails.advisor,
-                    ProjectLogo:this.state.projectDetails.ProjectLogo?this.state.projectDetails.ProjectLogo:'',
-                    MovieLink:this.state.projectDetails.MovieLink,
-                    PDescription:this.state.projectDetails.PDescription,
-                    ProjectCourse:this.state.projectDetails.ProjectCourse,
-                    ProjectTopic:this.state.projectDetails.ProjectTopic,
-                    ProjectPDF:this.state.projectDetails.ProjectPDF?this.state.projectDetails.ProjectPDF:'',
+                    Students:this.state.StudentsDetails,
+                    Advisor:this.state.ProjectAdvisor,
+                    ProjectLogo:this.state.poster?this.state.poster:'',
+                    MovieLink:this.state.MovieLink,
+                    PDescription:this.state.PDescription,
+                    ProjectCourse:this.state.projectCourse,
+                    ProjectTopic:this.state.ProjectTopic,
+                    ProjectPDF:this.state.ProjectPDF?this.state.ProjectPDF:'',
                 })
                 .then(()=>{
-                    this.setState({isReady:true,showPreview:false},()=>{
-                        alert('הפרויקט נשמר בהצלחה');
-                        this.GetData();
-                    })
+                    console.log('saved')
                 })
-            })
-        //}
     }
     //delete pdf/word file
     DeletePdf=()=>{
@@ -358,7 +338,7 @@ class St2 extends React.Component{
         switch (textareaTitle) {
             case sectionNames.projectDesc:this.setState({PDescription:event})
                 break;
-            case sectionNames.projectName:this.setState({ProjectName:event.target.value})
+            case sectionNames.projectName:this.setState({ProjectName:event.target.value},()=>{console.log(this.state.ProjectName)})
                 break;
            default:
                break;
@@ -393,7 +373,7 @@ class St2 extends React.Component{
     changePublished = ()=>{
         const temp = !this.state.isPublished;
         const ref = firebase.database().ref('RuppinProjects/'+projectKey);
-        if(this.ValidateData(this.state.projectDetails)){
+        if(this.ValidateData(this.getProjectDetails())){
             this.setState({isPublished:temp},()=>{
                 if(this.state.isSaved===true || groupData.ProjectName!==undefined){
                     ref.update({

@@ -75,15 +75,15 @@ export default class ProjectModules extends React.Component{
                             <SmallHeaderForm title={`#מודול ${idx+1}`}/>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="goalName">
                                 <Form.Label column sm="2">שם המודול</Form.Label>
-                                <Col sm="3">
+                                <Col sm="2">
                                     <Form.Control value={modules[idx].ModuleName} onChange={(e)=>this.changeModuleName(idx,e)} dir="rtl" type="text"/>
                                 </Col>
 
                                 <Form.Label column sm="2">תיאור המודול</Form.Label>
-                                <Col sm="3">
-                                    <Form.Control value={modules[idx].ModuleDescription} onChange={(e)=>this.changeModuleDesc(idx,e)} dir="rtl" as="textarea" rows="3"/>
+                                <Col sm="5">
+                                    <Form.Control value={modules[idx].ModuleDescription} onChange={(e)=>this.changeModuleDesc(idx,e)} dir="rtl" as="textarea" rows="5"/>
                                 </Col>
-                                <Col sm="2">
+                                <Col sm="1">
                                     <Button onClick={()=>this.removeModule(idx)} style={{backgroundColor:'#fff',borderColor:'#fff',color:'red'}}>
                                         <IoIosCloseCircleOutline color="red" size={40}/>
                                     </Button>

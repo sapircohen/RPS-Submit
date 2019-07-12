@@ -219,10 +219,10 @@ class PreviewVt3 extends React.Component{
               </Modal.Body>  
               <Modal.Footer style={{justifyContent:'space-between'}}>
                 <Col sm='3'></Col>
-                <Col sm='3' style={{textAlign:'center'}}>
+                {/* <Col sm='3' style={{textAlign:'center'}}>
                     <Button onClick={this.OnSave} variant="success">שמירה</Button>
-                </Col>
-                <Col sm='3' style={{textAlign:'center'}}>
+                </Col> */}
+                <Col sm='6' style={{textAlign:'center'}}>
                     <Button onClick={this.props.close} variant="warning">סגירה</Button>
                 </Col>
                 <Col sm='3'></Col>

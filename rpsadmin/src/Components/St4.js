@@ -93,6 +93,15 @@ export default class St3 extends React.Component{
     }
     componentDidMount(){
         this.GetData();
+        window.setInterval(()=>{
+            this.SaveData();
+            if(this.state.isPublished){
+                if(!this.ValidateData(this.getProjectDetails())){
+                    this.setState({isPublished:false});
+                    alert('הפרויקט לא יפורסם')
+                }
+            }
+           },3000)
     }
     GetData=()=>{
         const ref = firebase.database().ref('RuppinProjects').child(projectKey);
@@ -501,50 +510,39 @@ export default class St3 extends React.Component{
         })
         return true;
     }
-    SaveData = (event)=>{
-        event.preventDefault();
-        //if(this.ValidateData(this.state.projectDetails)){
-            //save project to firebase.
-            this.setState({isReady:false},()=>{
-                const ref = firebase.database().ref('RuppinProjects/'+projectKey);
-                ref.update({
-                    templateSubmit:'st4',
-                    templateView:'vt4',
-                    ProjectName:this.state.ProjectName,
-                    PDescription:this.state.PDescription,
-                    advisor:[this.state.ProjectAdvisor],
-                    Major:this.state.projectMajor,
-                    ProjectCourse:this.state.projectCourse,
-                    ProjectTopic:this.state.ProjectTopic,
-                    Students:this.state.StudentsDetails,
-                    isPublished:this.state.isPublished,
-                    MovieLink:this.state.MovieLink,
-                    ProjectLogo:this.state.poster[0]?this.state.poster[0]:'',
-                    ProjectPDF:this.state.ProjectPDF,
-                    CDescription:this.state.CDescription,
-                    ProjectGoal:this.state.ProjectGoal,
-                    ProjectNeed:this.state.ProjectNeed,
-                    ProjectConclusion:this.state.ProjectConclusion,
-                    projectFindings:this.state.projectFindings,
-                    projectSolution:this.state.projectSolution,
-                    CustomerName:this.state.customerName,
-                    CustomerLogo:this.state.customerLogo,
-                    Year:this.state.Year,
-                    Semester:this.state.Semester,
-                    ScreenShots:this.state.ScreenShots,
-                    ScreenShotsNames:this.state.ScreenShotsNames,
-                })
-                .then(()=>{
-                    this.setState({isReady:true,showPreview:false},()=>{
-                        alert('הפרויקט נשמר בהצלחה')
-                    })
-                })
+    SaveData = ()=>{
+        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+            ref.update({
+                templateSubmit:'st4',
+                templateView:'vt4',
+                ProjectName:this.state.ProjectName,
+                PDescription:this.state.PDescription,
+                advisor:[this.state.ProjectAdvisor],
+                Major:this.state.projectMajor,
+                ProjectCourse:this.state.projectCourse,
+                ProjectTopic:this.state.ProjectTopic,
+                Students:this.state.StudentsDetails,
+                isPublished:this.state.isPublished,
+                MovieLink:this.state.MovieLink,
+                ProjectLogo:this.state.poster[0]?this.state.poster[0]:'',
+                ProjectPDF:this.state.ProjectPDF,
+                CDescription:this.state.CDescription,
+                ProjectGoal:this.state.ProjectGoal,
+                ProjectNeed:this.state.ProjectNeed,
+                ProjectConclusion:this.state.ProjectConclusion,
+                projectFindings:this.state.projectFindings,
+                projectSolution:this.state.projectSolution,
+                CustomerName:this.state.customerName,
+                CustomerLogo:this.state.customerLogo,
+                Year:this.state.Year,
+                Semester:this.state.Semester,
+                ScreenShots:this.state.ScreenShots,
+                ScreenShotsNames:this.state.ScreenShotsNames,
             })
-        //}
     }
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        if(this.ValidateData(this.state.projectDetails)){
+        if(this.ValidateData(this.getProjectDetails())){
             this.setState({isPublished:temp},()=>{
                 if(this.state.isSaved===true || groupData.ProjectName!==undefined){
                     const ref = firebase.database().ref('RuppinProjects/'+projectKey);

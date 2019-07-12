@@ -114,6 +114,12 @@ class St1 extends React.Component{
         this.GetData();
         window.setInterval(()=>{
             this.SaveData();
+            if(this.state.isPublished){
+                if(!this.ValidateData(this.getProjectDetails())){
+                    this.setState({isPublished:false});
+                    alert('הפרויקט לא יפורסם')
+                }
+            }
         },3000)
     }
     GetData = ()=>{
@@ -166,6 +172,7 @@ class St1 extends React.Component{
                 functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:''
                 
             },()=>{
+                console.log(this.state.chosenTechs)
                 this.setState({projectDetails:this.getProjectDetails()})
             })
             //get list of advisors from firebase
@@ -293,7 +300,7 @@ class St1 extends React.Component{
     TechsChosen (value){
         this.setState({
             chosenTechs:value.map((val)=>{
-                return val.value;
+                return val;
             })
         })
     }
@@ -767,7 +774,7 @@ class St1 extends React.Component{
                     {/* tag the project */}
                     <HashTags tags={this.state.tags}  handleDelete={this.handleDelete} handleAddition={this.handleAddition} changeTags={this.ChangeTags}/>
                     {/* techs tag */}
-                    <Techs TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
+                    <Techs chosenTechs={this.state.chosenTechs} TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
                     {/* Project links */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:30,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="קישורים"/>

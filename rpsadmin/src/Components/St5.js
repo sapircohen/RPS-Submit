@@ -91,8 +91,15 @@ export default class St5 extends React.Component{
     }
     componentDidMount(){
         this.GetData();
-        this.getTechnologies();
-        this.getAdvisors();
+        window.setInterval(()=>{
+            this.SaveData();
+            if(this.state.isPublished){
+                if(!this.ValidateData(this.getProjectDetails())){
+                    this.setState({isPublished:false});
+                    alert('הפרויקט לא יפורסם')
+                }
+            }
+        },3000)
     }
     GetData=()=>{
         const ref = firebase.database().ref('RuppinProjects').child(projectKey);
@@ -129,6 +136,8 @@ export default class St5 extends React.Component{
             },()=>{
                 this.setState({projectDetails:this.getProjectDetails()})
             })
+            this.getTechnologies();
+            this.getAdvisors();
         })
     }
     OpenImageModal = (title,pic)=>this.setState({openModal:true,modalTitle:title,picTitle:pic})
@@ -277,43 +286,34 @@ export default class St5 extends React.Component{
             ScreenShotsNames:[...this.state.ScreenShotsNames,name]
         })
     }
-    SaveData = (event)=>{
-        event.preventDefault();
-        this.setState({isReady:false},()=>{
+    SaveData = ()=>{
             const ref = firebase.database().ref('RuppinProjects/'+projectKey);
             ref.update({
                 templateSubmit:'st5',
                 templateView:'vt1',
                 ProjectCourse:course,
-                ProjectPDF:this.state.projectDetails.ProjectPDF,
-                Year:this.state.projectDetails.Year,
-                Semester:this.state.projectDetails.Semester,
-                Advisor:this.state.projectDetails.advisor,
-                CustomerLogo:this.state.projectDetails.customerLogo,
-                GroupName:this.state.projectDetails.GroupName,
-                ProjectName:this.state.projectDetails.ProjectName,
-                PDescription:this.state.projectDetails.PDescription,
-                MovieLink:this.state.projectDetails.MovieLink,
-                Students:this.state.projectDetails.StudentsDetails,
-                ScreenShots:this.state.projectDetails.ScreenShots,
-                ProjectLogo:this.state.projectDetails.logo,
-                CDescription:this.state.projectDetails.CDescription,
-                ScreenShotsNames:this.state.projectDetails.ScreenShotsNames,
-                projectGoals:this.state.projectDetails.projectGoals,
-                isPublished:this.state.projectDetail.isPublished,
-                Technologies:this.state.projectDetails.chosenTechs,
-                ProjectConclusion:this.state.projectDetails.ProjectConclusion,
-                SystemDescription:this.state.projectDetails.SystemDescription,
-                projectFindings:this.state.projectDetails.projectFindings,
-                PartnerDescription:this.state.projectDetails.PartnerDescription
+                ProjectPDF:this.state.ProjectPDF,
+                Year:this.state.Year,
+                Semester:this.state.Semester,
+                Advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
+                CustomerLogo:this.state.customerLogo,
+                GroupName:this.state.GroupName,
+                ProjectName:this.state.ProjectName,
+                PDescription:this.state.PDescription,
+                MovieLink:this.state.MovieLink,
+                Students:this.state.StudentsDetails,
+                ScreenShots:this.state.ScreenShots,
+                ProjectLogo:this.state.logo,
+                CDescription:this.state.CDescription,
+                ScreenShotsNames:this.state.ScreenShotsNames,
+                projectGoals:this.state.projectGoals,
+                isPublished:this.state.isPublished,
+                Technologies:this.state.chosenTechs,
+                ProjectConclusion:this.state.ProjectConclusion,
+                SystemDescription:this.state.SystemDescription,
+                projectFindings:this.state.projectFindings,
+                PartnerDescription:this.state.PartnerDescription
             })
-            .then(()=>{
-                this.setState({isReady:true,showPreview:false},()=>{
-                    alert('הפרויקט נשמר בהצלחה');
-                    this.GetData();
-                })
-            })
-        })
     }
     changeStudentImage = (url,index)=>{
         this.state.StudentsDetails[index].Picture = url;
@@ -513,7 +513,7 @@ export default class St5 extends React.Component{
     closePreview = ()=>this.setState({showPreview:false})
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        if(this.ValidateData(this.state.projectDetails)){
+        if(this.ValidateData(this.getProjectDetails())){
             this.setState({isPublished:temp},()=>{
                 if(this.state.isSaved===true || groupData.ProjectName!==undefined){
                     const ref = firebase.database().ref('RuppinProjects/'+projectKey);

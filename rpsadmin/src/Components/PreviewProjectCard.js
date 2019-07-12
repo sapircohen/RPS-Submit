@@ -19,9 +19,6 @@ export default class PreviewCard extends React.Component{
         isIS:false,
         isBS:false,
     }
-    componentDidUpdate(){
-        console.log(this.props.projectDetails)
-    }
     OnSave = (e)=>{
         this.props.SaveData(e);
     }
@@ -274,10 +271,10 @@ export default class PreviewCard extends React.Component{
                             <Col sm="10" style={{textAlign:'right'}}>
                                 {
                                     this.props.projectDetails.Technologies.map((tech,key)=>
-                                        <Badge size={20} marginWidth={2} style={{backgroundColor:randomColor({
+                                        <Badge key={key} size={20} marginWidth={2} style={{backgroundColor:randomColor({
                                             luminosity: 'light',
                                             hue: 'blue'
-                                         }),fontSize:20,marginLeft:5}}>{tech}</Badge>
+                                         }),fontSize:20,marginLeft:5}}>{tech.value}</Badge>
                                     )
                                 }
                             </Col>
@@ -293,7 +290,7 @@ export default class PreviewCard extends React.Component{
                             <Col sm="10" style={{textAlign:'right'}}>
                                 {
                                     this.props.projectDetails.HashTags.map((tag,key)=>
-                                        <Badge size={20} marginWidth={2} style={{backgroundColor:randomColor({
+                                        <Badge key={key} size={20} marginWidth={2} style={{backgroundColor:randomColor({
                                             luminosity: 'light',
                                             hue: 'blue'
                                          }),fontSize:20,marginLeft:5}}>{tag}</Badge>
@@ -325,10 +322,10 @@ export default class PreviewCard extends React.Component{
               </Modal.Body>  
               <Modal.Footer style={{justifyContent:'space-between'}}>
                 <Col sm='3'></Col>
-                <Col sm='3' style={{textAlign:'center'}}>
+                {/* <Col sm='3' style={{textAlign:'center'}}>
                     <Button onClick={this.OnSave} variant="success">שמירה</Button>
-                </Col>
-                <Col sm='3' style={{textAlign:'center'}}>
+                </Col> */}
+                <Col sm='6' style={{textAlign:'center'}}>
                     <Button onClick={this.props.close} variant="warning">סגירה</Button>
                 </Col>
                 <Col sm='3'></Col>

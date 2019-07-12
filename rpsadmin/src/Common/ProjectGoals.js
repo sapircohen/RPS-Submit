@@ -79,9 +79,9 @@ export default class ProjectGoals extends React.Component{
                         <div  key={idx}>
                             <SmallHeaderForm title={`#מטרה ${idx+1}`}/>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="goalName">
-                                <Form.Label column sm="2">תיאור המטרה</Form.Label>
-                                <Col sm="3">
-                                    <Form.Control value={this.state.goals[idx].GoalDescription} onChange={(e)=>this.changeGoalDesc(idx,e)} dir="rtl" as="textarea" rows="3"/>
+                                <Form.Label column sm="1">תיאור המטרה</Form.Label>
+                                <Col sm="4">
+                                    <Form.Control value={this.state.goals[idx].GoalDescription} onChange={(e)=>this.changeGoalDesc(idx,e)} dir="rtl" as="textarea" rows="5"/>
                                 </Col>
 
                                 <Form.Label column sm="2">סטטוס המטרה</Form.Label>

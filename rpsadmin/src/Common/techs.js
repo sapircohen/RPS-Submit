@@ -13,6 +13,7 @@ export default class Techs extends React.Component{
                 <Col sm="2"></Col> 
                 <Col sm="8">
                 <Select
+                value={this.props.chosenTechs}
                 onChange={this.props.TechsChosen}
                 closeMenuOnSelect={false}
                 components={makeAnimated()}
