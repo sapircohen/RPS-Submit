@@ -19,6 +19,7 @@ import SelectInput from '../Common/inputSelect';
 import LinkInput from '../Common/Projectlinks';
 import {Years} from '../Common/Years';
 import LabelTextPDF from '../Common/LabelText';
+import SAlert from '../Common/SAlert';
 
 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
 const groupData = JSON.parse(localStorage.getItem('groupData'));
@@ -40,6 +41,10 @@ class St2 extends React.Component{
     constructor(props){
         super(props);
         this.state = {
+            alertTitle:'',
+            alertText:'',
+            alertIcon:'warning',
+            alertShow:false,
             isSaved:false,
             fileSize:0,
             imageAspect:4/3,
@@ -76,7 +81,7 @@ class St2 extends React.Component{
         if(this.state.isPublished){
             if(!this.ValidateData(this.getProjectDetails())){
                 this.setState({isPublished:false});
-                alert('הפרויקט לא יפורסם')
+                this.setState({alertShow:true,alertTitle:'הפרויקט לא יפורסם',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
             }
         }
        },3000)
@@ -233,51 +238,53 @@ class St2 extends React.Component{
     ValidateData = (projectData)=>{          
             // project name validation
             if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-                alert('שם הפרויקט חסר');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
                 return false;
             }
             //project long description -->PDescription
             if(projectData.PDescription.length===0){
-                alert("תיאור הפרויקט הוא שדה חובה");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט הוא שדה חובה',alertIcon:'warning'})
                 return false;
             }
             if(projectData.PDescription.length>5000){
-                alert("תיאור הפרויקט צריך להיות קטן מ-5000 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-5000 תווים',alertIcon:'warning'})
                 return false;
             }
             //project year
             if(projectData.Year === "" || projectData.Year === "בחר"){
-                alert('יש לבחור שנה');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור שנה',alertIcon:'warning'})
                 return false;
             }
             //project Semester
             if(projectData.Semester === "" || projectData.Semester === "בחר"){
-                alert('יש לבחור סמסטר');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור סמסטר',alertIcon:'warning'})
                 return false;
             }
             //project major/experties
             if(projectData.Major === ""){
-                alert('יש לבחור התמחות');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור התמחות',alertIcon:'warning'})
+
                 return false;
             }
             //project course
             if(projectData.ProjectCourse === ""){
-                alert('יש לבחור סוג');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור סוג',alertIcon:'warning'})
                 return false;
             }
             //project topic
             if(projectData.ProjectTopic === ""){
-                alert('יש לבחור נושא');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור נושא',alertIcon:'warning'})
                 return false;
             }
             //project advisor
             if(projectData.advisor[0] === ""){
-                alert('יש לבחור מנחה');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור מנחה',alertIcon:'warning'})
                 return false;
             }
             //project students
             if(projectData.Students.length<1){
-                alert('חייב שיהיה לפחות חבר צוות אחת');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חייב להיות לפחות חבר צוות אחד',alertIcon:'success'})
+
                 return false;
             }
             this.setState({
@@ -370,6 +377,7 @@ class St2 extends React.Component{
                 break;
         }
     }
+    CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
     changePublished = ()=>{
         const temp = !this.state.isPublished;
         const ref = firebase.database().ref('RuppinProjects/'+projectKey);
@@ -380,7 +388,10 @@ class St2 extends React.Component{
                         isPublished:this.state.isPublished,
                     })
                     .then(()=>{
-                        this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
+                        if(this.state.isPublished===true){
+                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'})
+                        }
+                        else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
                     })
                 }
             })
@@ -401,6 +412,7 @@ class St2 extends React.Component{
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={this.changePublished} isPublished={this.state.isPublished}  />
                 <ModalImage fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 {/* preview project card */}
                 <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>

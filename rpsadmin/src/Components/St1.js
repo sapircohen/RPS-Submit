@@ -24,7 +24,7 @@ import AppLinksInput from '../Common/appLinks';
 import HashTags from '../Common/Tag';
 import Techs from '../Common/techs';
 import {Years} from '../Common/Years';
-
+import SAlert from '../Common/SAlert';
 
 const course = JSON.parse(localStorage.getItem('course'));
 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
@@ -55,6 +55,10 @@ class St1 extends React.Component{
     constructor(props){
         super(props);
         this.state={
+            alertTitle:'',
+            alertText:'',
+            alertShow:false,
+            alertIcon:'warning',
             isSaved:false,
             imageAspect:4/3,
             showPreview:false,
@@ -117,7 +121,7 @@ class St1 extends React.Component{
             if(this.state.isPublished){
                 if(!this.ValidateData(this.getProjectDetails())){
                     this.setState({isPublished:false});
-                    alert('הפרויקט לא יפורסם')
+                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                 }
             }
         },3000)
@@ -290,11 +294,11 @@ class St1 extends React.Component{
     }
     handleAddition(tag){this.setState(state => ({ tags: [...state.tags, tag] }))}
     changeProjectType = (e)=>{
-        if (e.target.value==='ארגוני') {
-            this.setState({organization:true})
+        if (e.target.value==='יזמי') {
+            this.setState({organization:false})
         }
         else{
-            this.setState({organization:false})
+            this.setState({organization:true})
         }
     }
     TechsChosen (value){
@@ -383,97 +387,97 @@ class St1 extends React.Component{
         console.log(projectData);
             // project name validation
             if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-                alert('שם הפרויקט חסר');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
                 return false;
             }
             //project custCustomers(משתמשי המערכת)
             if(projectData.CustCustomers===''){
-                alert('חסר שדה משתמשי המערכת');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר שדה משתמשי המערכת',alertIcon:'warning'})
                 return false;
             }
             //project stackholders(בעלי ענייןs)
             if(projectData.CStackholders===''){
-                alert('חסר שדה בעלי עניין');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר שדה בעלי עניין',alertIcon:'warning'})
                 return false;
             }
             // project short description validation
             if(projectData.CDescription.length<50){
-                alert("תיאור קצר צריך להיות גדול מ-50 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
                 return false;
             }
             if(projectData.CDescription.length>150){
-                alert("תיאור קצר צריך להיות קטן מ-150 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-150 תווים',alertIcon:'warning'})
                 return false;
             }
             //project long description -->PDescription
             if(projectData.PDescription.length<200){
-                alert("תיאור הפרויקט צריך להיות גדול מ-200 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
             if(projectData.PDescription.length>500){
-                alert("תיאור הפרויקט צריך להיות קטן מ-500 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
                 return false;
             }
             // project Challenges -->Challenges
             if(projectData.Challenges.length<50){
-                alert("שדה אתגרי הפרויקט צריך להיות גדול מ-50 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה אתגרי הפרויקט צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
                 return false;
             }
             if(projectData.Challenges.length>200){
-                alert("שדה אתגרי הפרויקט צריך להיות קטן מ-200 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה אתגרי הפרויקט צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
             //project comments
             if(projectData.Comments.length<5 && projectData.Comments!==''){
-                alert("שדה הערות צריך להיות גדול מ-5 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה הערות צריך להיות גדול מ-5 תווים',alertIcon:'warning'})
                 return false;
             }
             //project Topic 
             if (projectData.ProjectTopic==='') {
-                alert('בחר נושא פרויקט');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחר נושא פרויקט'})
                 return false;
             }
             //project year
             if (projectData.Year === "" || projectData.Year === "בחר") {
-                alert(' בחרו שנה');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו שנה',alertIcon:'warning'})
                 return false;
             }
             //project semester
             if (projectData.Semester === "" || projectData.Semester === "בחר") {
-                alert(' בחרו סמסטר');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו סמסטר',alertIcon:'warning'})
                 return false;
             }
             //project Advisors
             if(projectData.advisor[0]===''){
-                alert('מנחה א חסר ');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה א חסר',alertIcon:'warning'})
                 return false;
             } 
             if(projectData.advisor[1]===''){
-                alert('מנחה ב חסר ');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה ב חסר',alertIcon:'warning'})
                 return false;
             } 
             //project goals-->Goals
             if(projectData.Goals.length<2){
-                alert('מספר מטרות הפרויקט צריך להיות לפחות 2');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מטרות הפרויקט צריך להיות לפחות 2',alertIcon:'warning'})
                 return false;
             }
             else{
                 let flag = true;
                 projectData.Goals.forEach((goal,index)=>{
                     if (goal.GoalDescription.length<10) {
-                        alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות גדול מ2 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
                     if (goal.GoalDescription.length>100) {
-                        alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
                     if(goal.GoalStatus.length<4){
-                        alert(" סטטוס מטרה מספר " +(index+1)+"צריך להיות גדול מ2 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
                     if(goal.GoalStatus.length>100){
-                        alert(" סטטוס מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
                 })
@@ -483,26 +487,28 @@ class St1 extends React.Component{
             }
             //project modules -->Module
             if(projectData.Module.length<2){
-                alert('מספר מודולי הפרויקט צריך להיות לפחות 2');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מודולי הפרויקט צריך להיות לפחות 2',alertIcon:'warning'})
+
                 return false;
             }
             else{
                 let flag = true;
                 projectData.Module.forEach((mod,index)=>{
                     if (mod.ModuleDescription.length<20) {
-                        alert(" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ",alertIcon:'warning'})
                         flag= false;
                     }
                     if (mod.ModuleDescription.length>200) {
-                        alert(" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ",alertIcon:'warning'})
                         flag= false;
                     }
                     if(mod.ModuleName.length<3){
-                        alert(" שם מודול מספר " +(index+1)+"צריך להיות גדול מ3 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" שם מודול מספר " +(index+1)+" צריך להיות גדול מ3 תווים ",alertIcon:'warning'})
+
                         flag= false;
                     }
-                    if(mod.ModuleName.length>70){
-                        alert(" שם מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                    if(mod.ModuleName.length>100){
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ",alertIcon:'warning'})
                         flag= false;
                     }
                 })
@@ -512,38 +518,45 @@ class St1 extends React.Component{
             }
             //project technologies -->Technologies
             if(projectData.Technologies.length<5){
-                alert('מספר הטכנולוגיות צריך להיות לפחות 5');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר הטכנולוגיות צריך להיות לפחות 5',alertIcon:'warning'})
+
                 return false;
             }
             //project screenshots
             if (projectData.ScreenShots.length<5) {
-                alert('מספר תמונות המסך צריך להיות לפחות 5');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר תמונות המסך צריך להיות לפחות 5'})
+
                 return false;
             }        
             //project logo
             if (projectData.ProjectLogo<1) {
-                alert('חסר לוגו הפרויקט');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר לוגו הפרויקט',alertIcon:'warning'})
+
                 return false;
             }
             //project github
             if(projectData.Github===''){
-                alert('חסר קישור לפרויקט בגיטהאב');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר קישור לפרויקט בגיטהאב',alertIcon:'warning'})
+
                 return false;
             }
             //project students
             if(projectData.Students.length<1){
-                alert('חייב שיהיה לפחות חבר צוות אחת');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חייב להיות לפחות חבר צוות אחד',alertIcon:'warning'})
+
                 return false;
             }
             else{
                 let flag = true;
                 projectData.Students.forEach((student,index)=>{
                     if(student.Name===''){
-                        alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר שם',alertIcon:'warning'})
+
                         flag = false;
                     }
                     if (student.Picture==='') {
-                        alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר תמונה',alertIcon:'warning'})
+
                         flag = false;
                     }
                 })
@@ -702,12 +715,16 @@ class St1 extends React.Component{
                             isPublished:this.state.isPublished,
                         })
                         .then(()=>{
-                            this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
-                        })
+                            if(this.state.isPublished===true){
+                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',text:'',alertIcon:'success'})
+                            }
+                            else this.setState({alertShow:true,alertTitle:'שימו לב',text:'הפרויקט לא יפורסם',alertIcon:'warning'})
+                            })
                     }
             })
         }
     }
+    CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
     render(){
         if (!this.state.isReady) {
             return(
@@ -723,6 +740,7 @@ class St1 extends React.Component{
         }
         return(
             <div style={{flex:1,backgroundColor:'#eee'}}>
+                <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 <SaveAction Save={this.SetProjectOnFirbase}/>

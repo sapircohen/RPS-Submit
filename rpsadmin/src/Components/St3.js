@@ -20,6 +20,7 @@ import {Years} from '../Common/Years';
 import LabelTextPDF from '../Common/LabelText';
 import PreviewModal from '../Common/imagesModalPrevies'
 import RichText from '../Common/RichText2';
+import SAlert from '../Common/SAlert';
 
 const groupData = JSON.parse(localStorage.getItem('groupData'));
 const course = JSON.parse(localStorage.getItem('course'));
@@ -49,6 +50,10 @@ export default class St3 extends React.Component{
     constructor(props){
         super(props);
         this.state = {
+            alertTitle:'',
+            alertText:'',
+            alertShow:false,
+            alertIcon:'warning',
             fileSize:0,
             isSaved:false,
             imageAspect:4/3,
@@ -95,7 +100,8 @@ export default class St3 extends React.Component{
             if(this.state.isPublished){
                 if(!this.ValidateData(this.getProjectDetails())){
                     this.setState({isPublished:false});
-                    alert('הפרויקט לא יפורסם')
+                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
+
                 }
             }
            },3000)
@@ -364,102 +370,114 @@ export default class St3 extends React.Component{
         console.log(projectData.advisor[0]);
         // project name validation
         if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-            alert('שם הפרויקט חסר');
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
             return false;
         }
         // project short description validation
         if(projectData.CDescription.length<50){
-            alert("תיאור קצר צריך להיות גדול מ-50 תווים");
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
             return false;
         }
         if(projectData.CDescription.length>150){
-            alert("תיאור קצר צריך להיות קטן מ-150 תווים");
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-150 תווים',alertIcon:'warning'})
             return false;
         }
         //project long description -->PDescription
         if(projectData.PDescription.length<200){
-            alert("תיאור הפרויקט צריך להיות גדול מ-200 תווים");
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
             return false;
         }
         if(projectData.PDescription.length>500){
-            alert("תיאור הפרויקט צריך להיות קטן מ-500 תווים");
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
             return false;
         }
         //project goal
         if(projectData.ProjectGoal!==''){
             if(projectData.ProjectGoal.length>200){
-                alert("תיאור מטרת הפרויקט הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור מטרת הפרויקט הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
         }
         //project need
         if(projectData.ProjectNeed!==''){
             if(projectData.ProjectNeed.length>200){
-                alert("תיאור הבעיה/צורך הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הבעיה/צורך הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
+
                 return false;
             }
         }
         //projectFindings
         if(projectData.projectFindings!==''){
             if(projectData.projectFindings.length>200){
-                alert("תיאור הממצאים הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הממצאים הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
+
                 return false;
             }
         }
         //project Solution
         if(projectData.projectSolution!==''){
             if(projectData.projectSolution.length>500){
-                alert("תיאור הפתרון הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפתרון הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
+
                 return false;
             }
         }
         //Project Conclusion
         if(projectData.ProjectConclusion!==''){
             if(projectData.ProjectConclusion.length>500){
-                alert("תיאור המסקנות הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור המסקנות הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
+
                 return false;
             }
         }
         //project year
         if(projectData.Year === "" || projectData.Year === "בחר"){
-            alert('יש לבחור שנה');
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור שנה',alertIcon:'warning'})
+
             return false;
         }
         //project Semester
         if(projectData.Semester === "" || projectData.Semester === "בחר"){
-            alert('יש לבחור סמסטר');
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור סמסטר',alertIcon:'warning'})
+
             return false;
         }
         //project major/experties
         if(projectData.Major === ""){
-            alert('יש לבחור התמחות');
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור התמחות',alertIcon:'warning'})
+
             return false;
         }
         //project course
         if(projectData.ProjectCourse === ""){
-            alert('יש לבחור סוג');
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור סוג',alertIcon:'warning'})
+
             return false;
         }
         //project topic
         if(projectData.ProjectTopic === ""){
-            alert('יש לבחור נושא');
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור נושא',alertIcon:'warning'})
+
             return false;
         }
         //project advisor
         if(projectData.advisor[0] === ""){
-            alert('יש לבחור מנחה');
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור מנחה',alertIcon:'warning'})
+
             return false;
         }
         //project students
         if(projectData.Students.length<1){
-            alert('חובה שיהיה לפחות חבר צוות אחת');
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חובה שיהיה לפחות חבר צוות אחד',alertIcon:'warning'})
+
             return false;
         }
         else{
             let flag = true;
             projectData.Students.forEach((student,index)=>{
                 if(student.Name===''){
-                    alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
+                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר שם',alertIcon:'warning'})
+
                     flag = false;
                 }
                 // if (student.Picture==='') {
@@ -472,12 +490,14 @@ export default class St3 extends React.Component{
             }
         }
         if(projectData.ProjectPDF ===''){
-            alert('חסר קובץ PDF/WORD');
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר קובץ PDF/WORD',alertIcon:'warning'})
+
             return false;
         }
         //project screenshots
         if (projectData.ScreenShots.length>5) {
-            alert('מספר תמונות המסך הוא עד 5');
+            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר תמונות המסך הוא עד 5',alertIcon:'warning'})
+
             return false;
         }      
         this.setState({
@@ -543,12 +563,16 @@ export default class St3 extends React.Component{
                         isPublished:this.state.isPublished,
                     })
                     .then(()=>{
-                        this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
+                        if(this.state.isPublished===true){
+                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'})
+                        }
+                        else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
                     })
                 }
             })
         }
     }
+    CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
     render(){
         if (!this.state.isReady) {
             return(
@@ -565,6 +589,7 @@ export default class St3 extends React.Component{
         return(
             <div style={{flex:1}}>
                 <NavbarProjs/>
+                <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
                 <ModalImage fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
