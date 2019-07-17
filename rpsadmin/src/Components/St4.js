@@ -106,7 +106,7 @@ export default class St3 extends React.Component{
                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                 }
             }
-           },3000)
+           },2000)
     }
     GetData=()=>{
         const ref = firebase.database().ref('RuppinProjects').child(projectKey);
@@ -312,11 +312,11 @@ export default class St3 extends React.Component{
         desertRef.delete().then(()=> {
             alert('התמונה נמחקה');
             const index = this.state.ScreenShots.indexOf(picURL);
-            console.log(index)
-            const array = this.state.ScreenShots.splice(index,1);
-            console.log(array);
-            this.setState({ScreenShots:array},()=>console.log(this.state.ScreenShots));
-            
+            let array = [...this.state.ScreenShots];
+            array.splice(index,1);
+            let array2 = [...this.state.ScreenShotsNames];
+            array2.splice(index,1);
+            this.setState({ScreenShots:array,ScreenShotsNames:array2,showImagesMode:false});
         }).catch((error)=> {
             console.log(error)
         });
@@ -557,15 +557,14 @@ export default class St3 extends React.Component{
                     })
                     .then(()=>{
                         if(this.state.isPublished===true){
-                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',text:'',alertIcon:'success'})
+                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'})
                         }
-                        else this.setState({alertShow:true,alertTitle:'שימו לב',text:'הפרויקט לא יפורסם',alertIcon:'warning'})
+                        else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
                         })                    
                 }
             })
         }
     }
-    CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
 
     render(){
         if (!this.state.isReady) {

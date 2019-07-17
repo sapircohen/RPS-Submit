@@ -284,11 +284,11 @@ export default class St3 extends React.Component{
         desertRef.delete().then(()=> {
             alert('התמונה נמחקה');
             const index = this.state.ScreenShots.indexOf(picURL);
-            console.log(index)
-            const array = this.state.ScreenShots.splice(index,1);
-            console.log(array);
-            this.setState({ScreenShots:array},()=>console.log(this.state.ScreenShots));
-            
+            let array = [...this.state.ScreenShots];
+            array.splice(index,1);
+            let array2 = [...this.state.ScreenShotsNames];
+            array2.splice(index,1);
+            this.setState({ScreenShots:array,ScreenShotsNames:array2,showImagesMode:false});
         }).catch((error)=> {
             console.log(error)
         });

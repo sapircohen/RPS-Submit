@@ -124,9 +124,10 @@ class St1 extends React.Component{
                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                 }
             }
-        },3000)
+        },2000)
     }
     GetData = ()=>{
+        this.setState({isReady:false},()=>{
         const ref = firebase.database().ref('RuppinProjects').child(projectKey);
         let dataForGroup ={};
         ref.once("value", (snapshot)=> {
@@ -173,7 +174,8 @@ class St1 extends React.Component{
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
                 ProjectCourse:course,
                 tags:tagsList,
-                functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:''
+                functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:'',
+                isReady:true
                 
             },()=>{
                 console.log(this.state.chosenTechs)
@@ -188,7 +190,7 @@ class St1 extends React.Component{
             //get topics for Final project from firebase
             this.getTopicForFinalProject();
         })
-        
+    })
     }
     getProjectDetails=()=>{
         const arrayOfTags = this.state.tags.map((text)=>text.text);
@@ -274,11 +276,7 @@ class St1 extends React.Component{
             console.log("The read failed: " + errorObject.code);
         })
     }
-    appExisting = (e)=>{
-        this.setState({
-            appExists:!this.state.appExists
-        })
-    }
+    appExisting = (e)=>{this.setState({appExists:!this.state.appExists})}
     changeCourseType = (e)=>{
         if(e.target.value==='פרויקט גמר'){
             this.setState({finalProject:true})
@@ -333,24 +331,11 @@ class St1 extends React.Component{
     }
     handleClose = ()=> {this.setState({ openModal: false });}
     handlePublishedChange = ()=>{this.setState({isPublished:!this.state.isPublished})}
-    getStudentsDetails = (students)=>{
-        this.setState({StudentsDetails:students},()=>{
-            console.log(this.state.StudentsDetails);
-        })
-    }
-    getProjectGoals = (goals)=>{
-        this.setState({projectGoals:goals},()=>{
-            console.log(this.state.projectGoals)
-        })
-    }
-    getprojectModules = (modules)=>{
-        this.setState({projectModules:modules},()=>{
-            console.log(this.state.projectModules)
-        })
-    }
+    getStudentsDetails = (students)=>{this.setState({StudentsDetails:students},()=>this.SaveData())}
+    getProjectGoals = (goals)=>{this.setState({projectGoals:goals})}
+    getprojectModules = (modules)=>{this.setState({projectModules:modules})}
     SetProjectOnFirbase = ()=>{
         const project = this.getProjectDetails();
-        console.log(project);
         this.setState({
             projectDetails:project,
         },()=>{
@@ -373,15 +358,11 @@ class St1 extends React.Component{
         }
     }
     changeScreenshots= (url,name)=>{
-        this.setState({
-            ScreenShots:[...this.state.ScreenShots,url],
-            ScreenShotsNames:[...this.state.ScreenShotsNames,name]
-        })
+        this.setState({ScreenShots:[...this.state.ScreenShots,url],ScreenShotsNames:[...this.state.ScreenShotsNames,name]})
     }
     changeStudentImage = (url,index)=>{
         this.state.StudentsDetails[index].Picture = url;
         this.forceUpdate();
-        console.log(this.state.StudentsDetails);
     }
     ValidateData = (projectData)=>{
         console.log(projectData);
@@ -464,7 +445,7 @@ class St1 extends React.Component{
             else{
                 let flag = true;
                 projectData.Goals.forEach((goal,index)=>{
-                    if (goal.GoalDescription.length<10) {
+                    if (goal.GoalDescription.length<2) {
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
@@ -472,7 +453,7 @@ class St1 extends React.Component{
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
-                    if(goal.GoalStatus.length<4){
+                    if(goal.GoalStatus.length<2){
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
@@ -570,7 +551,7 @@ class St1 extends React.Component{
             return true;
     }
     SaveData = ()=>{
-        console.log('saved')
+        //console.log('saved')
         const ref = firebase.database().ref('RuppinProjects/'+projectKey);
         ref.update({
             templateSubmit:'st1',
@@ -605,9 +586,6 @@ class St1 extends React.Component{
             Github:this.state.Github,
             functionalityMovie:this.state.functionalityMovie
         })
-        .then(()=>{
-            console.log('saved');
-        })
     }
     DeletePic = (picURL)=>{
         console.log(picURL)
@@ -616,10 +594,11 @@ class St1 extends React.Component{
         desertRef.delete().then(()=> {
             alert('התמונה נמחקה');
             const index = this.state.ScreenShots.indexOf(picURL);
-            console.log(index)
-            const array = this.state.ScreenShots.splice(index,1);
-            console.log(array);
-            this.setState({ScreenShots:array},()=>console.log(this.state.ScreenShots));
+            let array = [...this.state.ScreenShots];
+            array.splice(index,1);
+            let array2 = [...this.state.ScreenShotsNames];
+            array2.splice(index,1);
+            this.setState({ScreenShots:array,ScreenShotsNames:array2,showImagesMode:false});
         }).catch((error)=> {
             console.log(error)
         });
@@ -716,9 +695,9 @@ class St1 extends React.Component{
                         })
                         .then(()=>{
                             if(this.state.isPublished===true){
-                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',text:'',alertIcon:'success'})
+                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'})
                             }
-                            else this.setState({alertShow:true,alertTitle:'שימו לב',text:'הפרויקט לא יפורסם',alertIcon:'warning'})
+                            else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
                             })
                     }
             })
@@ -831,15 +810,14 @@ class St1 extends React.Component{
                                 </Col>
                                 <Col sm="4">
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Screenshots','')}>
-                                        <FaCameraRetro/>
-                                        {`  הוספת תמונות מסך`}
+                                        <FaCameraRetro/>{`  הוספת תמונות מסך`}
                                     </Button>
                                 </Col>
                                 {this.state.organization ?
                                 <Col sm="4">
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Customer Logo','Clogo')}>
                                          <FaCameraRetro/>
-                                         {this.state.customerLogo?`  עריכת לוגו לקוח`:`  הוספת לוגו לקוח`}
+                                         {this.state.customerLogo.length!==0?`  עריכת לוגו לקוח`:`  הוספת לוגו לקוח`}
                                     </Button>
                                 </Col>
                                 :
