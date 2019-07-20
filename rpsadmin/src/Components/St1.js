@@ -415,7 +415,7 @@ class St1 extends React.Component{
             }
             //project Topic 
             if (projectData.ProjectTopic==='') {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחר נושא פרויקט'})
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו נושא פרויקט'})
                 return false;
             }
             //project year
@@ -430,11 +430,11 @@ class St1 extends React.Component{
             }
             //project Advisors
             if(projectData.advisor[0]===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה א חסר',alertIcon:'warning'})
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה חלק א חסר',alertIcon:'warning'})
                 return false;
             } 
             if(projectData.advisor[1]===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה ב חסר',alertIcon:'warning'})
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה חלק ב חסר',alertIcon:'warning'})
                 return false;
             } 
             //project goals-->Goals

@@ -23,6 +23,8 @@ import PreviewCard from './PreviewProjectCard';
 import ModalImage from '../Common/ImageModal';
 import LinkInput from '../Common/Projectlinks';
 import Loader from 'react-loader-spinner';
+import SAlert from '../Common/SAlert';
+import ProjectModules from '../Common/ProjectModules';
 
 //get constants from localstorage
 const course = JSON.parse(localStorage.getItem('course'));
@@ -31,7 +33,7 @@ const groupData = JSON.parse(localStorage.getItem('groupData'));
 
 const sectionNames = {
     projectDesc : "רקע ומוטיבציה",
-    projectSystemDesc:"תיאור המערכת/תכנון הנדסי",
+    //projectSystemDesc:"תיאור המערכת/תכנון הנדסי",
     projectChallenges:"אתגרי הפרויקט",
     projectSmallDesc:"תיאור קצר",
     projectComments:"הערות",
@@ -62,7 +64,7 @@ export default class St5 extends React.Component{
         PDescription:'',
         firstAdvisor:'',
         secondAdvisor:'',
-        SystemDescription:'',
+        //SystemDescription:'',
         projectFindings:'',
         ProjectConclusion:'',
         advisorsList:[],
@@ -70,6 +72,7 @@ export default class St5 extends React.Component{
         MovieLink:'',
         PartnerDescription:'',
         projectGoals:[],
+        projectModules:[],
         techOptions : [],
         StudentsDetails:[],
         openModal:false,
@@ -96,10 +99,10 @@ export default class St5 extends React.Component{
             if(this.state.isPublished){
                 if(!this.ValidateData(this.getProjectDetails())){
                     this.setState({isPublished:false});
-                    alert('הפרויקט לא יפורסם')
+                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                 }
             }
-        },3000)
+        },2000)
     }
     GetData=()=>{
         const ref = firebase.database().ref('RuppinProjects').child(projectKey);
@@ -125,12 +128,13 @@ export default class St5 extends React.Component{
                 CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
                 projectGoals:dataForGroup.Goals?dataForGroup.Goals:[],
+                projectModules:dataForGroup.Module?dataForGroup.Module:[],
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
                 ProjectCourse:course,
                 ProjectConclusion:dataForGroup.ProjectConclusion?dataForGroup.ProjectConclusion:'',
-                SystemDescription:dataForGroup.SystemDescription?dataForGroup.SystemDescription:'',
+                //SystemDescription:dataForGroup.SystemDescription?dataForGroup.SystemDescription:'',
                 projectFindings:dataForGroup.projectFindings?dataForGroup.projectFindings:'',
                 PartnerDescription:dataForGroup.PartnerDescription?dataForGroup.PartnerDescription:''
             },()=>{
@@ -252,11 +256,12 @@ export default class St5 extends React.Component{
             CDescription:this.state.CDescription,
             ScreenShotsNames:this.state.ScreenShotsNames,
             Goals:this.state.projectGoals,
+            Module:this.state.projectModules,
             isPublished:this.state.isPublished,
             Technologies:this.state.chosenTechs,
             ProjectCourse:course,
             ProjectConclusion:this.state.ProjectConclusion,
-            SystemDescription:this.state.SystemDescription,
+            //SystemDescription:this.state.SystemDescription,
             projectFindings:this.state.projectFindings,
             PartnerDescription:this.state.PartnerDescription
         }
@@ -280,6 +285,7 @@ export default class St5 extends React.Component{
                 break;
         }
     }
+    getprojectModules = (modules)=>{this.setState({projectModules:modules})}
     changeScreenshots= (url,name)=>{
         this.setState({
             ScreenShots:[...this.state.ScreenShots,url],
@@ -301,6 +307,8 @@ export default class St5 extends React.Component{
                 ProjectName:this.state.ProjectName,
                 PDescription:this.state.PDescription,
                 MovieLink:this.state.MovieLink,
+                Goals:this.state.projectGoals,
+                Module:this.state.projectModules,
                 Students:this.state.StudentsDetails,
                 ScreenShots:this.state.ScreenShots,
                 ProjectLogo:this.state.logo,
@@ -310,7 +318,7 @@ export default class St5 extends React.Component{
                 isPublished:this.state.isPublished,
                 Technologies:this.state.chosenTechs,
                 ProjectConclusion:this.state.ProjectConclusion,
-                SystemDescription:this.state.SystemDescription,
+                //SystemDescription:this.state.SystemDescription,
                 projectFindings:this.state.projectFindings,
                 PartnerDescription:this.state.PartnerDescription
             })
@@ -336,10 +344,11 @@ export default class St5 extends React.Component{
         desertRef.delete().then(()=> {
             alert('התמונה נמחקה');
             const index = this.state.ScreenShots.indexOf(picURL);
-            console.log(index)
-            const array = this.state.ScreenShots.splice(index,1);
-            console.log(array);
-            this.setState({ScreenShots:array},()=>console.log(this.state.ScreenShots));
+            let array = [...this.state.ScreenShots];
+            array.splice(index,1);
+            let array2 = [...this.state.ScreenShotsNames];
+            array2.splice(index,1);
+            this.setState({ScreenShots:array,ScreenShotsNames:array2,showImagesMode:false});
         }).catch((error)=> {
             console.log(error)
         });
@@ -365,8 +374,8 @@ export default class St5 extends React.Component{
                 break;
             case sectionNames.PartnerDescription:this.setState({PartnerDescription:event.target.value})
                 break;
-            case sectionNames.projectSystemDesc:this.setState({SystemDescription:event})
-                break;
+            // case sectionNames.projectSystemDesc:this.setState({SystemDescription:event})
+            //     break;
            default:
                break;
         }
@@ -393,73 +402,104 @@ export default class St5 extends React.Component{
         console.log(projectData);
             // project name validation
             if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-                alert('שם הפרויקט חסר');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
                 return false;
             }
             // project short description validation
             if(projectData.CDescription.length<50){
-                alert("תיאור קצר צריך להיות גדול מ-50 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
                 return false;
             }
             if(projectData.CDescription.length>150){
-                alert("תיאור קצר צריך להיות קטן מ-150 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-150 תווים',alertIcon:'warning'})
                 return false;
             }
             //project long description -->PDescription
             if(projectData.PDescription.length<200){
-                alert("תיאור רקע ומוטיבציה צריך להיות גדול מ-200 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור רקע ומוטיבציה צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
             if(projectData.PDescription.length>500){
-                alert("תיאור רקע ומוטיבציה צריך להיות קטן מ-500 תווים");
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור רקע ומוטיבציה צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
                 return false;
             }
             //project Topic 
             if (projectData.ProjectTopic==='') {
-                alert('בחר נושא פרויקט');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו נושא פרויקט'})
                 return false;
             }
             //project year
             if (projectData.Year === "" || projectData.Year === "בחר") {
-                alert(' בחרו שנה');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו שנה',alertIcon:'warning'})
                 return false;
             }
             //project semester
             if (projectData.Semester === "" || projectData.Semester === "בחר") {
-                alert(' בחרו סמסטר');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו סמסטר',alertIcon:'warning'})
                 return false;
             }
             //project Advisors
             if(projectData.advisor[0]===''){
-                alert('מנחה א חסר ');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה חלק א חסר',alertIcon:'warning'})
                 return false;
             } 
             if(projectData.advisor[1]===''){
-                alert('מנחה ב חסר ');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה חלק ב חסר',alertIcon:'warning'})
                 return false;
             } 
             //project goals-->Goals
             if(projectData.Goals.length<2){
-                alert('מספר מטרות הפרויקט צריך להיות לפחות 2');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מטרות ודרישות הנדסיות צריך להיות לפחות 2',alertIcon:'warning'})
                 return false;
             }
             else{
                 let flag = true;
                 projectData.Goals.forEach((goal,index)=>{
                     if (goal.GoalDescription.length<10) {
-                        alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות גדול מ2 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
                     if (goal.GoalDescription.length>100) {
-                        alert(" תיאור מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
                     if(goal.GoalStatus.length<4){
-                        alert(" סטטוס מטרה מספר " +(index+1)+"צריך להיות גדול מ2 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
                     if(goal.GoalStatus.length>100){
-                        alert(" סטטוס מטרה מספר " +(index+1)+" צריך להיות קטן מ100 תווים ");
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
+                        flag= false;
+                    }
+                })
+                if (!flag) {
+                    return false;
+                }
+            }
+            //project modules -->Module
+            if(projectData.Module.length<2){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מודולי הפרויקט צריך להיות לפחות 2',alertIcon:'warning'})
+
+                return false;
+            }
+            else{
+                let flag = true;
+                projectData.Module.forEach((mod,index)=>{
+                    if (mod.ModuleDescription.length<20) {
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ",alertIcon:'warning'})
+                        flag= false;
+                    }
+                    if (mod.ModuleDescription.length>200) {
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ",alertIcon:'warning'})
+                        flag= false;
+                    }
+                    if(mod.ModuleName.length<3){
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" שם מודול מספר " +(index+1)+" צריך להיות גדול מ3 תווים ",alertIcon:'warning'})
+
+                        flag= false;
+                    }
+                    if(mod.ModuleName.length>100){
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ",alertIcon:'warning'})
                         flag= false;
                     }
                 })
@@ -469,33 +509,33 @@ export default class St5 extends React.Component{
             }
             //project technologies -->Technologies
             if(projectData.Technologies.length<5){
-                alert('מספר הטכנולוגיות צריך להיות לפחות 5');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר הטכנולוגיות צריך להיות לפחות 5',alertIcon:'warning'})
                 return false;
             }
             //project screenshots
             if (projectData.ScreenShots.length<5) {
-                alert('מספר תמונות המסך צריך להיות לפחות 5');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר תמונות המסך צריך להיות לפחות 5'})
                 return false;
             }        
             //project logo
             if (projectData.ProjectLogo<1) {
-                alert('חסר לוגו הפרויקט');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסרה תמונה מייצגת',alertIcon:'warning'})
                 return false;
             }
             //project students
             if(projectData.Students.length<1){
-                alert('חייב שיהיה לפחות חבר צוות אחת');
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חייב להיות לפחות חבר צוות אחד',alertIcon:'warning'})
                 return false;
             }
             else{
                 let flag = true;
                 projectData.Students.forEach((student,index)=>{
                     if(student.Name===''){
-                        alert('לסטודנט/ית מספר '+(index+1)+' חסר שם');
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר שם',alertIcon:'warning'})
                         flag = false;
                     }
                     if (student.Picture==='') {
-                        alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר תמונה',alertIcon:'warning'})
                         flag = false;
                     }
                 })
@@ -521,7 +561,10 @@ export default class St5 extends React.Component{
                         isPublished:this.state.isPublished,
                     })
                     .then(()=>{
-                        this.state.isPublished===true?alert('הפרויקט פורסם'):alert('הפרויקט לא יפורסם');
+                        if(this.state.isPublished===true){
+                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'})
+                        }
+                        else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
                     })
                 }
             })
@@ -543,6 +586,7 @@ export default class St5 extends React.Component{
         return(
             <div style={{flex:1,backgroundColor:'#eee'}}>
                 <NavbarProjs />
+                <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 <HeaderForm title={this.state.GroupName}/>
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
@@ -560,7 +604,7 @@ export default class St5 extends React.Component{
                         {/* project background and motivation */}
                         <RichText IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         {/* project description */}
-                        <RichText IsMandatory={true}  defaultInput={this.state.SystemDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSystemDesc} />
+                        {/* <RichText IsMandatory={true}  defaultInput={this.state.SystemDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSystemDesc} /> */}
                         {/* Project Findings*/}
                         <RichText  defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
                         {/* Project Conclusion*/}
@@ -578,7 +622,8 @@ export default class St5 extends React.Component{
                             <SelectInput IsMandatory={true}  defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                     </div>
-                    <ProjectGoals initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
+                    <ProjectGoals title={"מטרות ודרישות הנדסיות"} initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
+                    <ProjectModules title={"תיאור מערכת / תכנון הנדסי"} initalProjectModule={this.state.projectModules} setProjectModules={this.getprojectModules}/>
                     {/* techs tag */}
                     <Techs TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
                     {/* FILES UPLOAD */}
