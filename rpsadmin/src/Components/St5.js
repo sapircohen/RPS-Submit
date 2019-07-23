@@ -102,7 +102,7 @@ export default class St5 extends React.Component{
                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                 }
             }
-        },2000)
+        },6000)
     }
     GetData=()=>{
         const ref = firebase.database().ref('RuppinProjects').child(projectKey);

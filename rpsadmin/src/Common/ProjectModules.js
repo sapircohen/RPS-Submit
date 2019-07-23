@@ -22,7 +22,7 @@ export default class ProjectModules extends React.Component{
                 })
             }
             else this.props.setProjectModules(this.state.modules);
-        },1000)
+        },3000)
     }
     addModule = ()=>{
         this.setState((prevState) => ({

@@ -97,7 +97,7 @@ class St1 extends React.Component{
             CustCustomers:'',
             CStackholders:'',
             projectDetails:{},
-            isReady:true,
+            isReady:false,
             coursesList:[],
             topicList:[],
             firstAdvisor:'',
@@ -108,6 +108,7 @@ class St1 extends React.Component{
             Year:'',
             Semester:'',
             ProjectCourse:'',
+            ProjectTopic:'בחר',
             functionalityMovie:'',
         }
         this.handleDelete = this.handleDelete.bind(this);
@@ -124,7 +125,7 @@ class St1 extends React.Component{
                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                 }
             }
-        },2000)
+        },5500)
     }
     GetData = ()=>{
         this.setState({isReady:false},()=>{
@@ -173,10 +174,9 @@ class St1 extends React.Component{
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
                 ProjectCourse:course,
+                ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
                 tags:tagsList,
                 functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:'',
-                isReady:true
-                
             },()=>{
                 console.log(this.state.chosenTechs)
                 this.setState({projectDetails:this.getProjectDetails()})
@@ -198,7 +198,7 @@ class St1 extends React.Component{
             ProjectName:this.state.ProjectName,
             PDescription:this.state.PDescription,
             Challenges:this.state.Challenges,
-            ProjectTopic:this.state.organization===true?'ארגוני':'יזמי',
+            ProjectTopic:this.state.ProjectTopic,
             ProjectCourse:course,
             advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
             HashTags:arrayOfTags,
@@ -226,6 +226,9 @@ class St1 extends React.Component{
             isApproved:1,
             functionalityMovie:this.state.functionalityMovie
         }
+        this.setState({
+            isReady:true
+        })
         return project;
     }
     getCourses= ()=>{
@@ -293,10 +296,10 @@ class St1 extends React.Component{
     handleAddition(tag){this.setState(state => ({ tags: [...state.tags, tag] }))}
     changeProjectType = (e)=>{
         if (e.target.value==='יזמי') {
-            this.setState({organization:false})
+            this.setState({organization:false,ProjectTopic:e.target.value})
         }
         else{
-            this.setState({organization:true})
+            this.setState({organization:true,ProjectTopic:e.target.value})
         }
     }
     TechsChosen (value){
@@ -414,7 +417,7 @@ class St1 extends React.Component{
                 return false;
             }
             //project Topic 
-            if (projectData.ProjectTopic==='') {
+            if (projectData.ProjectTopic==='בחר') {
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו נושא פרויקט'})
                 return false;
             }
@@ -552,10 +555,12 @@ class St1 extends React.Component{
     }
     SaveData = ()=>{
         //console.log('saved')
+        const arrayOfTags = this.state.tags.map((text)=>text.text);
         const ref = firebase.database().ref('RuppinProjects/'+projectKey);
         ref.update({
             templateSubmit:'st1',
             templateView:'vt1',
+            ProjectTopic:this.state.ProjectTopic,
             ProjectCourse:course,
             ProjectName: this.state.ProjectName,
             ProjectSite:this.state.ProjectSite,
@@ -581,7 +586,7 @@ class St1 extends React.Component{
             GooglePlay:this.state.googleLink,
             AppStore:this.state.appleLink,
             CustomerName:this.state.CustomerName,
-            HashTags:this.state.HashTags,
+            HashTags:arrayOfTags,
             PDescription:this.state.PDescription,
             Github:this.state.Github,
             functionalityMovie:this.state.functionalityMovie
@@ -753,7 +758,7 @@ class St1 extends React.Component{
                             {/* semester */}
                             <SelectInput IsMandatory={true} defaultInput={this.state.Semester}   inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* projectType */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.organization?'ארגוני':'יזמי'}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.ProjectTopic}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}
                             <SelectInput IsMandatory={true}  defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* second advisor */}

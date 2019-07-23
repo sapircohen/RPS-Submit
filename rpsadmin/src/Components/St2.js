@@ -84,7 +84,7 @@ class St2 extends React.Component{
                 this.setState({alertShow:true,alertTitle:'הפרויקט לא יפורסם',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
             }
         }
-       },3000)
+       },6000)
     }
     GetData=()=>{
         //get group data from local storage

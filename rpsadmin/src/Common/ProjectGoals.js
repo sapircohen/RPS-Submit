@@ -24,7 +24,7 @@ export default class ProjectGoals extends React.Component{
                 })
             }
             else this.props.setProjectGoals(this.state.goals);
-        },1000)
+        },3000)
     }
     addGoal = ()=>{
         this.setState((prevState) => ({
