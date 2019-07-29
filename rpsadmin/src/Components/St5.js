@@ -24,36 +24,37 @@ import ModalImage from '../Common/ImageModal';
 import LinkInput from '../Common/Projectlinks';
 import Loader from 'react-loader-spinner';
 import SAlert from '../Common/SAlert';
-import ProjectModules from '../Common/ProjectModules';
-
 //get constants from localstorage
 const course = JSON.parse(localStorage.getItem('course'));
 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
 const groupData = JSON.parse(localStorage.getItem('groupData'));
 
 const sectionNames = {
-    projectDesc : "רקע ומוטיבציה",
-    //projectSystemDesc:"תיאור המערכת/תכנון הנדסי",
+    projectDesc : "רקע ומטרת הפרויקט *עד 400 תוים",
     projectChallenges:"אתגרי הפרויקט",
-    projectSmallDesc:"תיאור קצר",
+    projectSmallDesc:" תיאור קצר *עד 200 תוים",
     projectComments:"הערות",
     projectName:"שם הפרויקט",
     projectStackholders:"בעלי עניין",
     projectCustCustomers:"משתמשי המערכת",
     projectCustomerName:'שם הלקוח',
     projectType:'נושא הפרויקט',
-    projectFirstAdvisor:"מנחה חלק א",
-    projectSecondAdvisor:"מנחה חלק ב",
+    projectFirstAdvisor:"מנחה א",
+    projectSecondAdvisor:"מנחה ב",
     projectMovie:'קישור לסרטון הפרויקט ביוטיוב',
     projectSemester:'סמסטר',
     projectYear:'שנה',
-    ProjectConclusion:'מסקנות',
-    projectFindings:'ממצאים',
-    projectPartnerDescription:'תיאור שותף תעשייתי'
+    ProjectConclusion:'סיכום ומסקנות *עד 1000 תוים',
+    projectFindings:'תוצאות *עד 2000 תוים',
+    projectPartnerDescription:'תיאור שותף תעשייתי',
+    ProjectSummery:'תקציר *עד 1000 תוים'
 }
-
 export default class St5 extends React.Component{
     state={
+        alertTitle:'',
+        alertText:'',
+        alertShow:false,
+        alertIcon:'warning',
         isSaved:false,
         imageAspect:4/3,
         showPreview:false,
@@ -64,7 +65,6 @@ export default class St5 extends React.Component{
         PDescription:'',
         firstAdvisor:'',
         secondAdvisor:'',
-        //SystemDescription:'',
         projectFindings:'',
         ProjectConclusion:'',
         advisorsList:[],
@@ -72,7 +72,6 @@ export default class St5 extends React.Component{
         MovieLink:'',
         PartnerDescription:'',
         projectGoals:[],
-        projectModules:[],
         techOptions : [],
         StudentsDetails:[],
         openModal:false,
@@ -87,10 +86,14 @@ export default class St5 extends React.Component{
         ProjectCourse:'',
         projectDetails:{},
         ProjectPDF:'',
+        SystemDescriptionPDF:'',
         chosenTechs:[],
         Year:'',
         Semester:'',
-        isReady:true
+        isReady:true,
+        ProjectSummery:'',
+        ProjectTopic:'בחר',
+        topicList:[]
     }
     componentDidMount(){
         this.GetData();
@@ -112,7 +115,9 @@ export default class St5 extends React.Component{
         })
         .then(()=>{
             this.setState({
+                ProjectSummery:dataForGroup.ProjectSummery?dataForGroup.ProjectSummery:'',
                 ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
+                SystemDescriptionPDF:dataForGroup.SystemDescriptionPDF?dataForGroup.SystemDescriptionPDF:'',
                 Year:dataForGroup.Year?dataForGroup.Year:'',
                 Semester:dataForGroup.Semester?dataForGroup.Semester:'',
                 Advisor:dataForGroup.Advisor?dataForGroup.Advisor:'',
@@ -128,20 +133,20 @@ export default class St5 extends React.Component{
                 CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
                 projectGoals:dataForGroup.Goals?dataForGroup.Goals:[],
-                projectModules:dataForGroup.Module?dataForGroup.Module:[],
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
                 ProjectCourse:course,
                 ProjectConclusion:dataForGroup.ProjectConclusion?dataForGroup.ProjectConclusion:'',
-                //SystemDescription:dataForGroup.SystemDescription?dataForGroup.SystemDescription:'',
                 projectFindings:dataForGroup.projectFindings?dataForGroup.projectFindings:'',
-                PartnerDescription:dataForGroup.PartnerDescription?dataForGroup.PartnerDescription:''
+                PartnerDescription:dataForGroup.PartnerDescription?dataForGroup.PartnerDescription:'',
+                ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
             },()=>{
                 this.setState({projectDetails:this.getProjectDetails()})
             })
             this.getTechnologies();
             this.getAdvisors();
+            this.getTopicForFinalProject();
         })
     }
     OpenImageModal = (title,pic)=>this.setState({openModal:true,modalTitle:title,picTitle:pic})
@@ -155,6 +160,17 @@ export default class St5 extends React.Component{
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
             console.log(snapshot.val())
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
+    }
+    getTopicForFinalProject = ()=>{
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses').child('Final project').child('Topics');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((topicName)=>{
+                this.setState({topicList:[...this.state.topicList,topicName.val().Name]});
+                console.log(topicName.val())
+            })
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
         })
@@ -186,12 +202,20 @@ export default class St5 extends React.Component{
                 ProjectPDF:this.state.ProjectPDF,
             })
         })
-    }   
+    }
+    saveDescPDF = (url)=>{
+        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+        this.setState({SystemDescriptionPDF:url
+        },()=>{
+            console.log(this.state.ProjectPDF)
+            ref.update({
+                ProjectPDF:this.state.ProjectPDF,
+            })
+        })
+    }     
     DeletePdf=()=>{
-        console.log(this.state.ProjectPDF)
         if(this.state.ProjectPDF!==''){
             const desertRef = firebase.storage().refFromURL(this.state.ProjectPDF);
-            // Delete the file
             desertRef.delete().then(()=> { 
                 this.setState({
                     ProjectPDF:''
@@ -199,6 +223,23 @@ export default class St5 extends React.Component{
                     const ref = firebase.database().ref('RuppinProjects/'+projectKey);
                     ref.update({
                         ProjectPDF:this.state.ProjectPDF,
+                    })
+                })            
+            }).catch((error)=> {
+                console.log(error)
+            });
+        }
+    }
+    DeleteDescPdf=()=>{
+        if(this.state.SystemDescriptionPDF!==''){
+            const desertRef = firebase.storage().refFromURL(this.state.SystemDescriptionPDF);
+            desertRef.delete().then(()=> { 
+                this.setState({
+                    SystemDescriptionPDF:''
+                },()=>{
+                    const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                    ref.update({
+                        SystemDescriptionPDF:this.state.SystemDescriptionPDF,
                     })
                 })            
             }).catch((error)=> {
@@ -241,7 +282,10 @@ export default class St5 extends React.Component{
     }
     getProjectDetails = ()=>{
         const project = {
+            ProjectTopic:this.state.ProjectTopic,
             ProjectPDF:this.state.ProjectPDF,
+            ProjectSummery:this.state.ProjectSummery,
+            SystemDescriptionPDF:this.state.SystemDescriptionPDF,
             Year:this.state.Year,
             Semester:this.state.Semester,
             advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
@@ -256,14 +300,12 @@ export default class St5 extends React.Component{
             CDescription:this.state.CDescription,
             ScreenShotsNames:this.state.ScreenShotsNames,
             Goals:this.state.projectGoals,
-            Module:this.state.projectModules,
             isPublished:this.state.isPublished,
             Technologies:this.state.chosenTechs,
             ProjectCourse:course,
             ProjectConclusion:this.state.ProjectConclusion,
-            //SystemDescription:this.state.SystemDescription,
             projectFindings:this.state.projectFindings,
-            PartnerDescription:this.state.PartnerDescription
+            PartnerDescription:this.state.PartnerDescription,
         }
         return project;
     }
@@ -285,7 +327,6 @@ export default class St5 extends React.Component{
                 break;
         }
     }
-    getprojectModules = (modules)=>{this.setState({projectModules:modules})}
     changeScreenshots= (url,name)=>{
         this.setState({
             ScreenShots:[...this.state.ScreenShots,url],
@@ -299,6 +340,7 @@ export default class St5 extends React.Component{
                 templateView:'vt1',
                 ProjectCourse:course,
                 ProjectPDF:this.state.ProjectPDF,
+                SystemDescriptionPDF:this.state.SystemDescriptionPDF,
                 Year:this.state.Year,
                 Semester:this.state.Semester,
                 Advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
@@ -308,7 +350,6 @@ export default class St5 extends React.Component{
                 PDescription:this.state.PDescription,
                 MovieLink:this.state.MovieLink,
                 Goals:this.state.projectGoals,
-                Module:this.state.projectModules,
                 Students:this.state.StudentsDetails,
                 ScreenShots:this.state.ScreenShots,
                 ProjectLogo:this.state.logo,
@@ -318,9 +359,9 @@ export default class St5 extends React.Component{
                 isPublished:this.state.isPublished,
                 Technologies:this.state.chosenTechs,
                 ProjectConclusion:this.state.ProjectConclusion,
-                //SystemDescription:this.state.SystemDescription,
                 projectFindings:this.state.projectFindings,
-                PartnerDescription:this.state.PartnerDescription
+                PartnerDescription:this.state.PartnerDescription,
+                ProjectSummery:this.state.ProjectSummery
             })
     }
     changeStudentImage = (url,index)=>{
@@ -328,6 +369,7 @@ export default class St5 extends React.Component{
         this.forceUpdate();
         console.log(this.state.StudentsDetails);
     }
+    changeProjectType = (e)=>{this.setState({ProjectTopic:e.target.value})}
     ChangeLinkInput = (event,linkTitle)=>{
         switch (linkTitle) {
             case sectionNames.projectMovie:
@@ -353,10 +395,10 @@ export default class St5 extends React.Component{
             console.log(error)
         });
     }
-    TechsChosen (value){
+    TechsChosen(value){
         this.setState({
             chosenTechs:value.map((val)=>{
-                return val.value;
+                return val;
             })
         })
     }
@@ -372,10 +414,10 @@ export default class St5 extends React.Component{
                 break;
             case sectionNames.ProjectConclusion:this.setState({ProjectConclusion:event})
                 break;
-            case sectionNames.PartnerDescription:this.setState({PartnerDescription:event.target.value})
+            case sectionNames.projectPartnerDescription:this.setState({PartnerDescription:event.target.value})
                 break;
-            // case sectionNames.projectSystemDesc:this.setState({SystemDescription:event})
-            //     break;
+            case sectionNames.ProjectSummery:this.setState({ProjectSummery:event})
+                break;
            default:
                break;
         }
@@ -405,22 +447,28 @@ export default class St5 extends React.Component{
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
                 return false;
             }
-            // project short description validation
-            if(projectData.CDescription.length<50){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
+            if(projectData.CDescription.length>200){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
-            if(projectData.CDescription.length>150){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-150 תווים',alertIcon:'warning'})
+            //project summery
+            if(projectData.ProjectSummery.length>1000){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'התקציר צריך להיות קטן מ-1000 תווים',alertIcon:'warning'})
                 return false;
             }
             //project long description -->PDescription
-            if(projectData.PDescription.length<200){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור רקע ומוטיבציה צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
+            if(projectData.PDescription.length>400){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור רקע מטרת הפרויקט צריך להיות קטן מ-400 תווים',alertIcon:'warning'})
                 return false;
             }
-            if(projectData.PDescription.length>500){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור רקע ומוטיבציה צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
+            //project findings
+            if(projectData.projectFindings.length>2000){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה תוצאות הפרויקט צריך להיות קטן מ-2000 תווים',alertIcon:'warning'})
+                return false;
+            }
+            //project Conclusion
+            if(projectData.ProjectConclusion.length>1000){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה סיכום ומסקנות הפרויקט צריך להיות קטן מ-1000 תווים',alertIcon:'warning'})
                 return false;
             }
             //project Topic 
@@ -440,11 +488,7 @@ export default class St5 extends React.Component{
             }
             //project Advisors
             if(projectData.advisor[0]===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה חלק א חסר',alertIcon:'warning'})
-                return false;
-            } 
-            if(projectData.advisor[1]===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה חלק ב חסר',alertIcon:'warning'})
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה א חסר',alertIcon:'warning'})
                 return false;
             } 
             //project goals-->Goals
@@ -455,7 +499,7 @@ export default class St5 extends React.Component{
             else{
                 let flag = true;
                 projectData.Goals.forEach((goal,index)=>{
-                    if (goal.GoalDescription.length<10) {
+                    if (goal.GoalDescription.length<2) {
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
@@ -463,43 +507,12 @@ export default class St5 extends React.Component{
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
-                    if(goal.GoalStatus.length<4){
+                    if(goal.GoalStatus.length<2){
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
                     if(goal.GoalStatus.length>100){
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
-                        flag= false;
-                    }
-                })
-                if (!flag) {
-                    return false;
-                }
-            }
-            //project modules -->Module
-            if(projectData.Module.length<2){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מודולי הפרויקט צריך להיות לפחות 2',alertIcon:'warning'})
-
-                return false;
-            }
-            else{
-                let flag = true;
-                projectData.Module.forEach((mod,index)=>{
-                    if (mod.ModuleDescription.length<20) {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ",alertIcon:'warning'})
-                        flag= false;
-                    }
-                    if (mod.ModuleDescription.length>200) {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ",alertIcon:'warning'})
-                        flag= false;
-                    }
-                    if(mod.ModuleName.length<3){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" שם מודול מספר " +(index+1)+" צריך להיות גדול מ3 תווים ",alertIcon:'warning'})
-
-                        flag= false;
-                    }
-                    if(mod.ModuleName.length>100){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ",alertIcon:'warning'})
                         flag= false;
                     }
                 })
@@ -520,6 +533,16 @@ export default class St5 extends React.Component{
             //project logo
             if (projectData.ProjectLogo<1) {
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסרה תמונה מייצגת',alertIcon:'warning'})
+                return false;
+            }
+            //project book pdf
+            if(projectData.ProjectPDF ===''){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר מסמך PDF של ספר הפרויקט',alertIcon:'warning'})
+                return false;
+            }
+            //project system pdf
+            if(projectData.SystemDescriptionPDF ===''){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר מסמך PDF של תיאור מערכת / תכנון הנדסי ',alertIcon:'warning'})
                 return false;
             }
             //project students
@@ -570,6 +593,7 @@ export default class St5 extends React.Component{
             })
         }
     }
+    CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
     render(){
         if (!this.state.isReady) {
             return(
@@ -601,14 +625,14 @@ export default class St5 extends React.Component{
                         <TextInputs IsMandatory={true} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* project Small Description */}
                         <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        {/* Project Summery*/}
+                        <RichText IsMandatory={true} defaultInput={this.state.ProjectSummery} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectSummery} />
                         {/* project background and motivation */}
                         <RichText IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
-                        {/* project description */}
-                        {/* <RichText IsMandatory={true}  defaultInput={this.state.SystemDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSystemDesc} /> */}
                         {/* Project Findings*/}
-                        <RichText  defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
+                        <RichText IsMandatory={true}   defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
                         {/* Project Conclusion*/}
-                        <RichText  defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
+                        <RichText IsMandatory={true}   defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
                         {/* project partner Description */}
                         <TextareaInput IsMandatory={false}  defaultInput={this.state.PartnerDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectPartnerDescription} />
                         <Form.Row dir="rtl">
@@ -616,16 +640,36 @@ export default class St5 extends React.Component{
                             <SelectInput IsMandatory={true} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
                             <SelectInput IsMandatory={true} defaultInput={this.state.Semester} inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.ProjectTopic}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}
                             <SelectInput IsMandatory={true}  defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* second advisor */}
-                            <SelectInput IsMandatory={true}  defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={false}  defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                     </div>
                     <ProjectGoals title={"מטרות ודרישות הנדסיות"} initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
-                    <ProjectModules title={"תיאור מערכת / תכנון הנדסי"} initalProjectModule={this.state.projectModules} setProjectModules={this.getprojectModules}/>
+                    {/* project system pdf description */}
+                    <div style={{border:'solid 1px',padding:20,borderRadius:30,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+                        <SmallHeaderForm title="תיאור מערכת / תכנון הנדסי"/>
+                        <Row dir="rtl" style={{marginTop:'2%'}} >
+                            <Col sm="4"></Col>
+                            <Col sm="4">
+                                <LabelTextPDF ProjectPDF={this.state.SystemDescriptionPDF} IsMandatory={true} />
+                                <PDFupload DeletePdf={this.DeleteDescPdf} pdfFileSize={30000000} wordFileSize={5000000} savePDF={this.saveDescPDF}/>
+                            </Col>
+                        </Row>
+                        <SmallHeaderForm title="ספר הפרויקט"/>
+                        {/* pdf */}
+                        <Row dir="rtl" style={{marginTop:'2%'}} >
+                            <Col sm="4"></Col>
+                            <Col sm="4">
+                                <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={true} />
+                                <PDFupload DeletePdf={this.DeletePdf} pdfFileSize={30000000} wordFileSize={5000000} savePDF={this.savePDF}/>
+                            </Col>
+                        </Row>
+                    </div>
                     {/* techs tag */}
-                    <Techs TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
+                    <Techs chosenTechs={this.state.chosenTechs} TechsChosen={this.TechsChosen.bind(this)} techs={this.state.techOptions}/>
                     {/* FILES UPLOAD */}
                     <div style={{border:'solid 1px',padding:20,borderRadius:30,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                     <SmallHeaderForm title="קבצים"/>
@@ -661,14 +705,7 @@ export default class St5 extends React.Component{
                                 </Col>
                                 <Col sm="4"></Col>
                             </Row>
-                            {/* pdf */}
-                            <Row dir="rtl" style={{marginTop:'2%'}} >
-                                <Col sm="4"></Col>
-                                <Col sm="4">
-                                    <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={false} />
-                                    <PDFupload DeletePdf={this.DeletePdf} pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
-                                </Col>
-                            </Row>
+                            
                             {/* project movie link */}
                             <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
                     </div>

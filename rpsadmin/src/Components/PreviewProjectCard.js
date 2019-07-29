@@ -9,10 +9,11 @@ import RichTextPreviewParagraph from '../Common/RichTextPreviewP';
 import '../css/previewStyle.css';
 //ICONS:
 import { FaGoogle,FaAppleAlt,FaCameraRetro } from "react-icons/fa";
-import {FiLayers,FiPaperclip} from 'react-icons/fi';
+import {FiLayers,FiPaperclip,FiEdit2,FiAward} from 'react-icons/fi';
 import { GiClapperboard,GiThreeFriends ,GiCrosshair} from "react-icons/gi";
 import {GoBook,GoTag,GoMarkGithub} from 'react-icons/go';
-import {IoIosLaptop,IoIosDesktop} from 'react-icons/io';
+import {IoIosLaptop,IoIosDesktop,IoIosRocket,IoIosContacts,IoMdPie,IoMdSkipForward} from 'react-icons/io';
+import PreviewParagraph from '../Common/PreviewParagraph';
 
 export default class PreviewCard extends React.Component{
     state={
@@ -45,6 +46,11 @@ export default class PreviewCard extends React.Component{
                             )
                         }
                     </Row>
+                    {/* project short description */}
+                    {
+                        this.props.projectDetails.CDescription &&
+                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.CDescription} Title="תיאור קצר" Icon={GoBook} />
+                    }
                     {/* project advisors */}
                     <Row className="show-grid"  style={{marginTop:'3%'}}>
                         <Col xs={12}>
@@ -116,9 +122,43 @@ export default class PreviewCard extends React.Component{
                         </Row>
                         )
                     }
+                    {/* project summery */}
+                    {
+                        this.props.projectDetails.ProjectSummery &&
+                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectSummery} Title="תקציר הפרויקט" Icon={IoMdSkipForward} />
+                    }
                     {/* project full description */}
                     <RichTextPreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="תיאור הפרויקט" Icon={GoBook} />
-                    
+                    {/* project Challenges description */}
+                    {
+                        this.props.projectDetails.Challenges &&
+                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Challenges} Title="אתגרי הפרויקט" Icon={IoIosRocket} />
+                    }
+                    {/* project findings */}
+                    {
+                    this.props.projectDetails.projectFindings &&
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.projectFindings} Title="ממצאים" Icon={FiEdit2} />
+                    }
+                    {/* project solution */}
+                    {
+                    this.props.projectDetails.projectSolution &&
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.projectSolution} Title="פתרון" Icon={FiAward} />
+                    }
+                    {/* project Conclusion */}
+                    {
+                    this.props.projectDetails.ProjectConclusion &&
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="מסקנות" Icon={IoMdPie} />
+                    }
+                    {/* project industrial partner */}
+                    {
+                    this.props.projectDetails.PartnerDescription &&
+                    <PreviewParagraph Paragraph={this.props.projectDetails.PartnerDescription} Title="שותף תעשייתי" Icon={IoIosContacts} />
+                    }
+                    {/* project Comments */}
+                    {
+                    this.props.projectDetails.Comments &&
+                    <PreviewParagraph Paragraph={this.props.projectDetails.Comments} Title="הערות" Icon={IoIosContacts} />
+                    }
                     {/* project goals (for IS project) */}
                     {
                         this.props.projectDetails.Goals &&
@@ -146,6 +186,7 @@ export default class PreviewCard extends React.Component{
                             <Col style={{textAlign:'right'}} sm="2"></Col>
                         </Row>
                     }
+                    
                     {/* students details */}
                     <div style={{marginTop:'4%'}} className="Box">
                         <Row dir="rtl" className="show-grid">
@@ -203,19 +244,25 @@ export default class PreviewCard extends React.Component{
                             </Row>
                         </Col>
                     }
-                    {/* project PDF */}
-                    {
+                    {/* project system PDF */}
+                    <Row style={{marginTop:'5%',textAlign:'center'}}>
+                        {
+                        this.props.projectDetails.SystemDescriptionPDF &&
+                        <Col style={{textAlign:'center'}} sm="6">
+                            <Button onClick={()=>window.open(this.props.projectDetails.SystemDescriptionPDF,"_blank")} formTarget="blank" dir="rtl" variant="info">
+                                <FiPaperclip/>  תיאור מערכת / תכנון הנדסי
+                            </Button>
+                        </Col>
+                        }
+                        {
                         this.props.projectDetails.ProjectPDF &&
-                        <Row style={{marginTop:'5%',textAlign:'center'}}>
-                            <Col sm="4"></Col>
-                            <Col style={{textAlign:'center'}} sm="4">
-                                <Button onClick={()=>window.open(this.props.projectDetails.ProjectPDF,"_blank")} formTarget="blank" dir="rtl" variant="info">
-                                    <FiPaperclip/>  PDF להורדה
-                                </Button>
-                            </Col>
-                            <Col sm="4"></Col>
-                        </Row>
-                    }
+                        <Col style={{textAlign:'center'}} sm="6">
+                            <Button onClick={()=>window.open(this.props.projectDetails.ProjectPDF,"_blank")} formTarget="blank" dir="rtl" variant="info">
+                                <FiPaperclip/>  ספר הפרויקט
+                            </Button>
+                        </Col>
+                        }
+                    </Row>
                     {/* project modules (for IS project) */}
                     {
                         this.props.projectDetails.Module &&
@@ -322,9 +369,6 @@ export default class PreviewCard extends React.Component{
               </Modal.Body>  
               <Modal.Footer style={{justifyContent:'space-between'}}>
                 <Col sm='3'></Col>
-                {/* <Col sm='3' style={{textAlign:'center'}}>
-                    <Button onClick={this.OnSave} variant="success">שמירה</Button>
-                </Col> */}
                 <Col sm='6' style={{textAlign:'center'}}>
                     <Button onClick={this.props.close} variant="warning">סגירה</Button>
                 </Col>

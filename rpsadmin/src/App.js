@@ -13,19 +13,20 @@ import CourseChoice from './Components/CourseChoice';
 import firebase from 'firebase';
 import 'firebase/storage';
 
-import { FirebaseProdConfig } from './Constants/APIkeys';
-//import { FirebaseTestConfig } from './Constants/APIkeys';
+//import { FirebaseProdConfig } from './Constants/APIkeys';
+import { FirebaseTestConfig } from './Constants/APIkeys';
+import LoginScreen from './Components/LoginScreen';
 
-firebase.initializeApp(FirebaseProdConfig);
-//firebase.initializeApp(FirebaseTestConfig);
+//firebase.initializeApp(FirebaseProdConfig);
+firebase.initializeApp(FirebaseTestConfig);
 export const storage =  firebase.storage();
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <Route path='/' exact component={LoginPage}/>
-        <Route path='/CourseChoice'  component={CourseChoice}/>
+        <Route path='/' exact component={LoginScreen}/>
+        <Route path='/CourseChoice' component={CourseChoice}/>
         <Route path='/st1'  component={St1}/>
         <Route path='/st2'  component={St2}/>
         <Route path='/st3' component={St3}/>
