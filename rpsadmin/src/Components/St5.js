@@ -338,6 +338,7 @@ export default class St5 extends React.Component{
             ref.update({
                 templateSubmit:'st5',
                 templateView:'vt1',
+                ProjectTopic:this.state.ProjectTopic,
                 ProjectCourse:course,
                 ProjectPDF:this.state.ProjectPDF,
                 SystemDescriptionPDF:this.state.SystemDescriptionPDF,
@@ -447,18 +448,30 @@ export default class St5 extends React.Component{
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
                 return false;
             }
-            if(projectData.CDescription.length>200){
+            if(projectData.CDescription.length>200 || projectData.CDescription.length===0){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
+            if(projectData.CDescription.length===0){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר חסר',alertIcon:'warning'})
+                return false;
+            }
             //project summery
-            if(projectData.ProjectSummery.length>1000){
+            if(projectData.ProjectSummery.length>1000 || projectData.ProjectSummery.length===0){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'התקציר צריך להיות קטן מ-1000 תווים',alertIcon:'warning'})
                 return false;
             }
+            if(projectData.ProjectSummery.length===0){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'התקציר חסר',alertIcon:'warning'})
+                return false;
+            }
             //project long description -->PDescription
-            if(projectData.PDescription.length>400){
+            if(projectData.PDescription.length>400 || projectData.PDescription.length===0){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור רקע מטרת הפרויקט צריך להיות קטן מ-400 תווים',alertIcon:'warning'})
+                return false;
+            }
+            if( projectData.PDescription.length===0){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור רקע מטרת הפרויקט חסר',alertIcon:'warning'})
                 return false;
             }
             //project findings
@@ -466,16 +479,20 @@ export default class St5 extends React.Component{
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה תוצאות הפרויקט צריך להיות קטן מ-2000 תווים',alertIcon:'warning'})
                 return false;
             }
+            if(projectData.projectFindings.length===0){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה תוצאות הפרויט חסר',alertIcon:'warning'})
+                return false;
+            }
             //project Conclusion
             if(projectData.ProjectConclusion.length>1000){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה סיכום ומסקנות הפרויקט צריך להיות קטן מ-1000 תווים',alertIcon:'warning'})
                 return false;
             }
-            //project Topic 
-            if (projectData.ProjectTopic==='') {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו נושא פרויקט'})
+            if(projectData.ProjectConclusion.length===0){
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה סיכום ומסקנות הפרויקט חסר',alertIcon:'warning'})
                 return false;
             }
+
             //project year
             if (projectData.Year === "" || projectData.Year === "בחר") {
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו שנה',alertIcon:'warning'})
@@ -491,6 +508,11 @@ export default class St5 extends React.Component{
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה א חסר',alertIcon:'warning'})
                 return false;
             } 
+            //project Topic 
+            if (projectData.ProjectTopic==='בחר' || projectData.ProjectTopic==='') {
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו נושא פרויקט'})
+                return false;
+            }
             //project goals-->Goals
             if(projectData.Goals.length<2){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מטרות ודרישות הנדסיות צריך להיות לפחות 2',alertIcon:'warning'})
@@ -527,7 +549,7 @@ export default class St5 extends React.Component{
             }
             //project screenshots
             if (projectData.ScreenShots.length<5) {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר תמונות המסך צריך להיות לפחות 5'})
+                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מינימום 5 תמונות של תוצרי פרויקט.'})
                 return false;
             }        
             //project logo
@@ -639,7 +661,7 @@ export default class St5 extends React.Component{
                             {/* year  */}
                             <SelectInput IsMandatory={true} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.Semester} inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.Semester} inputList={['שנתי']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             <SelectInput IsMandatory={true} defaultInput={this.state.ProjectTopic}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}
                             <SelectInput IsMandatory={true}  defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />

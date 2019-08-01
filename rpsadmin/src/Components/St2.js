@@ -284,8 +284,19 @@ class St2 extends React.Component{
             //project students
             if(projectData.Students.length<1){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חייב להיות לפחות חבר צוות אחד',alertIcon:'success'})
-
                 return false;
+            }
+            else{
+                let flag = true;
+                projectData.Students.forEach((student,index)=>{
+                    if(student.Name===''){
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר שם',alertIcon:'warning'})
+                        flag = false;
+                    }
+                })
+                if (!flag) {
+                    return false;
+                }
             }
             this.setState({
                 isSaved:true

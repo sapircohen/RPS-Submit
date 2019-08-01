@@ -258,7 +258,7 @@ export default class PreviewCard extends React.Component{
                         this.props.projectDetails.ProjectPDF &&
                         <Col style={{textAlign:'center'}} sm="6">
                             <Button onClick={()=>window.open(this.props.projectDetails.ProjectPDF,"_blank")} formTarget="blank" dir="rtl" variant="info">
-                                <FiPaperclip/>  ספר הפרויקט
+                                <FiPaperclip/> {this.props.projectDetails.templateSubmit==='st5' ? 'ספר הפרויקט':'PDF להורדה'}
                             </Button>
                         </Col>
                         }
