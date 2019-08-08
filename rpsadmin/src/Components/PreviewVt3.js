@@ -60,9 +60,9 @@ class PreviewVt3 extends React.Component{
                             <Row dir="rtl">
                                 <Col sm="1" style={{textAlign:'right'}}>
                                     {
-                                        this.props.projectDetails.advisor&&
+                                        this.props.projectDetails.Advisor&&
                                         (
-                                            this.props.projectDetails.advisor.length===1?
+                                            this.props.projectDetails.Advisor.length===1?
                                             <p>מנחה:</p>
                                             :
                                             <p>מנחים:</p>
@@ -70,12 +70,12 @@ class PreviewVt3 extends React.Component{
                                     }
                                 </Col>
                                 <Col style={{textAlign:'right'}} sm="3">{
-                                    this.props.projectDetails.advisor&&
+                                    this.props.projectDetails.Advisor&&
                                     (
-                                    this.props.projectDetails.advisor[0]!=='בחר'&&
+                                    this.props.projectDetails.Advisor[0]!=='בחר'&&
                                     (
-                                        this.props.projectDetails.advisor.map((a,key)=>
-                                            (key===this.props.projectDetails.advisor.length-1)
+                                        this.props.projectDetails.Advisor.map((a,key)=>
+                                            (key===this.props.projectDetails.Advisor.length-1)
                                             ?`${a} `:`${a}, `
                                         ) 
                                     )
@@ -102,29 +102,29 @@ class PreviewVt3 extends React.Component{
                     {/* project goal */}
                     {
                     this.props.projectDetails.ProjectGoal &&
-                    <PreviewParagraph Paragraph={this.props.projectDetails.ProjectGoal} Title="מטרת הפרויקט" Icon={GiCrosshair} />
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectGoal} Title="מטרת הפרויקט" Icon={GiCrosshair} />
                     }
                     
                     {/* project need */}
                     {
                     this.props.projectDetails.ProjectNeed &&
-                    <PreviewParagraph Paragraph={this.props.projectDetails.ProjectNeed} Title="הבעיה/צורך" Icon={FiFlag} />
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectNeed} Title="הבעיה/צורך" Icon={FiFlag} />
                     }
                     
                     {/* project findings */}
                     {
                     this.props.projectDetails.projectFindings &&
-                    <PreviewParagraph Paragraph={this.props.projectDetails.projectFindings} Title="ממצאים" Icon={FiEdit2} />
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.projectFindings} Title="ממצאים" Icon={FiEdit2} />
                     }
                     {/* project solution */}
                     {
                     this.props.projectDetails.projectSolution &&
-                    <PreviewParagraph Paragraph={this.props.projectDetails.projectSolution} Title="פתרון" Icon={FiAward} />
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.projectSolution} Title="פתרון" Icon={FiAward} />
                     }
                     {/* project Conclusion */}
                     {
                     this.props.projectDetails.ProjectConclusion &&
-                    <PreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="מסקנות" Icon={GoBook} />
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="מסקנות" Icon={GoBook} />
                     }
                     {/* students details */}
                     <div style={{marginTop:'4%'}} className="Box">

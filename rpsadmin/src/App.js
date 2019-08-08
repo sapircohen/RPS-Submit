@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import LoginPage from "./Components/LoginScreen";
+import LoginScreen from './Components/LoginScreen';
 import St1 from "./Components/St1";
 import St2 from './Components/St2';
 import St3 from './Components/St3';
@@ -15,7 +15,6 @@ import 'firebase/storage';
 
 import { FirebaseProdConfig } from './Constants/APIkeys';
 //import { FirebaseTestConfig } from './Constants/APIkeys';
-import LoginScreen from './Components/LoginScreen';
 
 firebase.initializeApp(FirebaseProdConfig);
 //firebase.initializeApp(FirebaseTestConfig);

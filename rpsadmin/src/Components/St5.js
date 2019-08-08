@@ -176,7 +176,7 @@ export default class St5 extends React.Component{
         })
     }
     getTechnologies = ()=>{
-        const ref = firebase.database().ref('Technologies');
+        const ref = firebase.database().ref('TechnologiesE');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((tech)=> {
                 let techA = {
@@ -543,12 +543,12 @@ export default class St5 extends React.Component{
                 }
             }
             //project technologies -->Technologies
-            if(projectData.Technologies.length<5){
+            if(projectData.Technologies.length<3){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר הטכנולוגיות צריך להיות לפחות 5',alertIcon:'warning'})
                 return false;
             }
             //project screenshots
-            if (projectData.ScreenShots.length<5) {
+            if (projectData.ScreenShots.length<2) {
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מינימום 5 תמונות של תוצרי פרויקט.'})
                 return false;
             }        

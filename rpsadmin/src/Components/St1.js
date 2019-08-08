@@ -177,6 +177,9 @@ class St1 extends React.Component{
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
                 tags:tagsList,
                 functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:'',
+                appleLink:dataForGroup.AppStore?dataForGroup.AppStore:'',
+                googleLink:dataForGroup.GooglePlay?dataForGroup.GooglePlay:'',
+                appExists:dataForGroup.GooglePlay?true:false
             },()=>{
                 console.log(this.state.chosenTechs)
                 this.setState({projectDetails:this.getProjectDetails()})
@@ -482,8 +485,8 @@ class St1 extends React.Component{
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ",alertIcon:'warning'})
                         flag= false;
                     }
-                    if (mod.ModuleDescription.length>200) {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ200 תווים ",alertIcon:'warning'})
+                    if (mod.ModuleDescription.length>400) {
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ400 תווים ",alertIcon:'warning'})
                         flag= false;
                     }
                     if(mod.ModuleName.length<3){
@@ -554,7 +557,6 @@ class St1 extends React.Component{
             return true;
     }
     SaveData = ()=>{
-        //console.log('saved')
         const arrayOfTags = this.state.tags.map((text)=>text.text);
         const ref = firebase.database().ref('RuppinProjects/'+projectKey);
         ref.update({
@@ -790,7 +792,7 @@ class St1 extends React.Component{
                         <LinkInput IsMandatory={true} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.Github} InputTitle={sectionNames.Github} inputSize="sm" placeholder="www.github.com"/>
                         <Form.Group dir="rtl" style={{marginTop:15}} as={Row}>
                             <Col sm="1">
-                            <Form.Check onChange={this.appExisting} id="projectApplication" type="checkbox"/> 
+                            <Form.Check checked={this.state.appExists} onChange={this.appExisting} id="projectApplication" type="checkbox"/> 
                             </Col>
                             <Form.Label  column sm="1">קיימת אפליקציה?</Form.Label>
                             <Col sm="10"></Col>
@@ -798,8 +800,8 @@ class St1 extends React.Component{
                         {
                             this.state.appExists &&
                             <Form.Group as={Row}>
-                                <AppLinksInput InputTitle={sectionNames.appleLinke} ChangeLinkInput={this.ChangeLinkInput} IconName={FaAppleAlt} iconColor="silver" placeholder="Appstore..." />
-                                <AppLinksInput InputTitle={sectionNames.googleLink} ChangeLinkInput={this.ChangeLinkInput} IconName={FaGoogle} iconColor="green" placeholder="Google play..." />
+                                <AppLinksInput defaultInput={this.state.appleLink} InputTitle={sectionNames.appleLinke} ChangeLinkInput={this.ChangeLinkInput} IconName={FaAppleAlt} iconColor="silver" placeholder="Appstore..." />
+                                <AppLinksInput defaultInput={this.state.googleLink} InputTitle={sectionNames.googleLink} ChangeLinkInput={this.ChangeLinkInput} IconName={FaGoogle} iconColor="green" placeholder="Google play..." />
                             </Form.Group>
                         }
                     </div>                    

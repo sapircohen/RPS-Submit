@@ -101,10 +101,9 @@ export default class St3 extends React.Component{
                 if(!this.ValidateData(this.getProjectDetails())){
                     this.setState({isPublished:false});
                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
-
                 }
             }
-           },3000)
+           },5000)
     }
     GetData=()=>{
         const ref = firebase.database().ref('RuppinProjects').child(projectKey);
@@ -137,7 +136,7 @@ export default class St3 extends React.Component{
                 ProjectNeed:dataForGroup.ProjectNeed?dataForGroup.ProjectNeed:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
-            })
+            },()=>{console.log(this.state.ProjectAdvisor)})
             //get list of advisors from firebase
             this.getAdvisorsForDepartment();
             //get list of Experties
@@ -150,7 +149,7 @@ export default class St3 extends React.Component{
         const project = {
             ProjectName:this.state.ProjectName,
             PDescription:this.state.PDescription,
-            advisor:[this.state.ProjectAdvisor],
+            Advisor:[this.state.ProjectAdvisor],
             Major:this.state.projectMajor,
             ProjectCourse:this.state.projectCourse,
             ProjectTopic:this.state.ProjectTopic,
@@ -367,21 +366,12 @@ export default class St3 extends React.Component{
     closePreview = ()=>this.setState({showPreview:false})
     //validate inputs
     ValidateData = (projectData)=>{
-        console.log(projectData.advisor[0]);
         // project name validation
         if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
             return false;
         }
-        // project short description validation
-        if(projectData.CDescription.length<50){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
-            return false;
-        }
-        if(projectData.CDescription.length>150){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-150 תווים',alertIcon:'warning'})
-            return false;
-        }
+        
         //project long description -->PDescription
         if(projectData.PDescription.length<200){
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
@@ -461,7 +451,7 @@ export default class St3 extends React.Component{
             return false;
         }
         //project advisor
-        if(projectData.advisor[0] === ""){
+        if(projectData.Advisor[0] === ""){
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור מנחה',alertIcon:'warning'})
 
             return false;
@@ -512,7 +502,7 @@ export default class St3 extends React.Component{
             templateView:'vt3',
             ProjectName:this.state.ProjectName,
             PDescription:this.state.PDescription,
-            advisor:[this.state.ProjectAdvisor],
+            Advisor:[this.state.ProjectAdvisor],
             Major:this.state.projectMajor,
             ProjectCourse:this.state.projectCourse,
             ProjectTopic:this.state.ProjectTopic,
@@ -532,6 +522,7 @@ export default class St3 extends React.Component{
             ScreenShots:this.state.ScreenShots,
             ScreenShotsNames:this.state.ScreenShotsNames,
         })
+        console.log(this.state.projectFindings)
     }
     //delete pdf/word file
     DeletePdf=()=>{
@@ -607,7 +598,7 @@ export default class St3 extends React.Component{
                         {/* project name */}
                         <TextInputs IsMandatory={true}  defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* project small description */}
-                        <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput IsMandatory={false}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
                         <RichText IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         {/* project Goal */}
@@ -621,16 +612,16 @@ export default class St3 extends React.Component{
                         {/* Project Conclusion*/}
                         <RichText  defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
                         <Form.Row dir="rtl">
-                            {/* project major */}
-                            <SelectInput IsMandatory={true}  inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />
-                            {/* project advisor */}
-                            <SelectInput IsMandatory={true}  inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            {/* project major
+                            <SelectInput IsMandatory={true}  inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} /> */}
                         </Form.Row>
                         <Form.Row dir="rtl">
+                            {/* project advisor */}
+                            <SelectInput IsMandatory={true}  inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* year  */}
-                            <SelectInput IsMandatory={true}  inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.Year}  inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput IsMandatory={true}  inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.Semester}  inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/*project topic */}
                             <SelectInput IsMandatory={true}  inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
