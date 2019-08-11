@@ -27,9 +27,9 @@ import {Years} from '../Common/Years';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
 
-const course = JSON.parse(localStorage.getItem('course'));
-const projectKey = JSON.parse(localStorage.getItem('projectKey'));
-const groupData = JSON.parse(localStorage.getItem('groupData'));
+// const course = JSON.parse(localStorage.getItem('course'));
+// const projectKey = JSON.parse(localStorage.getItem('projectKey'));
+// const groupData = JSON.parse(localStorage.getItem('groupData'));
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -111,13 +111,23 @@ class St1 extends React.Component{
             ProjectCourse:'',
             ProjectTopic:'בחר',
             functionalityMovie:'',
+            course :'',
+            projectKey:'',
+            groupData :''
+
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
         this.TechsChosen = this.TechsChosen.bind(this);
     }
     componentDidMount(){
-        this.GetData();
+        this.setState({
+            course :JSON.parse(localStorage.getItem('course')),
+            projectKey:JSON.parse(localStorage.getItem('projectKey')),
+            groupData :JSON.parse(localStorage.getItem('groupData'))
+        },()=>{
+            this.GetData();
+        })
         window.setInterval(()=>{
             let currentTime = JSON.parse(localStorage.getItem('currentTime'));
             let time = new Date();
@@ -138,7 +148,7 @@ class St1 extends React.Component{
     }
     GetData = ()=>{
         this.setState({isReady:false},()=>{
-        const ref = firebase.database().ref('RuppinProjects').child(projectKey);
+        const ref = firebase.database().ref('RuppinProjects').child(this.state.projectKey);
         let dataForGroup ={};
         ref.once("value", (snapshot)=> {
             dataForGroup=snapshot.val();
@@ -182,7 +192,7 @@ class St1 extends React.Component{
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
-                ProjectCourse:course,
+                ProjectCourse:this.state.course,
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
                 tags:tagsList,
                 functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:'',
@@ -211,7 +221,7 @@ class St1 extends React.Component{
             PDescription:this.state.PDescription,
             Challenges:this.state.Challenges,
             ProjectTopic:this.state.ProjectTopic,
-            ProjectCourse:course,
+            ProjectCourse:this.state.course,
             advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
             HashTags:arrayOfTags,
             Technologies:this.state.chosenTechs,
@@ -256,7 +266,7 @@ class St1 extends React.Component{
         })
     }
     getTopicForFinalProject = ()=>{
-        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses').child('Final project').child('Topics');
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Experties').child(this.state.groupData.Major).child('Courses').child('Final project').child('Topics');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((topicName)=>{
                 this.setState({topicList:[...this.state.topicList,topicName.val().Name]});
@@ -267,7 +277,7 @@ class St1 extends React.Component{
         })
     }
     getAdvisors = ()=>{
-        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Advisors');
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
             console.log(snapshot.val())
@@ -567,12 +577,12 @@ class St1 extends React.Component{
     }
     SaveData = ()=>{
         const arrayOfTags = this.state.tags.map((text)=>text.text);
-        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
         ref.update({
             templateSubmit:'st1',
             templateView:'vt1',
             ProjectTopic:this.state.ProjectTopic,
-            ProjectCourse:course,
+            ProjectCourse:this.state.course,
             ProjectName: this.state.ProjectName,
             ProjectSite:this.state.ProjectSite,
             isPublished:this.state.isPublished,
@@ -704,8 +714,8 @@ class St1 extends React.Component{
         const temp = !this.state.isPublished;
         if(this.ValidateData(this.getProjectDetails())){
             this.setState({isPublished:temp},()=>{
-                    if(this.state.isSaved===true || groupData.ProjectName!==undefined){
-                        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                    if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
+                        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
                         ref.update({
                             isPublished:this.state.isPublished,
                         })

@@ -22,8 +22,6 @@ import LabelTextPDF from '../Common/LabelText';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
 
-const projectKey = JSON.parse(localStorage.getItem('projectKey'));
-const groupData = JSON.parse(localStorage.getItem('groupData'));
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
     projectChallenges:"אתגרי הפרויקט",
@@ -72,11 +70,18 @@ class St2 extends React.Component{
             projectMajor:'',
             projectCourse:'',
             Year:'',
-            Semester:''
+            Semester:'',
+            projectKey:'',
+            groupData :''
         }
     }
     componentDidMount(){
-       this.GetData();
+        this.setState({
+            projectKey:JSON.parse(localStorage.getItem('projectKey')),
+            groupData :JSON.parse(localStorage.getItem('groupData'))
+        },()=>{
+            this.GetData();
+        })
        window.setInterval(()=>{
         let currentTime = JSON.parse(localStorage.getItem('currentTime'));
         let time = new Date();
@@ -96,7 +101,7 @@ class St2 extends React.Component{
     }
     GetData=()=>{
         //get group data from local storage
-        const ref = firebase.database().ref('RuppinProjects').child(projectKey);
+        const ref = firebase.database().ref('RuppinProjects').child(this.state.projectKey);
         let dataForGroup ={};
         ref.once("value", (snapshot)=> {
             dataForGroup=snapshot.val();
@@ -150,7 +155,7 @@ class St2 extends React.Component{
         return project;
     }
     getAdvisorsForDepartment = ()=>{
-        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Advisors');
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Advisors');
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
         }, (errorObject)=> {
@@ -158,7 +163,7 @@ class St2 extends React.Component{
         })
     }
     getCoursesForExpertis = ()=>{
-        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses');
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Experties').child(this.state.groupData.Major).child('Courses');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((course)=> {
                 this.setState({
@@ -171,7 +176,7 @@ class St2 extends React.Component{
         }) 
     }
     getExperties = ()=>{
-        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties');
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Experties');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((exp)=> {
                 this.setState({
@@ -183,7 +188,7 @@ class St2 extends React.Component{
     }
     getTopicsListForCourses=()=>{
         this.state.coursesList.forEach((course)=>{
-            let ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses').child(course).child('Topics');
+            let ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Experties').child(this.state.groupData.Major).child('Courses').child(course).child('Topics');
             ref.once("value", (snapshot)=> {
                 snapshot.forEach((topic)=> {
                     this.setState({
@@ -223,7 +228,7 @@ class St2 extends React.Component{
         console.log(this.state.StudentsDetails);
     }
     savePDF = (url)=>{
-        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
         this.setState({
             ProjectPDF:url
         },()=>{
@@ -316,7 +321,7 @@ class St2 extends React.Component{
     //save project to firebase.
     SaveData = ()=>{
         //event.preventDefault();
-        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
                 ref.update({
                     templateSubmit:'st2',
                     templateView:'vt2',
@@ -349,7 +354,7 @@ class St2 extends React.Component{
                 this.setState({
                     ProjectPDF:''
                 },()=>{
-                    const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+                    const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
                     ref.update({
                         ProjectPDF:this.state.ProjectPDF,
                     })
@@ -399,10 +404,10 @@ class St2 extends React.Component{
     CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
     changePublished = ()=>{
         const temp = !this.state.isPublished;
-        const ref = firebase.database().ref('RuppinProjects/'+projectKey);
+        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
         if(this.ValidateData(this.getProjectDetails())){
             this.setState({isPublished:temp},()=>{
-                if(this.state.isSaved===true || groupData.ProjectName!==undefined){
+                if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
                     ref.update({
                         isPublished:this.state.isPublished,
                     })
