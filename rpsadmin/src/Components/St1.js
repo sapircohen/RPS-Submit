@@ -25,6 +25,7 @@ import HashTags from '../Common/Tag';
 import Techs from '../Common/techs';
 import {Years} from '../Common/Years';
 import SAlert from '../Common/SAlert';
+import Idle from '../Common/Idle';
 
 const course = JSON.parse(localStorage.getItem('course'));
 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
@@ -118,14 +119,22 @@ class St1 extends React.Component{
     componentDidMount(){
         this.GetData();
         window.setInterval(()=>{
-            this.SaveData();
-            if(this.state.isPublished){
-                if(!this.ValidateData(this.getProjectDetails())){
-                    this.setState({isPublished:false});
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
-                }
+            let currentTime = JSON.parse(localStorage.getItem('currentTime'));
+            let time = new Date();
+            if((time-currentTime)>10000){
+                console.log("not save:", time-currentTime);
             }
-        },5500)
+            else{
+                console.log("save");
+                this.SaveData();
+                if(this.state.isPublished){
+                    if(!this.ValidateData(this.getProjectDetails())){
+                        this.setState({isPublished:false});
+                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
+                    }
+                }
+        }
+        },6000)
     }
     GetData = ()=>{
         this.setState({isReady:false},()=>{
@@ -726,6 +735,7 @@ class St1 extends React.Component{
         }
         return(
             <div style={{flex:1,backgroundColor:'#eee'}}>
+                <Idle/>
                 <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>

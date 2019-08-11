@@ -20,6 +20,7 @@ import LinkInput from '../Common/Projectlinks';
 import {Years} from '../Common/Years';
 import LabelTextPDF from '../Common/LabelText';
 import SAlert from '../Common/SAlert';
+import Idle from '../Common/Idle';
 
 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
 const groupData = JSON.parse(localStorage.getItem('groupData'));
@@ -77,6 +78,12 @@ class St2 extends React.Component{
     componentDidMount(){
        this.GetData();
        window.setInterval(()=>{
+        let currentTime = JSON.parse(localStorage.getItem('currentTime'));
+        let time = new Date();
+        if((time-currentTime)>10000){
+            console.log("not save:", time-currentTime);
+        }
+        else{
         this.SaveData();
         if(this.state.isPublished){
             if(!this.ValidateData(this.getProjectDetails())){
@@ -84,6 +91,7 @@ class St2 extends React.Component{
                 this.setState({alertShow:true,alertTitle:'הפרויקט לא יפורסם',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
             }
         }
+    }
        },6000)
     }
     GetData=()=>{
@@ -418,6 +426,7 @@ class St2 extends React.Component{
         }
         return(
             <div style={{flex:1}}>
+                <Idle/>
                 <NavbarProjs/>
                 <SaveAction  style={{zIndex:26}} Save={this.SetProjectOnFirbase}/>
                 <HeaderForm title={this.state.GroupName}/>
@@ -450,7 +459,7 @@ class St2 extends React.Component{
                         </Form.Row>
                     </div>
                     {/* FILES UPLOAD */}
-                    <div style={{border:'solid 1px',padding:15,borderRadius:20,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+                    <div style={{border:'solid 1px',padding:15,borderRadius:20,margin:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="הוספת קבצים"/>
                             {/* project movie link */}
                             <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com"/>

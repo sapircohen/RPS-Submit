@@ -24,6 +24,7 @@ import ModalImage from '../Common/ImageModal';
 import LinkInput from '../Common/Projectlinks';
 import Loader from 'react-loader-spinner';
 import SAlert from '../Common/SAlert';
+import Idle from '../Common/Idle';
 //get constants from localstorage
 const course = JSON.parse(localStorage.getItem('course'));
 const projectKey = JSON.parse(localStorage.getItem('projectKey'));
@@ -98,6 +99,12 @@ export default class St5 extends React.Component{
     componentDidMount(){
         this.GetData();
         window.setInterval(()=>{
+            let currentTime = JSON.parse(localStorage.getItem('currentTime'));
+            let time = new Date();
+            if((time-currentTime)>10000){
+                console.log("not save:", time-currentTime);
+            }
+            else{
             this.SaveData();
             if(this.state.isPublished){
                 if(!this.ValidateData(this.getProjectDetails())){
@@ -105,6 +112,7 @@ export default class St5 extends React.Component{
                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                 }
             }
+        }
         },6000)
     }
     GetData=()=>{
@@ -631,6 +639,7 @@ export default class St5 extends React.Component{
         }
         return(
             <div style={{flex:1,backgroundColor:'#eee'}}>
+                <Idle/>
                 <NavbarProjs />
                 <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 <HeaderForm title={this.state.GroupName}/>
