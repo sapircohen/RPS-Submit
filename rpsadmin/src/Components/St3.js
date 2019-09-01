@@ -16,7 +16,7 @@ import SaveAction from '../Common/SaveAction';
 import HeaderForm from '../Common/HeaderForm';
 import PublishProject from '../Common/PublishProject';
 import firebase from 'firebase';
-import {Years} from '../Common/Years';
+import {YearsSt3} from '../Common/Years';
 import LabelTextPDF from '../Common/LabelText';
 import PreviewModal from '../Common/imagesModalPrevies'
 import RichText from '../Common/RichText2';
@@ -634,7 +634,7 @@ export default class St3 extends React.Component{
                             {/* project advisor */}
                             <SelectInput IsMandatory={true}  inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* year  */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.Year}  inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={true} defaultInput={this.state.Year}  inputList={YearsSt3} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
                             <SelectInput IsMandatory={true} defaultInput={this.state.Semester}  inputList={['שנתי','א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/*project topic */}
