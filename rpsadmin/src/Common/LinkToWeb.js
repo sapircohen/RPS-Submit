@@ -3,8 +3,8 @@ import {Button,Col} from 'react-bootstrap';
 
 const LinkButton = (props)=>{
     return(
-        <Col sm="3" style={{textAlign:'center'}}>
-            <Button onClick={()=>window.open(props.href,"_blank")}  style={{backgroundColor:props.color,borderColor:props.color}} >
+        <Col style={{textAlign:'center'}}>
+            <Button size="lg" variant={props.color} onClick={()=>window.open(props.href,"_blank")} >
                 <props.Icon/>
                 {props.Title}
             </Button>

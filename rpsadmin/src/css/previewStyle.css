@@ -1,11 +1,147 @@
 .Box{
-    padding: 10px;
+    /* padding: 10px;
     border: 1px solid #888888;
     border-radius: 50px;
-    box-shadow: 1px 5px #888888;
+    box-shadow: 1px 5px #888888; */
 }
 .Headers{
     font-family: 'Amatic SC', cursive;
     font-weight: 'bold';
     text-decoration: underline;
 }
+
+@media (min-width: 320px) and (max-width: 480px) {
+  
+    .StudentPic{
+        height: auto;
+    }
+    .ProjectLogo{
+        width: 100px;
+    }
+    .HashTag{
+        size: 10px;
+    }
+  }
+
+  .image-gallery-image img {
+    height:auto;
+   }
+
+.StudentPic2{
+    object-fit: inherit;
+    height: 200px;
+    width: auto;
+}
+.ui.card{
+    justify-content: center;
+    margin:  0px auto;
+    border-color: cadetblue;
+}
+
+/* 
+  ##Device = Desktops
+  ##Screen = 1281px to higher resolution desktops
+*/
+
+@media (min-width: 1281px) {
+  
+    .Frame{
+      width: 80%;
+      height:800px;
+    }  
+    .intro{
+      width: 350px;
+      height: auto;
+    }  
+  }
+  
+  /* 
+    ##Device = Laptops, Desktops
+    ##Screen = B/w 1025px to 1280px
+  */
+  
+  @media (min-width: 1025px) and (max-width: 1280px) {
+    
+    .Frame{
+      width: 80%;
+      height:800px;
+    }    
+    .intro{
+      width: 350px;
+      height: auto;
+    }   
+  }
+  
+  /* 
+    ##Device = Tablets, Ipads (portrait)
+    ##Screen = B/w 768px to 1024px
+  */
+  
+  @media (min-width: 768px) and (max-width: 1024px) {
+    
+    .Frame{
+      width: 80%;
+      height:800px;
+    }   
+    .intro{
+      width: 350px;
+      height: auto;
+    }
+  }
+  
+  /* 
+    ##Device = Tablets, Ipads (landscape)
+    ##Screen = B/w 768px to 1024px
+  */
+  
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    
+    .Frame{
+      width: 80%;
+      height:800px;
+    }  
+    .intro{
+      width: 300px;
+      height: auto;
+    }
+  }
+  
+  /* 
+    ##Device = Low Resolution Tablets, Mobiles (Landscape)
+    ##Screen = B/w 481px to 767px
+  */
+  
+  @media (min-width: 481px) and (max-width: 767px) {
+    
+    .Frame{
+        width: 80%;
+        height:500px;
+    }  
+    .displayStaff{
+      display:none;
+    }
+    .intro{
+      width: 200px;
+      height: auto;
+    }
+  }
+  
+  /* 
+    ##Device = Most of the Smartphones Mobiles (Portrait)
+    ##Screen = B/w 320px to 479px
+  */
+  
+  @media (min-width: 320px) and (max-width: 480px) {
+    
+    .Frame{
+      width: 80%;
+        display: none
+    }  
+    .displayStaff{
+      display:none;
+    }
+    .intro{
+      width: 200px;
+      height: auto;
+    }
+  }

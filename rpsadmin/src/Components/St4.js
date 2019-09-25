@@ -22,6 +22,7 @@ import PreviewModal from '../Common/imagesModalPrevies'
 import RichText from '../Common/RichText2';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
+import ModalExample1 from './PreviewProject';
 
 const sectionNames = {
     projectNeed:'הבעיה/הצורך',
@@ -600,7 +601,8 @@ export default class St3 extends React.Component{
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 {/* showPreview */}
                 <SaveAction  style={{zIndex:26}} Save={this.SetProjectOnFirbase}/>
-                <PreviewVt4 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
+                {/* <PreviewVt4 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}
+                <ModalExample1 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData}/>
                 {/* inputs */}
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Project details */}

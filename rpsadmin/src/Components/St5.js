@@ -25,6 +25,7 @@ import LinkInput from '../Common/Projectlinks';
 import Loader from 'react-loader-spinner';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
+import ModalExample1 from './PreviewProject';
 const sectionNames = {
     projectDesc : "רקע ומטרת הפרויקט *עד 400 תוים",
     projectChallenges:"אתגרי הפרויקט",
@@ -650,7 +651,8 @@ export default class St5 extends React.Component{
                 <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 {/* preview project card */}
-                <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
+                {/* <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}
+                <ModalExample1 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData}/>
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>

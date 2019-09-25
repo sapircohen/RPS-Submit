@@ -138,7 +138,7 @@ class LoginScreen extends React.Component{
             />
           </Avatar>
           <Typography component="h1" variant="h5">
-            התחברות
+            ממשק הזנת נתונים
           </Typography>
           <form className={classes.form}>
             <FormControl margin="normal" required fullWidth>

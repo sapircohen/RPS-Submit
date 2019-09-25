@@ -26,6 +26,7 @@ import Techs from '../Common/techs';
 import {Years} from '../Common/Years';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
+import ModalExample1 from './PreviewProject';
 
 // const course = JSON.parse(localStorage.getItem('course'));
 // const projectKey = JSON.parse(localStorage.getItem('projectKey'));
@@ -753,7 +754,8 @@ class St1 extends React.Component{
                 <NavbarProjs />
                 <HeaderForm title={this.state.GroupName}/>
                 {/* preview project card */}
-                <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
+                <ModalExample1 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
+                {/* <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}
                 {/*publish project? */}
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
