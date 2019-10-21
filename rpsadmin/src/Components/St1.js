@@ -165,6 +165,7 @@ class St1 extends React.Component{
                     tagsList.push(t);
                 })
             }
+            console.log(tagsList);
             this.setState({
                 Year:dataForGroup.Year?dataForGroup.Year:'',
                 Semester:dataForGroup.Semester?dataForGroup.Semester:'',
