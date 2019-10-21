@@ -16,7 +16,7 @@ export default class HashTags extends React.Component{
     }
     render(){
         return(
-            <div dir="rtl" style={{padding:15,borderRadius:20,marginTop:30,border:'solid 1px',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+            <div dir="rtl" style={{padding:15,borderRadius:5,marginTop:30,border:'solid 1px',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="תייגו את הפרויקט"/>
                         <Row style={{marginTop:'10px'}}>
                             <Col sm="3"></Col>

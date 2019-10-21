@@ -48,6 +48,9 @@ const params = {
       el: '.swiper-pagination'
 }}
 export default class ModalExample1 extends React.Component{
+    componentDidMount(){
+        console.log(this.props.projectDetails)
+    }
     render(){  
         return (
             <Modal style={{backgroundColor:'transparent',fontFamily:'Calibri'}} onHide={this.props.close} show={this.props.openPreview} size="xl" aria-labelledby="contained-modal-title-vcenter">
@@ -390,7 +393,7 @@ export default class ModalExample1 extends React.Component{
                     
                     {/* project screenshots (for IS project) */}
                     {
-                        this.props.projectDetails.ScreenShots &&
+                        (this.props.projectDetails.ScreenShots &&this.props.projectDetails.ScreenShots!==[])&&
                         <Col className="Box"  style={{marginTop:'4%',textAlign:'center'}}>
                             <Col style={{textAlign:'center',fontFamily:'Calibri'}} sm="12">
                                 <h3>תמונות מסך <FaCameraRetro size={20}/></h3>
@@ -438,7 +441,7 @@ export default class ModalExample1 extends React.Component{
                             </Col>
                         </Row>
                     }
-                    {/* project hashtags (for IS project)   */}
+                    {/* project hashtags*/}
                     {
                         this.props.projectDetails.HashTags &&
                         <Row style={{marginTop:'4%',textAlign:'center'}} dir="rtl" className="show-grid">
@@ -453,7 +456,7 @@ export default class ModalExample1 extends React.Component{
                                     key={key}
                                     style={{marginRight:'10px'}}
                                     avatar={<Avatar style={{color:'black',backgroundColor:'lightskyblue'}} alt="computer icon"><GoTag size={20}/></Avatar>}
-                                    label={tag}
+                                    label={tag.value?tag.value:tag}
                                   />                                    )
                                 }
                             </Col>

@@ -19,7 +19,7 @@ import ProjectGoals from '../Common/ProjectGoals';
 import StudentDetails from '../Common/StudentsDetails';
 import PreviewModal from "../Common/imagesModalPrevies";
 import SaveAction from '../Common/SaveAction';
-import PreviewCard from './PreviewProjectCard';
+import Hashtags from '../Common/Tag2';
 import ModalImage from '../Common/ImageModal';
 import LinkInput from '../Common/Projectlinks';
 import Loader from 'react-loader-spinner';
@@ -71,6 +71,9 @@ export default class St5 extends React.Component{
         projectGoals:[],
         techOptions : [],
         StudentsDetails:[],
+        HashSuggestions: [],
+            HashOptions : [],
+            tags:[],
         openModal:false,
         modalTitle:'',
         picTitle:'',
@@ -154,6 +157,7 @@ export default class St5 extends React.Component{
                 projectFindings:dataForGroup.projectFindings?dataForGroup.projectFindings:'',
                 PartnerDescription:dataForGroup.PartnerDescription?dataForGroup.PartnerDescription:'',
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
+                tags:dataForGroup.HashTags?dataForGroup.HashTags:[],
             },()=>{
                 this.setState({projectDetails:this.getProjectDetails()})
             })
@@ -319,6 +323,7 @@ export default class St5 extends React.Component{
             ProjectConclusion:this.state.ProjectConclusion,
             projectFindings:this.state.projectFindings,
             PartnerDescription:this.state.PartnerDescription,
+            HashTags:this.state.tags,
         }
         return project;
     }
@@ -344,6 +349,14 @@ export default class St5 extends React.Component{
         this.setState({
             ScreenShots:[...this.state.ScreenShots,url],
             ScreenShotsNames:[...this.state.ScreenShotsNames,name]
+        })
+    }
+    HashsChosen =(value)=>{
+        this.setState({
+            tags:value.map((val)=>{
+                console.log(val)
+                return val;
+            })
         })
     }
     SaveData = ()=>{
@@ -375,7 +388,8 @@ export default class St5 extends React.Component{
                 ProjectConclusion:this.state.ProjectConclusion,
                 projectFindings:this.state.projectFindings,
                 PartnerDescription:this.state.PartnerDescription,
-                ProjectSummery:this.state.ProjectSummery
+                ProjectSummery:this.state.ProjectSummery,
+                HashTags:this.state.tags,
             })
     }
     changeStudentImage = (url,index)=>{
@@ -470,7 +484,7 @@ export default class St5 extends React.Component{
                 return false;
             }
             //project summery
-            if(projectData.ProjectSummery.length>1000 || projectData.ProjectSummery.length===0){
+            if(projectData.ProjectSummery.length>1100 || projectData.ProjectSummery.length===0){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'התקציר צריך להיות קטן מ-1000 תווים',alertIcon:'warning'})
                 return false;
             }
@@ -479,7 +493,7 @@ export default class St5 extends React.Component{
                 return false;
             }
             //project long description -->PDescription
-            if(projectData.PDescription.length>400 || projectData.PDescription.length===0){
+            if(projectData.PDescription.length>500 || projectData.PDescription.length===0){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור רקע מטרת הפרויקט צריך להיות קטן מ-400 תווים',alertIcon:'warning'})
                 return false;
             }
@@ -488,7 +502,7 @@ export default class St5 extends React.Component{
                 return false;
             }
             //project findings
-            if(projectData.projectFindings.length>2000){
+            if(projectData.projectFindings.length>2200){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה תוצאות הפרויקט צריך להיות קטן מ-2000 תווים',alertIcon:'warning'})
                 return false;
             }
@@ -497,7 +511,7 @@ export default class St5 extends React.Component{
                 return false;
             }
             //project Conclusion
-            if(projectData.ProjectConclusion.length>1000){
+            if(projectData.ProjectConclusion.length>1100){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה סיכום ומסקנות הפרויקט צריך להיות קטן מ-1000 תווים',alertIcon:'warning'})
                 return false;
             }
@@ -538,7 +552,7 @@ export default class St5 extends React.Component{
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
-                    if (goal.GoalDescription.length>100) {
+                    if (goal.GoalDescription.length>150) {
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
@@ -546,7 +560,7 @@ export default class St5 extends React.Component{
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
-                    if(goal.GoalStatus.length>100){
+                    if(goal.GoalStatus.length>150){
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
                         flag= false;
                     }
@@ -746,6 +760,8 @@ export default class St5 extends React.Component{
                             {/* project movie link */}
                             <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
                     </div>
+                    {/* tag the project */}
+                    <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
                     <StudentDetails setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
                 </Form>
             </div>

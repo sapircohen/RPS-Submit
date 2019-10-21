@@ -11,7 +11,6 @@ import PDFupload from '../Common/PdfFileUpload';
 import LinkInput from '../Common/Projectlinks';
 import StudentDetails from '../Common/StudentsDetails';
 import ModalImage from '../Common/ImageModal';
-import PreviewVt3 from './PreviewVt3';
 import SaveAction from '../Common/SaveAction';
 import HeaderForm from '../Common/HeaderForm';
 import PublishProject from '../Common/PublishProject';
@@ -23,6 +22,7 @@ import RichText from '../Common/RichText2';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
 import ModalExample1 from './PreviewProject';
+import Hashtags from '../Common/Tag2';
 
 const sectionNames = {
     projectNeed:'הבעיה/הצורך',
@@ -75,6 +75,9 @@ export default class St3 extends React.Component{
             topicsList:[],
             expertiesList:[],
             projectDetails:{},
+            HashSuggestions: [],
+            HashOptions : [],
+            tags:[],
             showPreview:false,
             CDescription:'',
             ProjectTopic:'',
@@ -151,6 +154,8 @@ export default class St3 extends React.Component{
                 ProjectNeed:dataForGroup.ProjectNeed?dataForGroup.ProjectNeed:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
+                tags:dataForGroup.HashTags?dataForGroup.HashTags:[],
+
             },()=>{console.log(this.state.ProjectAdvisor)})
             //get list of advisors from firebase
             this.getAdvisorsForDepartment();
@@ -183,6 +188,7 @@ export default class St3 extends React.Component{
             Semester:this.state.Semester,
             ScreenShots:this.state.ScreenShots,
             ScreenShotsNames:this.state.ScreenShotsNames,
+            HashTags:this.state.tags,
         }
         return project;
     }
@@ -318,6 +324,14 @@ export default class St3 extends React.Component{
         this.forceUpdate();
         console.log(this.state.StudentsDetails);
     }
+    HashsChosen =(value)=>{
+        this.setState({
+            tags:value.map((val)=>{
+                console.log(val)
+                return val;
+            })
+        })
+    }
     //pdf details
     savePDF = (url)=>{
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
@@ -392,20 +406,20 @@ export default class St3 extends React.Component{
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
             return false;
         }
-        if(projectData.PDescription.length>500){
+        if(projectData.PDescription.length>600){
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
             return false;
         }
         //project goal
         if(projectData.ProjectGoal!==''){
-            if(projectData.ProjectGoal.length>200){
+            if(projectData.ProjectGoal.length>300){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור מטרת הפרויקט הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
         }
         //project need
         if(projectData.ProjectNeed!==''){
-            if(projectData.ProjectNeed.length>200){
+            if(projectData.ProjectNeed.length>300){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הבעיה/צורך הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
 
                 return false;
@@ -413,7 +427,7 @@ export default class St3 extends React.Component{
         }
         //projectFindings
         if(projectData.projectFindings!==''){
-            if(projectData.projectFindings.length>200){
+            if(projectData.projectFindings.length>300){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הממצאים הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
 
                 return false;
@@ -421,7 +435,7 @@ export default class St3 extends React.Component{
         }
         //project Solution
         if(projectData.projectSolution!==''){
-            if(projectData.projectSolution.length>500){
+            if(projectData.projectSolution.length>600){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפתרון הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
 
                 return false;
@@ -429,7 +443,7 @@ export default class St3 extends React.Component{
         }
         //Project Conclusion
         if(projectData.ProjectConclusion!==''){
-            if(projectData.ProjectConclusion.length>500){
+            if(projectData.ProjectConclusion.length>600){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור המסקנות הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
 
                 return false;
@@ -536,6 +550,8 @@ export default class St3 extends React.Component{
             Semester:this.state.Semester,
             ScreenShots:this.state.ScreenShots,
             ScreenShotsNames:this.state.ScreenShotsNames,
+            HashTags:this.state.tags,
+
         })
         console.log(this.state.projectFindings)
     }
@@ -605,7 +621,6 @@ export default class St3 extends React.Component{
                 
                 {/* showPreview */}
                 <SaveAction Save={this.SetProjectOnFirbase}/>
-                {/* <PreviewVt3 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}
                 <ModalExample1 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData}/>
                 {/* inputs */}
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
@@ -696,6 +711,9 @@ export default class St3 extends React.Component{
                             <Col sm="2"></Col>
                         </Row>
                     </div>
+                                        {/* tag the project */}
+                                        <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
+
                     {/* Students details */}
                     <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
                 </Form>
