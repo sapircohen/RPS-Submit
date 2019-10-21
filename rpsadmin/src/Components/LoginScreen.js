@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import firebase from 'firebase';
 import Loader from 'react-loader-spinner';
+import Header from './MainHeader';
 
 
 const styles = theme => ({
@@ -126,7 +127,9 @@ class LoginScreen extends React.Component{
       )
     }
     return (
-      <main className={classes.main}>
+      <div>
+                <Header/>
+                <main className={classes.main}>
         <CssBaseline />
         <Paper className={classes.paper}>
           <Avatar style={{backgroundColor:'transparent'}} className={classes.avatar}>
@@ -162,6 +165,8 @@ class LoginScreen extends React.Component{
           </form>
         </Paper>
       </main>
+    
+      </div>
     );
   }
 }

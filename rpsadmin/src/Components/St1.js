@@ -11,7 +11,6 @@ import ProjectModules from '../Common/ProjectModules';
 import ProjectGoals from '../Common/ProjectGoals';
 import PreviewModal from "../Common/imagesModalPrevies";
 import SaveAction from '../Common/SaveAction';
-import PreviewCard from './PreviewProjectCard';
 import Loader from 'react-loader-spinner';
 //commons
 import RichText from '../Common/RichText2';

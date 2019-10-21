@@ -2,6 +2,8 @@ import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import {withRouter} from 'react-router-dom';
+import {FaUserTie} from 'react-icons/fa';
+//import {FiFacebook,FiLinkedin,FiInstagram,FiYoutube,FiEdit} from 'react-icons/fi';
 
 class NavbarProj extends React.Component{
     Logout = ()=>{
@@ -26,7 +28,6 @@ class NavbarProj extends React.Component{
                 <Navbar.Collapse className="justify-content-end">
                     <Nav className="ml-auto">
                         <Nav.Link style={{fontSize:17}} onClick={this.Logout} >התנתקות</Nav.Link>
-                        {/* <Nav.Link style={{fontSize:17}} href="#home">לאתר הפרויקטים</Nav.Link> */}
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
