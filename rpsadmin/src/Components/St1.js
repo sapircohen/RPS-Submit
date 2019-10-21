@@ -74,7 +74,6 @@ class St1 extends React.Component{
             Challenges:'',
             CustomerName:'',
             GroupName:'',
-           // chosenHashs:[],
             HashSuggestions: [],
             HashOptions : [],
             tags:[],
@@ -175,7 +174,6 @@ class St1 extends React.Component{
                     })
                 }
             }
-            console.log(tagsList)
             this.setState({
                 Year:dataForGroup.Year?dataForGroup.Year:'',
                 Semester:dataForGroup.Semester?dataForGroup.Semester:'',
