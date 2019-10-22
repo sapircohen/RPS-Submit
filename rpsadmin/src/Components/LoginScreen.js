@@ -81,10 +81,13 @@ class LoginScreen extends React.Component{
     const ref = firebase.database().ref('RuppinProjects');
     ref.once("value", (snapshot)=> {
       snapshot.forEach((project)=> {
-
+        if(project.val().Password==='notEditableDontEvenTry'){
+          alert('התוצר נעול לעריכה, פנה למנהל מערכת');
+          logged=true;
+        }
         if (parseInt(this.state.password) === project.val().Password && this.state.groupName === project.val().GroupName) {
           logged = true;          
-          console.log(project.val())
+          //console.log(project.val())
           localStorage.setItem('groupData', JSON.stringify(project.val()));
           localStorage.setItem('projectKey',JSON.stringify(project.key))
           if(project.val().templateSubmit){
@@ -141,7 +144,7 @@ class LoginScreen extends React.Component{
             />
           </Avatar>
           <Typography component="h1" variant="h5">
-            ממשק הזנת נתונים
+            ממשק הזנת תוצרים
           </Typography>
           <form className={classes.form}>
             <FormControl margin="normal" required fullWidth>
