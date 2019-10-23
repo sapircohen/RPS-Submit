@@ -81,7 +81,8 @@ class LoginScreen extends React.Component{
     const ref = firebase.database().ref('RuppinProjects');
     ref.once("value", (snapshot)=> {
       snapshot.forEach((project)=> {
-        if(project.val().Password==='notEditableDontEvenTry'){
+        console.log(project.val().Password)
+        if(this.state.groupName === project.val().GroupName && project.val().Password==='notEditableDontEvenTry'){
           alert('התוצר נעול לעריכה, פנה למנהל מערכת');
           logged=true;
         }

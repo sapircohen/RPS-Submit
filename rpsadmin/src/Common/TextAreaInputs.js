@@ -7,6 +7,7 @@ const TextareaInput = (props)=>{
         <Form.Group as={Row}>
             <Col  sm="10">
                 <Form.Control as="textarea" value={props.defaultInput} onChange={(e)=>props.ChangeInputTextarea(e,props.InputTitle)} dir="rtl" rows={3} />
+                <p style={{border:'solid #CED4DA 0.5px',color:'#1C5F8A'}}>{props.defaultInput.length}</p>
             </Col>
             <Form.Label style={{textAlign:'right'}} column sm="2">
             {props.IsMandatory&&<span style={{color:'red'}}>*</span>}
