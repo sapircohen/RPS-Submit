@@ -165,6 +165,8 @@ export default class St3 extends React.Component{
             this.getExperties();
             //get list of courses
             this.getCoursesForExpertis();
+            //get hashtags options 
+            this.getHashs();
         })
         
     }
@@ -206,7 +208,23 @@ export default class St3 extends React.Component{
             console.log("The read failed: " + errorObject.code);
         })
     }
-
+    getHashs = ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('HashTags');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((hash)=> {
+                let Hash = {
+                    value:hash.val().Name,
+                    label:hash.val().Name
+                }
+                this.setState({
+                    HashOptions:[...this.state.HashOptions,Hash]
+                })
+            })
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
+    }
     getCoursesForExpertis = ()=>{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Experties').child(this.state.groupData.Major).child('Courses');
         ref.once("value", (snapshot)=> {

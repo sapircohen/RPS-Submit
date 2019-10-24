@@ -14,10 +14,11 @@ export default class CourseChoice extends React.Component{
     }
     componentDidMount(){
         const groupData = JSON.parse(localStorage.getItem('groupData'));
+        //console.log(groupData.Faculty)
         this.coursesFromFirebase(groupData.Faculty,groupData.Department,groupData.Major);
     }
     changeProjectType = (e)=>{
-        console.log(e.target.options.selectedIndex);
+        //console.log(e.target.options.selectedIndex);
         const template = this.state.templateList[e.target.options.selectedIndex-1];
         const course = this.state.coursesList[e.target.options.selectedIndex-1];
         this.setState({template:template,course:course})
@@ -26,10 +27,9 @@ export default class CourseChoice extends React.Component{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(fac).child('Departments').child(dep).child('Experties').child(exp).child('Courses');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((course)=>{
-                console.log(course.val())
+                //console.log(course.val())
                 this.setState({coursesList:[...this.state.coursesList,course.val().Name]});
                 this.setState({templateList:[...this.state.templateList,course.val()['Submit Template']]});
-
             })
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);

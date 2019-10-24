@@ -164,6 +164,7 @@ export default class St5 extends React.Component{
             this.getTechnologies();
             this.getAdvisors();
             this.getTopicForFinalProject();
+            this.getHashs();
         })
     }
     OpenImageModal = (title,pic)=>this.setState({openModal:true,modalTitle:title,picTitle:pic})
@@ -202,6 +203,23 @@ export default class St5 extends React.Component{
                 }
                 this.setState({
                     techOptions:[...this.state.techOptions,techA]
+                })
+            })
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
+    }
+    getHashs = ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('HashTags');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((hash)=> {
+                let Hash = {
+                    value:hash.val().Name,
+                    label:hash.val().Name
+                }
+                this.setState({
+                    HashOptions:[...this.state.HashOptions,Hash]
                 })
             })
         }, (errorObject)=> {

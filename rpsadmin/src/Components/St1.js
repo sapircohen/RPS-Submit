@@ -88,7 +88,6 @@ class St1 extends React.Component{
             openModal:false,
             finalProject:false,
             organization:false,
-            
             appExists:false,
             chosenTechs:[],
             suggestions: [],
@@ -156,23 +155,41 @@ class St1 extends React.Component{
         let dataForGroup ={};
         ref.once("value", (snapshot)=> {
             dataForGroup=snapshot.val();
+            console.log(dataForGroup)
         })
         .then(()=>{
             let tagsList = [];
-            console.log(dataForGroup.HashTags);
             if(dataForGroup.HashTags){
-                if(dataForGroup.HashTags[0].__isNew__!==undefined){
-                    tagsList=dataForGroup.HashTags;
-                }
-                else{
+                console.log(dataForGroup.HashTags[0].label)
                     dataForGroup.HashTags.forEach((tag)=>{
-                        let t = {
+                        console.log(tag)
+                        let t={};
+                        if(tag.__isNew__ || tag.label){
+                            console.log(tag)
+                            t = {
+                                'value':tag.value,
+                                'label':tag.label
+                            }
+                        }
+                        else{
+                            t = {
                                 'value':tag,
                                 'label':tag
+                            }
                         }
                         tagsList.push(t);
                     })
-                }
+                //}
+                // else{
+                //     dataForGroup.HashTags.forEach((tag)=>{
+                //         let t = {
+                //             'value':tag,
+                //             'label':tag
+                //         }
+                //         tagsList.push(t);
+                //     })
+                // }
+                // //console.log(tagsList)
             }
             this.setState({
                 Year:dataForGroup.Year?dataForGroup.Year:'',
@@ -203,7 +220,7 @@ class St1 extends React.Component{
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
                 ProjectCourse:this.state.course,
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
-                tags:dataForGroup.HashTags,
+                tags:tagsList,
                 functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:'',
                 appleLink:dataForGroup.AppStore?dataForGroup.AppStore:'',
                 googleLink:dataForGroup.GooglePlay?dataForGroup.GooglePlay:'',
@@ -219,6 +236,8 @@ class St1 extends React.Component{
             this.getCourses();
             //get topics for Final project from firebase
             this.getTopicForFinalProject();
+            //get hashtags for options - autocomplite
+            this.getHashs();
         })
     })
     }
@@ -307,12 +326,13 @@ class St1 extends React.Component{
         })
     }
     getHashs = ()=>{
-        const ref = firebase.database().ref('Technologies');
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('HashTags');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((hash)=> {
                 let Hash = {
-                    value:hash.val(),
-                    label:hash.val()
+                    value:hash.val().Name,
+                    label:hash.val().Name
                 }
                 this.setState({
                     HashOptions:[...this.state.HashOptions,Hash]
@@ -355,7 +375,6 @@ class St1 extends React.Component{
     HashsChosen (value){
         this.setState({
             tags:value.map((val)=>{
-                console.log(val)
                 return val;
             })
         })
@@ -684,8 +703,7 @@ class St1 extends React.Component{
             default:
                 break;
         }
-    }
-    
+    }   
     ChangeSelectedInputs = (event,selectedTitle)=>{
         switch (selectedTitle) {
             case sectionNames.projectFirstAdvisor:
@@ -728,11 +746,6 @@ class St1 extends React.Component{
                 break;
         }
     }
-    // ChangeTags = (newTags)=>{
-    //     this.setState({
-    //         tags:newTags
-    //     })
-    // }
     closePreview = ()=>this.setState({showPreview:false})
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     ChangePublish = ()=>{

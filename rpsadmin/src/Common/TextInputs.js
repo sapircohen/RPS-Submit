@@ -1,9 +1,7 @@
-import React,{useState} from 'react';
+import React from 'react';
 import {Form,Col,Row} from 'react-bootstrap';
 
 const TextInputs =(props)=>{
-    const [counter, setCounter] = useState(props.defaultInput.length);
-
     return(
         <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
             <Col sm="3"></Col>
