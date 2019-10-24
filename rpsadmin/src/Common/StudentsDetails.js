@@ -79,7 +79,7 @@ export default class StudentsDetails extends React.Component{
     render(){
         const {students} = this.state;
         return(
-            <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:20,marginTop:'3%',marginBottom:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+            <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:5,marginTop:'3%',marginBottom:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                                 
                 <SmallHeaderForm title="חברי הצוות"/>
                 <Row dir="rtl" style={{marginTop:'2%'}}>

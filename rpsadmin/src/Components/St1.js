@@ -20,7 +20,7 @@ import TextInputs from '../Common/TextInputs';
 import SelectInput from '../Common/inputSelect';
 import LinkInput from '../Common/Projectlinks';
 import AppLinksInput from '../Common/appLinks';
-import HashTags from '../Common/Tag';
+import Hashtags from '../Common/Tag2';
 import Techs from '../Common/techs';
 import {Years} from '../Common/Years';
 import SAlert from '../Common/SAlert';
@@ -74,7 +74,9 @@ class St1 extends React.Component{
             Challenges:'',
             CustomerName:'',
             GroupName:'',
-            HashTags:[],
+            HashSuggestions: [],
+            HashOptions : [],
+            tags:[],
             MovieLink:'',
             PDescription:'',
             CDescription:null,
@@ -86,7 +88,6 @@ class St1 extends React.Component{
             openModal:false,
             finalProject:false,
             organization:false,
-            tags:[],
             appExists:false,
             chosenTechs:[],
             suggestions: [],
@@ -119,6 +120,9 @@ class St1 extends React.Component{
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
         this.TechsChosen = this.TechsChosen.bind(this);
+        //HashsChosen
+        this.HashsChosen = this.HashsChosen.bind(this);
+
     }
     componentDidMount(){
         this.setState({
@@ -132,10 +136,9 @@ class St1 extends React.Component{
             let currentTime = JSON.parse(localStorage.getItem('currentTime'));
             let time = new Date();
             if((time-currentTime)>10000){
-                console.log("not save:", time-currentTime);
+                //console.log("not save:", time-currentTime);
             }
             else{
-                console.log("save");
                 this.SaveData();
                 if(this.state.isPublished){
                     if(!this.ValidateData(this.getProjectDetails())){
@@ -157,13 +160,36 @@ class St1 extends React.Component{
         .then(()=>{
             let tagsList = [];
             if(dataForGroup.HashTags){
-                dataForGroup.HashTags.forEach((tag)=>{
-                    let t = {
-                        'id':tag,
-                        'text':tag
-                    }
-                    tagsList.push(t);
-                })
+                console.log(dataForGroup.HashTags[0].label)
+                    dataForGroup.HashTags.forEach((tag)=>{
+                        console.log(tag)
+                        let t={};
+                        if(tag.__isNew__ || tag.label){
+                            console.log(tag)
+                            t = {
+                                'value':tag.value,
+                                'label':tag.label
+                            }
+                        }
+                        else{
+                            t = {
+                                'value':tag,
+                                'label':tag
+                            }
+                        }
+                        tagsList.push(t);
+                    })
+                //}
+                // else{
+                //     dataForGroup.HashTags.forEach((tag)=>{
+                //         let t = {
+                //             'value':tag,
+                //             'label':tag
+                //         }
+                //         tagsList.push(t);
+                //     })
+                // }
+                // //console.log(tagsList)
             }
             console.log(tagsList);
             this.setState({
@@ -201,7 +227,6 @@ class St1 extends React.Component{
                 googleLink:dataForGroup.GooglePlay?dataForGroup.GooglePlay:'',
                 appExists:dataForGroup.GooglePlay?true:false
             },()=>{
-                console.log(this.state.chosenTechs)
                 this.setState({projectDetails:this.getProjectDetails()})
             })
             //get list of advisors from firebase
@@ -212,11 +237,13 @@ class St1 extends React.Component{
             this.getCourses();
             //get topics for Final project from firebase
             this.getTopicForFinalProject();
+            //get hashtags for options - autocomplite
+            this.getHashs();
         })
     })
     }
     getProjectDetails=()=>{
-        const arrayOfTags = this.state.tags.map((text)=>text.text);
+        // const arrayOfTags = this.state.tags.map((text)=>text.text);
         const project = {
             ProjectName:this.state.ProjectName,
             PDescription:this.state.PDescription,
@@ -224,7 +251,7 @@ class St1 extends React.Component{
             ProjectTopic:this.state.ProjectTopic,
             ProjectCourse:this.state.course,
             advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
-            HashTags:arrayOfTags,
+            HashTags:this.state.tags,
             Technologies:this.state.chosenTechs,
             Year:this.state.Year,
             Semester:this.state.Semester,
@@ -260,7 +287,6 @@ class St1 extends React.Component{
         ref.once("value", (snapshot)=> {
             snapshot.forEach((course)=>{
                 this.setState({coursesList:[...this.state.coursesList,course.val().Name]});
-                console.log(course.val())
             })
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
@@ -271,7 +297,6 @@ class St1 extends React.Component{
         ref.once("value", (snapshot)=> {
             snapshot.forEach((topicName)=>{
                 this.setState({topicList:[...this.state.topicList,topicName.val().Name]});
-                console.log(topicName.val())
             })
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
@@ -281,7 +306,6 @@ class St1 extends React.Component{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Advisors');
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
-            console.log(snapshot.val())
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
         })
@@ -296,6 +320,23 @@ class St1 extends React.Component{
                 }
                 this.setState({
                     techOptions:[...this.state.techOptions,techA]
+                })
+            })
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
+    }
+    getHashs = ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('HashTags');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((hash)=> {
+                let Hash = {
+                    value:hash.val().Name,
+                    label:hash.val().Name
+                }
+                this.setState({
+                    HashOptions:[...this.state.HashOptions,Hash]
                 })
             })
         }, (errorObject)=> {
@@ -328,6 +369,13 @@ class St1 extends React.Component{
     TechsChosen (value){
         this.setState({
             chosenTechs:value.map((val)=>{
+                return val;
+            })
+        })
+    }
+    HashsChosen (value){
+        this.setState({
+            tags:value.map((val)=>{
                 return val;
             })
         })
@@ -369,7 +417,6 @@ class St1 extends React.Component{
         })
     }
     savePic=(url,title,index,screenshotName)=>{
-        console.log(screenshotName)
         switch (title) {
             case 'Customer Logo':this.setState({customerLogo:[url]})
                 break;
@@ -391,7 +438,6 @@ class St1 extends React.Component{
         this.forceUpdate();
     }
     ValidateData = (projectData)=>{
-        console.log(projectData);
             // project name validation
             if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
@@ -421,7 +467,7 @@ class St1 extends React.Component{
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
-            if(projectData.PDescription.length>500){
+            if(projectData.PDescription.length>600){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
                 return false;
             }
@@ -577,7 +623,7 @@ class St1 extends React.Component{
             return true;
     }
     SaveData = ()=>{
-        const arrayOfTags = this.state.tags.map((text)=>text.text);
+        //const arrayOfTags = this.state.tags.map((text)=>text.text);
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
         ref.update({
             templateSubmit:'st1',
@@ -608,14 +654,13 @@ class St1 extends React.Component{
             GooglePlay:this.state.googleLink,
             AppStore:this.state.appleLink,
             CustomerName:this.state.CustomerName,
-            HashTags:arrayOfTags,
+            HashTags:this.state.tags,
             PDescription:this.state.PDescription,
             Github:this.state.Github,
             functionalityMovie:this.state.functionalityMovie
         })
     }
     DeletePic = (picURL)=>{
-        console.log(picURL)
         const desertRef = firebase.storage().refFromURL(picURL);
         // Delete the file
         desertRef.delete().then(()=> {
@@ -654,14 +699,12 @@ class St1 extends React.Component{
                     this.setState({CustCustomers:event.target.value})
                 break;
             case sectionNames.projectCustomerName:
-                    this.setState({CustomerName:event.target.value},()=>{
-                        console.log(this.state.CustomerName)
-                    })
+                    this.setState({CustomerName:event.target.value})
                 break;
             default:
                 break;
         }
-    }
+    }   
     ChangeSelectedInputs = (event,selectedTitle)=>{
         switch (selectedTitle) {
             case sectionNames.projectFirstAdvisor:
@@ -704,11 +747,6 @@ class St1 extends React.Component{
                 break;
         }
     }
-    ChangeTags = (newTags)=>{
-        this.setState({
-            tags:newTags
-        })
-    }
     closePreview = ()=>this.setState({showPreview:false})
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     ChangePublish = ()=>{
@@ -730,7 +768,7 @@ class St1 extends React.Component{
             })
         }
     }
-    CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
+    CloseAlert = ()=>{this.setState({alertShow:false})}
     render(){
         if (!this.state.isReady) {
             return(
@@ -760,7 +798,7 @@ class St1 extends React.Component{
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Poject details */}
-                    <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+                    <div style={{border:'solid 1px',padding:15,borderRadius:5,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* projectName */}
                         <TextInputs IsMandatory={true} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
@@ -798,11 +836,11 @@ class St1 extends React.Component{
                     <ProjectGoals initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
                     <ProjectModules initalProjectModule={this.state.projectModules} setProjectModules={this.getprojectModules}/>
                     {/* tag the project */}
-                    <HashTags tags={this.state.tags}  handleDelete={this.handleDelete} handleAddition={this.handleAddition} changeTags={this.ChangeTags}/>
+                    <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
                     {/* techs tag */}
                     <Techs chosenTechs={this.state.chosenTechs} TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
                     {/* Project links */}
-                    <div style={{border:'solid 1px',padding:15,borderRadius:30,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+                    <div style={{border:'solid 1px',padding:15,borderRadius:5,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="קישורים"/>
                         {/* project site link */}
                         <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.ProjectSite} InputTitle={sectionNames.projectLink} inputSize="sm" placeholder="http://proj.ruppin.ac.il/..."/>
@@ -828,7 +866,7 @@ class St1 extends React.Component{
                         }
                     </div>                    
                     {/* FILES UPLOAD */}
-                    <div style={{border:'solid 1px',padding:20,borderRadius:30,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+                    <div style={{border:'solid 1px',padding:20,borderRadius:5,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="קבצים"/>
                             <Row dir="rtl" style={{marginTop:'2%'}} >
                                 <Col sm="4">

@@ -61,7 +61,7 @@ export default class ProjectGoals extends React.Component{
     render(){
         const {goals} = this.state;
         return(
-            <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:20,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+            <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:5,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                 <SmallHeaderForm title={this.props.title?this.props.title:"מטרות הפרויקט"}/>
                 <Row dir="rtl" style={{marginTop:'2%'}}>
                     <Col sm="4">

@@ -9,7 +9,7 @@ import { FaPlusCircle } from "react-icons/fa";
 import firebase from 'firebase';
 import SaveAction from '../Common/SaveAction';
 import PDFupload from '../Common/PdfFileUpload';
-import PreviewCard from './PreviewProjectCard';
+import Hashtags from '../Common/Tag2';
 import Loader from 'react-loader-spinner';
 //commons
 import RichText from '../Common/RichText2';
@@ -53,6 +53,9 @@ class St2 extends React.Component{
             isPublished:false,
             StudentsDetails:[],
             poster:[],
+            HashSuggestions: [],
+            HashOptions : [],
+            tags:[],
             picTitle:'',
             imagesToShowInModal:[],
             GroupName:'',
@@ -106,7 +109,6 @@ class St2 extends React.Component{
         let dataForGroup ={};
         ref.once("value", (snapshot)=> {
             dataForGroup=snapshot.val();
-            console.log(dataForGroup)
         })
         .then(()=>{
             const course = JSON.parse(localStorage.getItem('course'));
@@ -125,8 +127,9 @@ class St2 extends React.Component{
                 isPublished:dataForGroup.isPublished!==undefined?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 ProjectAdvisor:dataForGroup.Advisor?dataForGroup.Advisor:'',
+                tags:dataForGroup.HashTags?dataForGroup.HashTags:[],
+
             },()=>{
-                console.log(this.state.StudentsDetails)
                 this.setState({projectDetails:this.getProjectDetails()})
             })
             //get list of advisors from firebase
@@ -135,6 +138,8 @@ class St2 extends React.Component{
             this.getExperties();
             //get list of courses
             this.getCoursesForExpertis();
+            //get hashtags options
+            this.getHashs();
         })
     }
     getProjectDetails=()=>{
@@ -151,7 +156,8 @@ class St2 extends React.Component{
             ProjectLogo:this.state.poster?this.state.poster[0]:[],
             ProjectPDF:this.state.ProjectPDF,
             Year:this.state.Year,
-            Semester:this.state.Semester
+            Semester:this.state.Semester,
+            HashTags:this.state.tags
         }
         return project;
     }
@@ -175,6 +181,23 @@ class St2 extends React.Component{
         .then(()=>{
             this.getTopicsListForCourses();
         }) 
+    }
+    getHashs = ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('HashTags');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((hash)=> {
+                let Hash = {
+                    value:hash.val().Name,
+                    label:hash.val().Name
+                }
+                this.setState({
+                    HashOptions:[...this.state.HashOptions,Hash]
+                })
+            })
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
     }
     getExperties = ()=>{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Experties');
@@ -207,6 +230,14 @@ class St2 extends React.Component{
         else{
             this.setState({openModal:true,modalTitle:title,picTitle:index,fileSize:0})
         }
+    }
+    HashsChosen =(value)=>{
+        this.setState({
+            tags:value.map((val)=>{
+                console.log(val)
+                return val;
+            })
+        })
     }
     getStudentsDetails = (students)=>{
         this.setState({StudentsDetails:students},()=>{
@@ -260,7 +291,7 @@ class St2 extends React.Component{
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט הוא שדה חובה',alertIcon:'warning'})
                 return false;
             }
-            if(projectData.PDescription.length>5000){
+            if(projectData.PDescription.length>6000){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-5000 תווים',alertIcon:'warning'})
                 return false;
             }
@@ -340,6 +371,7 @@ class St2 extends React.Component{
                     ProjectCourse:this.state.projectCourse,
                     ProjectTopic:this.state.ProjectTopic,
                     ProjectPDF:this.state.ProjectPDF?this.state.ProjectPDF:'',
+                    HashTags:this.state.tags,
                 })
                 .then(()=>{
                     console.log('saved')
@@ -444,7 +476,7 @@ class St2 extends React.Component{
                 <ModalExample1 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData}/>
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Project details */}
-                    <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>   
+                    <div style={{border:'solid 1px',padding:15,borderRadius:5,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>   
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* project name */}
                         <TextInputs IsMandatory={true}  defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
@@ -466,7 +498,7 @@ class St2 extends React.Component{
                         </Form.Row>
                     </div>
                     {/* FILES UPLOAD */}
-                    <div style={{border:'solid 1px',padding:15,borderRadius:20,margin:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
+                    <div style={{border:'solid 1px',padding:15,borderRadius:5,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="הוספת קבצים"/>
                             {/* project movie link */}
                             <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com"/>
@@ -496,6 +528,9 @@ class St2 extends React.Component{
                                 </Col>
                             </Row>
                     </div>
+                                        {/* tag the project */}
+                                        <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
+
                     {/* Students details */}
                     <StudentDetails isMandatory={false} setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
                 </Form>

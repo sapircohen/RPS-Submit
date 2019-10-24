@@ -11,7 +11,7 @@ import PDFupload from '../Common/PdfFileUpload';
 import LinkInput from '../Common/Projectlinks';
 import StudentDetails from '../Common/StudentsDetails';
 import ModalImage from '../Common/ImageModal';
-import PreviewVt4 from './PreviewVt4';
+import Hashtags from '../Common/Tag2';
 import SaveAction from '../Common/SaveAction';
 import HeaderForm from '../Common/HeaderForm';
 import PublishProject from '../Common/PublishProject';
@@ -70,6 +70,9 @@ export default class St3 extends React.Component{
             advisorsList:[],
             coursesList:[],
             topicsList:[],
+            HashSuggestions: [],
+            HashOptions : [],
+            tags:[],
             expertiesList:[],
             projectDetails:{},
             showPreview:false,
@@ -154,6 +157,7 @@ export default class St3 extends React.Component{
                 customerLogo:dataForGroup.CustomerLogo?dataForGroup.CustomerLogo:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
+                tags:dataForGroup.HashTags?dataForGroup.HashTags:[],
             },()=>this.setState({projectDetails:this.getProjectDetails()}))
             //get list of advisors from firebase
             this.getAdvisorsForDepartment();
@@ -161,6 +165,8 @@ export default class St3 extends React.Component{
             this.getExperties();
             //get list of courses
             this.getCoursesForExpertis();
+            //get hashtags options 
+            this.getHashs();
         })
         
     }
@@ -189,6 +195,7 @@ export default class St3 extends React.Component{
             Semester:this.state.Semester,
             ScreenShots:this.state.ScreenShots,
             ScreenShotsNames:this.state.ScreenShotsNames,
+            HashTags:this.state.tags,
         }
         return project;
     }
@@ -197,6 +204,23 @@ export default class St3 extends React.Component{
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
             //console.log(snapshot.val())
+        }, (errorObject)=> {
+            console.log("The read failed: " + errorObject.code);
+        })
+    }
+    getHashs = ()=>{
+        const groupData = JSON.parse(localStorage.getItem('groupData'));
+        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('HashTags');
+        ref.once("value", (snapshot)=> {
+            snapshot.forEach((hash)=> {
+                let Hash = {
+                    value:hash.val().Name,
+                    label:hash.val().Name
+                }
+                this.setState({
+                    HashOptions:[...this.state.HashOptions,Hash]
+                })
+            })
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
         })
@@ -280,6 +304,14 @@ export default class St3 extends React.Component{
             default:
                 break;
         }
+    }
+    HashsChosen =(value)=>{
+        this.setState({
+            tags:value.map((val)=>{
+                console.log(val)
+                return val;
+            })
+        })
     }
     //Change 
     ChangeLinkInput = (event,linkTitle)=>{
@@ -429,41 +461,41 @@ export default class St3 extends React.Component{
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
             return false;
         }
-        if(projectData.PDescription.length>500){
+        if(projectData.PDescription.length>600){
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
             return false;
         }
         //project goal
         if(projectData.ProjectGoal!==''){
-            if(projectData.ProjectGoal.length>200){
+            if(projectData.ProjectGoal.length>300){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור מטרת הפרויקט הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
         }
         //project need
         if(projectData.ProjectNeed!==''){
-            if(projectData.ProjectNeed.length>200){
+            if(projectData.ProjectNeed.length>300){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הבעיה/צורך הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
         }
         //projectFindings
         if(projectData.projectFindings!==''){
-            if(projectData.projectFindings.length>200){
+            if(projectData.projectFindings.length>300){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הממצאים הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
         }
         //projectSolution
         if(projectData.projectSolution!==''){
-            if(projectData.projectSolution.length>500){
+            if(projectData.projectSolution.length>600){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפתרון הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
                 return false;
             }
         }
         //ProjectConclusion
         if(projectData.ProjectConclusion!==''){
-            if(projectData.ProjectConclusion.length>500){
+            if(projectData.ProjectConclusion.length>600){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור המסקנות הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
                 return false;
             }
@@ -558,6 +590,7 @@ export default class St3 extends React.Component{
                 Semester:this.state.Semester,
                 ScreenShots:this.state.ScreenShots,
                 ScreenShotsNames:this.state.ScreenShotsNames,
+                HashTags:this.state.tags,
             })
     }
     ChangePublish = ()=>{
@@ -579,6 +612,7 @@ export default class St3 extends React.Component{
             })
         }
     }
+    CloseAlert = ()=>{this.setState({alertShow:false})}
 
     render(){
         if (!this.state.isReady) {
@@ -698,6 +732,10 @@ export default class St3 extends React.Component{
                             <Col sm="4"></Col>
                         </Row>
                     </div>
+                    {/* tag the project */}
+                    <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
+
+
                     {/* Students details */}
                     <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
                 </Form>
