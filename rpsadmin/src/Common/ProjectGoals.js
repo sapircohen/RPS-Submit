@@ -14,7 +14,7 @@ export default class ProjectGoals extends React.Component{
     }
     componentDidMount(){
         window.setTimeout(()=>{
-            console.log(this.props)
+            //console.log(this.props)
             if(this.props.initalProjectGoals&&this.props.initalProjectGoals.length!==0){
                 this.setState({
                     goals:this.props.initalProjectGoals,
@@ -39,10 +39,10 @@ export default class ProjectGoals extends React.Component{
         //remove a student in position index
         let array = [...this.state.goals];
     
-        console.log(this.state.goals)
+        //console.log(this.state.goals)
         if (index !== -1) {
             array.splice(index, 1);
-            console.log(array);
+            //console.log(array);
             this.setState({goals: array},()=>{
                 this.props.setProjectGoals(this.state.goals);
             });

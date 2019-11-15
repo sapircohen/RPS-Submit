@@ -26,7 +26,8 @@ import {Years} from '../Common/Years';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
 import ModalExample1 from './PreviewProject';
-
+import { isObject } from 'util';
+import {GetHashtags} from '../Common/HashtagsSetup';
 // const course = JSON.parse(localStorage.getItem('course'));
 // const projectKey = JSON.parse(localStorage.getItem('projectKey'));
 // const groupData = JSON.parse(localStorage.getItem('groupData'));
@@ -155,17 +156,14 @@ class St1 extends React.Component{
         let dataForGroup ={};
         ref.once("value", (snapshot)=> {
             dataForGroup=snapshot.val();
-            console.log(dataForGroup)
+            console.log(snapshot.val())
         })
         .then(()=>{
             let tagsList = [];
             if(dataForGroup.HashTags){
-                console.log(dataForGroup.HashTags[0].label)
                     dataForGroup.HashTags.forEach((tag)=>{
-                        console.log(tag)
                         let t={};
                         if(tag.__isNew__ || tag.label){
-                            console.log(tag)
                             t = {
                                 'value':tag.value,
                                 'label':tag.label
@@ -179,19 +177,7 @@ class St1 extends React.Component{
                         }
                         tagsList.push(t);
                     })
-                //}
-                // else{
-                //     dataForGroup.HashTags.forEach((tag)=>{
-                //         let t = {
-                //             'value':tag,
-                //             'label':tag
-                //         }
-                //         tagsList.push(t);
-                //     })
-                // }
-                // //console.log(tagsList)
             }
-            console.log(tagsList);
             this.setState({
                 Year:dataForGroup.Year?dataForGroup.Year:'',
                 Semester:dataForGroup.Semester?dataForGroup.Semester:'',
@@ -331,9 +317,18 @@ class St1 extends React.Component{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('HashTags');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((hash)=> {
-                let Hash = {
-                    value:hash.val().Name,
-                    label:hash.val().Name
+                let Hash={};
+                if(isObject(hash.val().Name)){
+                    Hash = {
+                        value: hash.val().Name.Name,
+                        label:hash.val().Name.Name,
+                    }
+                }
+                else{
+                    Hash = {
+                        value:hash.val().Name,
+                        label:hash.val().Name
+                    }
                 }
                 this.setState({
                     HashOptions:[...this.state.HashOptions,Hash]
@@ -760,10 +755,13 @@ class St1 extends React.Component{
                         })
                         .then(()=>{
                             if(this.state.isPublished===true){
-                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'})
+                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                                const groupData = JSON.parse(localStorage.getItem('groupData'));
+                                GetHashtags(groupData.Faculty);
                             }
                             else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
                             })
+                        
                     }
             })
         }

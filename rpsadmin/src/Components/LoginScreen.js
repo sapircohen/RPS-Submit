@@ -81,12 +81,11 @@ class LoginScreen extends React.Component{
     const ref = firebase.database().ref('RuppinProjects');
     ref.once("value", (snapshot)=> {
       snapshot.forEach((project)=> {
-        console.log(project.val().Password)
         if(this.state.groupName === project.val().GroupName && project.val().Password==='notEditableDontEvenTry'){
           alert('התוצר נעול לעריכה, פנה למנהל מערכת');
           logged=true;
         }
-        if (parseInt(this.state.password) === project.val().Password && this.state.groupName === project.val().GroupName) {
+        if (parseInt(this.state.password.trim()) === project.val().Password && this.state.groupName === project.val().GroupName) {
           logged = true;          
           //console.log(project.val())
           localStorage.setItem('groupData', JSON.stringify(project.val()));
@@ -111,10 +110,10 @@ class LoginScreen extends React.Component{
   })
   }
   changedGroupName(e){
-    this.setState({groupName:e.target.value});
+    this.setState({groupName:e.target.value.trim()});
   }
   changedPassword(e){
-    this.setState({password:e.target.value})
+    this.setState({password:e.target.value.trim()})
   }
   render(){
     const { classes } = this.props;

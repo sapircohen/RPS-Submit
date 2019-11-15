@@ -18,7 +18,6 @@ export default class StudentsDetails extends React.Component{
     }
     componentDidMount = ()=>{
         window.setTimeout(()=>{
-            console.log(this.props)
             if(this.props.studentInitalDetails&&this.props.studentInitalDetails.length!==0){
                 this.setState({
                     students:this.props.studentInitalDetails,

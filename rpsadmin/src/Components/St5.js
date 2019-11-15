@@ -26,6 +26,9 @@ import Loader from 'react-loader-spinner';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
 import ModalExample1 from './PreviewProject';
+import { isObject } from 'util';
+import {GetHashtags} from '../Common/HashtagsSetup';
+
 const sectionNames = {
     projectDesc : "רקע ומטרת הפרויקט *עד 400 תוים",
     projectChallenges:"אתגרי הפרויקט",
@@ -72,8 +75,8 @@ export default class St5 extends React.Component{
         techOptions : [],
         StudentsDetails:[],
         HashSuggestions: [],
-            HashOptions : [],
-            tags:[],
+        HashOptions : [],
+        tags:[],
         openModal:false,
         modalTitle:'',
         picTitle:'',
@@ -130,6 +133,27 @@ export default class St5 extends React.Component{
             dataForGroup=snapshot.val();
         })
         .then(()=>{
+            let tagsList = [];
+            if(dataForGroup.HashTags){
+                dataForGroup.HashTags.forEach((tag)=>{
+                    console.log(tag)
+                    let t={};
+                    if(tag.__isNew__ || tag.label){
+                        console.log(tag)
+                        t = {
+                            'value':tag.value,
+                            'label':tag.label
+                        }
+                    }
+                    else{
+                        t = {
+                            'value':tag,
+                            'label':tag
+                        }
+                    }
+                    tagsList.push(t);
+                })
+            }
             this.setState({
                 ProjectSummery:dataForGroup.ProjectSummery?dataForGroup.ProjectSummery:'',
                 ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
@@ -157,7 +181,7 @@ export default class St5 extends React.Component{
                 projectFindings:dataForGroup.projectFindings?dataForGroup.projectFindings:'',
                 PartnerDescription:dataForGroup.PartnerDescription?dataForGroup.PartnerDescription:'',
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
-                tags:dataForGroup.HashTags?dataForGroup.HashTags:[],
+                tags:tagsList,
             },()=>{
                 this.setState({projectDetails:this.getProjectDetails()})
             })
@@ -214,19 +238,26 @@ export default class St5 extends React.Component{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('HashTags');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((hash)=> {
-                let Hash = {
-                    value:hash.val().Name,
-                    label:hash.val().Name
+                let Hash={};
+                if(isObject(hash.val().Name)){
+                    Hash = {
+                        value: hash.val().Name.Name,
+                        label:hash.val().Name.Name,
+                    }
                 }
-                this.setState({
-                    HashOptions:[...this.state.HashOptions,Hash]
-                })
+                else{
+                    Hash = {
+                        value:hash.val().Name,
+                        label:hash.val().Name
+                    }
+                }
+                this.setState({HashOptions:[...this.state.HashOptions,Hash]})
             })
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
         })
+        .then(()=>console.log(this.state.HashOptions))
     }
-    //pdf details
     savePDF = (url)=>{
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
         this.setState({
@@ -372,7 +403,6 @@ export default class St5 extends React.Component{
     HashsChosen =(value)=>{
         this.setState({
             tags:value.map((val)=>{
-                console.log(val)
                 return val;
             })
         })
@@ -426,7 +456,6 @@ export default class St5 extends React.Component{
         }
     }
     DeletePic = (picURL)=>{
-        console.log(picURL)
         const desertRef = firebase.storage().refFromURL(picURL);
         // Delete the file
         desertRef.delete().then(()=> {
@@ -487,8 +516,6 @@ export default class St5 extends React.Component{
         }
     }
     ValidateData = (projectData)=>{
-        console.log(projectData);
-            // project name validation
             if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
                 return false;
@@ -652,7 +679,9 @@ export default class St5 extends React.Component{
                     })
                     .then(()=>{
                         if(this.state.isPublished===true){
-                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'})
+                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                            const groupData = JSON.parse(localStorage.getItem('groupData'));
+                            GetHashtags(groupData.Faculty);
                         }
                         else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
                     })

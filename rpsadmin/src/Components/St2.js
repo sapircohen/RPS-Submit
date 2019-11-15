@@ -22,6 +22,8 @@ import LabelTextPDF from '../Common/LabelText';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
 import ModalExample1 from './PreviewProject';
+import { isObject } from 'util';
+import {GetHashtags} from '../Common/HashtagsSetup';
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -111,6 +113,27 @@ class St2 extends React.Component{
             dataForGroup=snapshot.val();
         })
         .then(()=>{
+            let tagsList = [];
+            if(dataForGroup.HashTags){
+                dataForGroup.HashTags.forEach((tag)=>{
+                    console.log(tag)
+                    let t={};
+                    if(tag.__isNew__ || tag.label){
+                        console.log(tag)
+                        t = {
+                            'value':tag.value,
+                            'label':tag.label
+                        }
+                    }
+                    else{
+                        t = {
+                            'value':tag,
+                            'label':tag
+                        }
+                    }
+                    tagsList.push(t);
+                })
+            }
             const course = JSON.parse(localStorage.getItem('course'));
             this.setState({
                 Year:dataForGroup.Year?dataForGroup.Year:'',
@@ -127,7 +150,7 @@ class St2 extends React.Component{
                 isPublished:dataForGroup.isPublished!==undefined?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 ProjectAdvisor:dataForGroup.Advisor?dataForGroup.Advisor:'',
-                tags:dataForGroup.HashTags?dataForGroup.HashTags:[],
+                tags:tagsList
 
             },()=>{
                 this.setState({projectDetails:this.getProjectDetails()})
@@ -187,9 +210,18 @@ class St2 extends React.Component{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('HashTags');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((hash)=> {
-                let Hash = {
-                    value:hash.val().Name,
-                    label:hash.val().Name
+                let Hash={};
+                if(isObject(hash.val().Name)){
+                    Hash = {
+                        value: hash.val().Name.Name,
+                        label:hash.val().Name.Name,
+                    }
+                }
+                else{
+                    Hash = {
+                        value:hash.val().Name,
+                        label:hash.val().Name
+                    }
                 }
                 this.setState({
                     HashOptions:[...this.state.HashOptions,Hash]
@@ -446,7 +478,9 @@ class St2 extends React.Component{
                     })
                     .then(()=>{
                         if(this.state.isPublished===true){
-                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'})
+                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                            const groupData = JSON.parse(localStorage.getItem('groupData'));
+                            GetHashtags(groupData.Faculty);
                         }
                         else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
                     })

@@ -13,7 +13,7 @@ export default class ProjectModules extends React.Component{
     }
     componentDidMount(){
         window.setTimeout(()=>{
-            console.log(this.props)
+            //console.log(this.props)
             if(this.props.initalProjectModule&&this.props.initalProjectModule.length!==0){
                 this.setState({
                     modules:this.props.initalProjectModule,

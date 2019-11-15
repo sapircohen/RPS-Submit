@@ -23,6 +23,8 @@ import RichText from '../Common/RichText2';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
 import ModalExample1 from './PreviewProject';
+import { isObject } from 'util';
+import {GetHashtags} from '../Common/HashtagsSetup';
 
 const sectionNames = {
     projectNeed:'הבעיה/הצורך',
@@ -133,6 +135,27 @@ export default class St3 extends React.Component{
             console.log(dataForGroup)
         })
         .then(()=>{
+            let tagsList = [];
+            if(dataForGroup.HashTags){
+                    dataForGroup.HashTags.forEach((tag)=>{
+                        console.log(tag)
+                        let t={};
+                        if(tag.__isNew__ || tag.label){
+                            console.log(tag)
+                            t = {
+                                'value':tag.value,
+                                'label':tag.label
+                            }
+                        }
+                        else{
+                            t = {
+                                'value':tag,
+                                'label':tag
+                            }
+                        }
+                        tagsList.push(t);
+                    })
+            }
             this.setState({
                 Year:dataForGroup.Year?dataForGroup.Year:'',
                 Semester:dataForGroup.Semester?dataForGroup.Semester:'',
@@ -157,7 +180,7 @@ export default class St3 extends React.Component{
                 customerLogo:dataForGroup.CustomerLogo?dataForGroup.CustomerLogo:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
-                tags:dataForGroup.HashTags?dataForGroup.HashTags:[],
+                tags:tagsList,
             },()=>this.setState({projectDetails:this.getProjectDetails()}))
             //get list of advisors from firebase
             this.getAdvisorsForDepartment();
@@ -213,9 +236,18 @@ export default class St3 extends React.Component{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('HashTags');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((hash)=> {
-                let Hash = {
-                    value:hash.val().Name,
-                    label:hash.val().Name
+                let Hash={};
+                if(isObject(hash.val().Name)){
+                    Hash = {
+                        value: hash.val().Name.Name,
+                        label:hash.val().Name.Name,
+                    }
+                }
+                else{
+                    Hash = {
+                        value:hash.val().Name,
+                        label:hash.val().Name
+                    }
                 }
                 this.setState({
                     HashOptions:[...this.state.HashOptions,Hash]
@@ -604,7 +636,9 @@ export default class St3 extends React.Component{
                     })
                     .then(()=>{
                         if(this.state.isPublished===true){
-                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'})
+                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                            const groupData = JSON.parse(localStorage.getItem('groupData'));
+                            GetHashtags(groupData.Faculty);
                         }
                         else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
                         })                    

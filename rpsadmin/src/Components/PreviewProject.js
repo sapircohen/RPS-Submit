@@ -48,9 +48,6 @@ const params = {
       el: '.swiper-pagination'
 }}
 export default class ModalExample1 extends React.Component{
-    componentDidMount(){
-        console.log(this.props.projectDetails)
-    }
     render(){  
         return (
             <Modal style={{backgroundColor:'transparent',fontFamily:'Calibri'}} onHide={this.props.close} show={this.props.openPreview} size="xl" aria-labelledby="contained-modal-title-vcenter">
