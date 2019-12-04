@@ -20,6 +20,15 @@ export const TemplateConfigS1=
         alertText:'חסר שדה בעלי עניין'
     },
     {
+        Name:'CustCustomers',
+        DisplayName:'משתמשי מערכת',
+        fieldType:'text',
+        isMandatory:true,
+        minimum:-Infinity,
+        maximum:Infinity,
+        alertText:'חסר שדה משתמשי מערכת'
+    },
+    {
         Name:'CDescription',
         DisplayName:'תיאור קצר',
         alertText:'תיאור קצר צריך להיות בין 50 ל-150 תווים',
