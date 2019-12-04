@@ -99,7 +99,8 @@ export default class St3 extends React.Component{
             showImagesMode:false,
             course :'',
             projectKey:'',
-            groupData :''
+            groupData :'',
+            showRatio:false
         }
     }
     componentDidMount(){
@@ -433,11 +434,15 @@ export default class St3 extends React.Component{
     }
     //image modal
     OpenImageModal = (title,index,fileSize)=>{
+        let temp = false;
+        if(title==='Screenshots'){
+            temp = true;
+        }
         if(title==='Project Logo'){
-            this.setState({modalTitle:title,picTitle:index,fileSize:fileSize,openModal:true})
+            this.setState({modalTitle:title,picTitle:index,fileSize:fileSize,openModal:true,showRatio:temp})
         }
         else{
-            this.setState({openModal:true,modalTitle:title,picTitle:index,fileSize:0})
+            this.setState({openModal:true,modalTitle:title,picTitle:index,fileSize:0,showRatio:temp})
         }
     }
     handleClose = ()=> this.setState({ openModal: false });
@@ -664,7 +669,7 @@ export default class St3 extends React.Component{
 
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
-                <ModalImage fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <ModalImage showRatio={this.state.showRatio}  fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview for screenshots  */}
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 {/* showPreview */}

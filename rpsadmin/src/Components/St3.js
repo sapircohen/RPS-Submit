@@ -98,6 +98,7 @@ export default class St3 extends React.Component{
             ScreenShotsNames:[],
             MovieLink:'',
             showImagesMode:false,
+            showRatio:false
         }
     }
     componentDidMount(){
@@ -397,11 +398,15 @@ export default class St3 extends React.Component{
     }
     //image modal
     OpenImageModal = (title,index,fileSize)=>{
+        let temp = false;
+        if(title==='Screenshots'){
+            temp = true;
+        }
         if(title==='Project Logo'){
-            this.setState({modalTitle:title,picTitle:index,fileSize:fileSize,openModal:true})
+            this.setState({modalTitle:title,picTitle:index,fileSize:fileSize,openModal:true,showRatio:temp})
         }
         else{
-            this.setState({openModal:true,modalTitle:title,picTitle:index,fileSize:0})
+            this.setState({openModal:true,modalTitle:title,picTitle:index,fileSize:0,showRatio:temp})
         }
     }
     handleClose = ()=> this.setState({ openModal: false });
@@ -669,13 +674,13 @@ export default class St3 extends React.Component{
                 <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
-                <ModalImage fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <ModalImage showRatio={this.state.showRatio} fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview for screenshots  */}
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 
                 {/* showPreview */}
                 <SaveAction Save={this.SetProjectOnFirbase}/>
-                <ModalExample1 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData}/>
+                <ModalExample1 showRatio={this.state.showRatio} close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData}/>
                 {/* inputs */}
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Project details */}

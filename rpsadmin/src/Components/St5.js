@@ -99,7 +99,8 @@ export default class St5 extends React.Component{
         topicList:[],
         course :'',
         projectKey:'',
-        groupData :''
+        groupData :'',
+        showRatio:false
     }
     componentDidMount(){
         this.setState({
@@ -191,7 +192,17 @@ export default class St5 extends React.Component{
             this.getHashs();
         })
     }
-    OpenImageModal = (title,pic)=>this.setState({openModal:true,modalTitle:title,picTitle:pic})
+    OpenImageModal = (title,pic)=>{
+        let temp = false;
+        if(title==='Screenshots'){
+            temp = true;
+        }
+        this.setState({
+        showRatio:temp,
+        openModal:true,
+        modalTitle:title,
+        picTitle:pic})
+    }
     getProjectGoals = (goals)=>{
         this.setState({projectGoals:goals},()=>{
             console.log(this.state.projectGoals)
@@ -709,7 +720,7 @@ export default class St5 extends React.Component{
                 <NavbarProjs />
                 <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 <HeaderForm title={this.state.GroupName}/>
-                <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <ModalImage showRatio={this.state.showRatio}  aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 {/* preview project card */}
                 {/* <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}

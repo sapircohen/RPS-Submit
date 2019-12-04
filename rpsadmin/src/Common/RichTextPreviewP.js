@@ -3,10 +3,10 @@ import {Row,Col} from 'react-bootstrap';
 
 const RichTextPreviewParagraph = (props)=>{
     return(
-        <Row  style={{marginTop:'3%'}} className="show-grid Box">
+        <Row  style={{textAlign:'center'}} className="show-grid Box">
             <Col style={{textAlign:'center'}} sm="12">
             {props.Title&&
-            <h3><props.Icon size={25}/> {props.Title}</h3>
+            <h3>{props.Icon&&<props.Icon size={25}/>} {props.Title}</h3>
             }
             </Col>
             <Col xs={12} style={{marginTop:'1%'}}>

@@ -78,7 +78,7 @@ class St2 extends React.Component{
             Year:'',
             Semester:'',
             projectKey:'',
-            groupData :''
+            groupData :'',
         }
     }
     componentDidMount(){
@@ -503,7 +503,7 @@ class St2 extends React.Component{
                 <SaveAction  style={{zIndex:26}} Save={this.SetProjectOnFirbase}/>
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={this.changePublished} isPublished={this.state.isPublished}  />
-                <ModalImage fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <ModalImage showRatio={this.state.showRatio} fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 {/* preview project card */}
                 {/* <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}

@@ -13,10 +13,24 @@ import Loader from 'react-loader-spinner';
 import {base64StringtoFile,extractImageFileExtensionFromBase64, image64toCanvasRef} from '../Constants/ResuableUtils';
 
 import {storage} from '../App';
+import RadioB from './RadioButton';
 
 const acceptedFileType = 'image/x-png, image/png, image/jpg, image/jpeg, image/gif';
 const acceptedFileTypeArray = acceptedFileType.split(",").map((item)=>{return item.trim()});
-
+const ratio = [
+    {
+        Name:'ריבועי',
+        aspect:1
+    },
+    {
+        Name:'נוף',
+        aspect:16/9
+    },
+    {
+        Name:'ורטיקלי',
+        aspect:9/16
+    },
+]
 
 class ModalImage extends React.Component{
     constructor(props){
@@ -28,8 +42,9 @@ class ModalImage extends React.Component{
             croppedAreaPixels:null,
             imgSrc:null,
             crop: { x: 0, y: 0 },
-            aspect: this.props.aspect,
-            zoom:1
+            aspect: 1,
+            zoom:1,
+            aspectName:''
         }
         this.handleOnCropComplete = this.handleOnCropComplete.bind(this);
     }
@@ -131,12 +146,16 @@ class ModalImage extends React.Component{
         
     }
     modalClose = ()=>{
+        this.cleanPhoto();
+        this.props.modalClose();
+    }
+    cleanPhoto=()=>{
         this.setState({
             croppedAreaPixels:null,
             imgSrc:null,
             crop: { x: 0, y: 0},
-            aspect: 4 / 3,
-            zoom:1
+            aspect: 1,
+            zoom:1,
         })
     }
     saveToFirebaseStorage = (image)=>{
@@ -156,7 +175,7 @@ class ModalImage extends React.Component{
                 this.setState({
                     isReady:true,
                 },()=>{
-                    this.props.modalClose();
+                    this.modalClose();
                 })
             })
         })
@@ -170,11 +189,16 @@ class ModalImage extends React.Component{
             console.log(this.state.screenshotName)
         })
     }
+    changeAspect= (e) => {
+        this.setState({
+            aspect:e.target.value,
+        })
+    }
     render(){
         const {imgSrc} = this.state;
          
         return(
-        <Modal onHide={this.props.modalClose}  centered size='lg'	show={this.props.modalOpen}>
+        <Modal onHide={this.modalClose}  centered size='lg'	show={this.props.modalOpen}>
             {/* put inside spinner inside the modal */}
 
             <Modal.Header style={{justifyContent:'center'}}>
@@ -184,6 +208,7 @@ class ModalImage extends React.Component{
             </Modal.Header>
             {this.state.isReady?
             <Modal.Body>
+                
             {
                 this.props.title==='Screenshots' &&
                 <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
@@ -193,6 +218,25 @@ class ModalImage extends React.Component{
                     </Col>
                     <Form.Label column sm="4">שם התמונה</Form.Label>
                 </Form.Group>
+            }
+           { this.props.showRatio&&
+           <Row  style={{textAlign:'center',direction:'rtl'}}>
+                    {
+                        ratio.map((aspect,key)=>
+                            <Col>
+                                <input 
+                                    
+                                    onChange={this.changeAspect}
+                                    type="radio"
+                                    checked={this.state.aspect==aspect.aspect} 
+                                    value={aspect.aspect}
+                                    key={key}
+                                />
+                                <span style={{margin:'4px'}}>{aspect.Name}</span>
+                            </Col>                                
+                        )
+                    }
+                </Row>
             }
             <div style={{flex:1,marginTop:'5%'}}>
                 {imgSrc !== null ?
@@ -248,10 +292,10 @@ class ModalImage extends React.Component{
                 <Button variant="success" onClick={this.saveImage}>
                 שמירה
                 </Button>
-                <Button style={{marginLeft:'1%'}} variant="warning" onClick={this.modalClose}>
+                <Button style={{marginLeft:'1%'}} variant="warning" onClick={this.cleanPhoto}>
                 נקה תמונה
                 </Button>
-                <Button  variant="danger" onClick={this.props.modalClose}>
+                <Button  variant="danger" onClick={this.modalClose}>
                 ביטול
                 </Button>
             </Modal.Footer>

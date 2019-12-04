@@ -115,7 +115,8 @@ class St1 extends React.Component{
             functionalityMovie:'',
             course :'',
             projectKey:'',
-            groupData :''
+            groupData :'',
+            showRatio:false
 
         }
         this.handleDelete = this.handleDelete.bind(this);
@@ -156,7 +157,6 @@ class St1 extends React.Component{
         let dataForGroup ={};
         ref.once("value", (snapshot)=> {
             dataForGroup=snapshot.val();
-            console.log(snapshot.val())
         })
         .then(()=>{
             let tagsList = [];
@@ -375,7 +375,17 @@ class St1 extends React.Component{
             })
         })
     }
-    OpenImageModal = (title,pic)=>this.setState({openModal:true,modalTitle:title,picTitle:pic})
+    OpenImageModal = (title,pic)=>{
+        let temp = false;
+        if(title==='Screenshots'){
+            temp = true;
+        }
+        this.setState({
+        showRatio:temp,
+        openModal:true,
+        modalTitle:title,
+        picTitle:pic})
+    }
     OpenImagePreviewForStudent = (index)=>{
         if(this.state.StudentsDetails[index].Picture !==''){
             let temp = [];
@@ -462,7 +472,7 @@ class St1 extends React.Component{
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
                 return false;
             }
-            if(projectData.PDescription.length>600){
+            if(projectData.PDescription.length>500){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
                 return false;
             }
@@ -784,7 +794,7 @@ class St1 extends React.Component{
             <div style={{flex:1,backgroundColor:'#eee'}}>
                 <Idle/>
                 <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
-                <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <ModalImage showRatio={this.state.showRatio} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <NavbarProjs />
