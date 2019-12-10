@@ -582,7 +582,7 @@ export default class St3 extends React.Component{
             templateView:'vt3',
             ProjectName:this.state.ProjectName,
             PDescription:this.state.PDescription,
-            Advisor:[this.state.ProjectAdvisor],
+            Advisor:this.state.ProjectAdvisor,
             Major:this.state.projectMajor,
             ProjectCourse:this.state.projectCourse,
             ProjectTopic:this.state.ProjectTopic,

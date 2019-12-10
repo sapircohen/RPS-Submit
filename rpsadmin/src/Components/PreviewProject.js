@@ -8,7 +8,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 import Swiper from 'react-id-swiper';
 import Iframe from 'react-iframe'
-
 // import 'react-id-swiper/lib/styles/css/swiper.css';
 //CSS:
 import '../css/previewStyle.css';
@@ -359,12 +358,10 @@ export default class ModalExample1 extends React.Component{
                         {/* <Divider style={{margin:'0px auto',marginTop:'10px',marginBottom:'10px',width:'80%',color:'#444'}}/> */}
                         <Col xs="0" sm="0" md="1"></Col>
                         <Col className="Frame" xs="0" sm="0" md="10" style={{textAlign:'center'}}>
-                            <Iframe url={this.props.projectDetails.ProjectPDF}
-                            
-                            display="initial"
-                            width='80%'
-                            height='100%'
-                            position="relative"/>
+                        <iframe title="project document" src={this.props.projectDetails.ProjectPDF+"&embedded=true"} width='100%' height='100%' frameborder='0'></iframe>               
+                        {/* <object data={this.props.projectDetails.ProjectPDF+"&embedded=true"} width="600" height="400">
+                        </object>       */}
+                        {/* <embed src={this.props.projectDetails.ProjectPDF} width="600" height="400" />       */}
                         </Col>
                         <Col xs="0" sm="0" md="1"></Col>
                     </Row>}
