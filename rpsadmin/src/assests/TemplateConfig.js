@@ -99,13 +99,7 @@ export const TemplateConfigS1=
         isMandatory:true,
         fieldType:'select',
     },
-    {
-        Name:'advisor[1]',
-        DisplayName:'מנחה חלק ב',
-        alertText:'חסר מנחה חלק ב',
-        isMandatory:true,
-        fieldType:'select',
-    },
+    
     {
         Name:'Goals',
         DisplayName:'מטרות הפרויקט',
@@ -1118,3 +1112,4 @@ export const TemplateConfigS5=
         LinkedArray:'Students'
     },
 ]
+

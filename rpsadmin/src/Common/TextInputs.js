@@ -12,6 +12,8 @@ const TextInputs =(props)=>{
             <Form.Label style={{textAlign:'right'}} column sm="2">
                 {props.IsMandatory&&<span style={{color:'red'}}>*</span>}
                 {props.InputTitle}
+                <br/>
+                {props.IsMandatory&&<span style={{color:'blue'}}> {props.maximum&&'מקסימום '+ props.maximum + ' תוים'}</span>}
             </Form.Label>
         </Form.Group>
     )

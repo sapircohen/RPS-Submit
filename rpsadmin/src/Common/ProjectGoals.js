@@ -63,6 +63,8 @@ export default class ProjectGoals extends React.Component{
         return(
             <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:5,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                 <SmallHeaderForm title={this.props.title?this.props.title:"מטרות הפרויקט"}/>
+                <br/>
+                {this.props.isMandatory&&(this.props.minimum&&<span style={{color:'blue'}}>מינימום {this.props.minimum} מטרות</span>)}
                 <Row dir="rtl" style={{marginTop:'2%'}}>
                     <Col sm="4">
                         <Button onClick={this.addGoal} variant="success">
@@ -78,13 +80,13 @@ export default class ProjectGoals extends React.Component{
                         return (
                         <div  key={idx}>
                             <SmallHeaderForm title={`#מטרה ${idx+1}`}/>
-                            <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="goalName">
-                                <Form.Label column sm="1">תיאור המטרה</Form.Label>
+                            <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row}>
+                                <Form.Label column sm="1">תיאור המטרה<br/>{this.props.isMandatory&&(this.props.maximumGoalDescription?<span style={{color:'blue'}}> מקסימום {this.props.maximumGoalDescription} תוים</span>:'')} </Form.Label>
                                 <Col sm="4">
                                     <Form.Control value={this.state.goals[idx].GoalDescription} onChange={(e)=>this.changeGoalDesc(idx,e)} dir="rtl" as="textarea" rows="5"/>
                                 </Col>
 
-                                <Form.Label column sm="2">סטטוס המטרה</Form.Label>
+                                <Form.Label column sm="2">סטטוס המטרה <br/> {this.props.isMandatory&&(this.props.maximumGoalStatus?<span style={{color:'blue'}}> מקסימום {this.props.maximumGoalStatus} תוים </span>:'')} </Form.Label>
                                 <Col sm="3">
                                     <Form.Control value={this.state.goals[idx].GoalStatus} onChange={(e)=>this.changeGoalStatus(idx,e)} dir="rtl" as="textarea" rows="3"/>
                                 </Col>

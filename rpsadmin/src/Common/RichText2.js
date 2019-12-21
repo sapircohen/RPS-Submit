@@ -48,6 +48,9 @@ export default class RichText extends React.Component {
         <Form.Label style={{textAlign:'right'}} column sm="2">
         {this.props.IsMandatory&&<span style={{color:'red'}}>*</span>}
         {this.props.InputTitle}
+        <br/>
+        {this.props.IsMandatory&&<span style={{color:'blue'}}> {this.props.maximum&&'מקסימום '+ this.props.maximum + ' תוים'}</span>}
+
         </Form.Label>
     </Form.Group>
 

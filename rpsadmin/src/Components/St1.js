@@ -28,6 +28,7 @@ import Idle from '../Common/Idle';
 import ModalExample1 from './PreviewProject';
 import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
+import Validator from '../Classes/Validator';
 // const course = JSON.parse(localStorage.getItem('course'));
 // const projectKey = JSON.parse(localStorage.getItem('projectKey'));
 // const groupData = JSON.parse(localStorage.getItem('groupData'));
@@ -55,7 +56,7 @@ const sectionNames = {
 }
 class St1 extends React.Component{
     constructor(props){
-        super(props);
+        super(props); 
         this.state={
             alertTitle:'',
             alertText:'',
@@ -124,7 +125,8 @@ class St1 extends React.Component{
         this.TechsChosen = this.TechsChosen.bind(this);
         //HashsChosen
         this.HashsChosen = this.HashsChosen.bind(this);
-
+        this.Configs=[];
+        this.getTemplateValidators();
     }
     componentDidMount(){
         this.setState({
@@ -143,7 +145,7 @@ class St1 extends React.Component{
             else{
                 this.SaveData();
                 if(this.state.isPublished){
-                    if(!this.ValidateData(this.getProjectDetails())){
+                    if(!this.ValidateData2(this.getProjectDetails())){
                         this.setState({isPublished:false});
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                     }
@@ -215,7 +217,7 @@ class St1 extends React.Component{
             },()=>{
                 this.setState({projectDetails:this.getProjectDetails()})
             })
-            this.getTemplateValidators();
+            //this.getTemplateValidators();
             //get list of advisors from firebase
             this.getAdvisors();
             //get technologies from firebase
@@ -237,6 +239,9 @@ class St1 extends React.Component{
                 if(course.val()["Submit Template"]==="st1"){
                     this.setState({
                         templateValidators:course.val().TemplateConfig
+                    },()=>{
+                        this.Configs= new Validator(this.state.templateValidators);
+                        console.log(this.state.templateValidators);
                     })
                 }
             })
@@ -459,6 +464,7 @@ class St1 extends React.Component{
         this.state.StudentsDetails[index].Picture = url;
         this.forceUpdate();
     }
+    //old
     ValidateData = (projectData)=>{
         // project name validation
         if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
@@ -644,75 +650,77 @@ class St1 extends React.Component{
         })
         return true;
     }
+    //new
     ValidateData2=(projectData)=>{
         const { templateValidators} = this.state;
+        let isPublish = true;
         templateValidators.forEach((validator,key)=>{
             switch (validator.fieldType) {
                 case "text":
                     if(validator.isLength && !validator.isMandatory){
                         if(projectData[validator.Name]!==''&&(projectData[validator.Name].length<validator.minimum || projectData[validator.Name].length>validator.maximum)){
                             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                            return false;
+                            isPublish=false;
                         }
                     }
-                    else if(validator.isLength){
+                    else if(validator.isLength && validator.isMandatory){
                         if(projectData[validator.Name].length<validator.minimum || projectData[validator.Name].length>validator.maximum ){
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                        return false;
+                        isPublish=false;
                         }
                     }
                     else{
-                        if(projectData[validator.Name]===''){
+                        if(projectData[validator.Name]===''  && validator.isMandatory){
                             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                            return false;
+                            isPublish=false;
                         }
                     }
                     break;
                 case "array":
-                        if(validator.isLength){
+                        if(validator.isLength && validator.isMandatory){
                             if(projectData[validator.Name].length<validator.minimum || projectData[validator.Name].length>validator.maximum ){
                             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                            return false;
+                            isPublish=false;
                             }
                         }
                     break;
                 case "arraytext":
-                    console.log(validator.Name)
-                        if(validator.isLength){
+                        if(validator.isLength && validator.isMandatory){
                             projectData[validator.LinkedArray].forEach((value,index)=>{
                                 if(value[validator.Name].length<validator.minimum || value[validator.Name].length>validator.maximum){
                                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:index + " - "+ validator.alertText,alertIcon:'warning'})
-                                    return false;
+                                    isPublish=false;
                                 }
                             })
                             
                         }
-                        else{
+                        else if(validator.isMandatory){
                             projectData[validator.LinkedArray].forEach((value,index)=>{
                                 if(value[validator.Name]===''){
                                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:index + " - "+ validator.alertText,alertIcon:'warning'})
-                                    return false;
+                                    isPublish=false;
                                 }
                             })
                         }
                     break;
                 case "select":
-                        if(projectData[validator.Name]==='' || projectData[validator.Name]==='בחר'){
+                        if((projectData[validator.Name]==='' || projectData[validator.Name]==='בחר') && validator.isMandatory){
                             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                            return false;
+                            isPublish=false;
                         }
                     break;
                 case "arrayselect":
-                        if(projectData[validator.Name][validator.index]==='' || projectData[validator.Name][validator.index]==='בחר'){
+                        if((projectData[validator.Name][validator.index]==='' || projectData[validator.Name][validator.index]==='בחר') && validator.isMandatory){
                             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                            return false;
+                            isPublish=false;
                         }
                     break;
                 default:
                     break;
             }
         })
-
+        return isPublish;
+        
     }
     SaveData = ()=>{
         //const arrayOfTags = this.state.tags.map((text)=>text.text);
@@ -843,7 +851,8 @@ class St1 extends React.Component{
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        if(this.ValidateData2(this.getProjectDetails())){
+        const isPublish = this.ValidateData2(this.getProjectDetails());
+        if(isPublish){
             this.setState({isPublished:temp},()=>{
                     if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
                         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
@@ -857,7 +866,7 @@ class St1 extends React.Component{
                                 GetHashtags(groupData.Faculty);
                             }
                             else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
-                            })
+                        })
                         
                     }
             })
@@ -896,19 +905,19 @@ class St1 extends React.Component{
                     <div style={{border:'solid 1px',padding:15,borderRadius:5,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* projectName */}
-                        <TextInputs IsMandatory={true} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
+                        <TextInputs IsMandatory={this.Configs.ProjectName.isMandatory} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.ProjectName.maximum} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* stalkholders */}
-                        <TextInputs IsMandatory={true}  defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectStackholders} inputSize="lg" />
+                        <TextInputs IsMandatory={this.Configs.CStackholders.isMandatory}  defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CStackholders.maximum} InputTitle={sectionNames.projectStackholders} inputSize="lg" />
                         {/* CustCustomers */}
-                        <TextInputs IsMandatory={true}  defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
+                        <TextInputs  IsMandatory={this.Configs.CustCustomers.isMandatory}  defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CustCustomers.maximum}  InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
                         {/* project Small Description */}
-                        <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput IsMandatory={this.Configs.CDescription.isMandatory} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CDescription.maximum}  InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <RichText IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <RichText IsMandatory={this.Configs.PDescription.isMandatory} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.PDescription.maximum} InputTitle={sectionNames.projectDesc} />
                         {/* project Challenges  */}
-                        <TextareaInput IsMandatory={true}  defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectChallenges} />
+                        <TextareaInput IsMandatory={this.Configs.Challenges.isMandatory}  defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.Challenges.maximum} InputTitle={sectionNames.projectChallenges} />
                         {/* project Comments */}
-                        <TextareaInput defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
+                        <TextareaInput IsMandatory={this.Configs.Comments.isMandatory} defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
                         <Form.Row dir="rtl">
                             {/* year  */}
                             <SelectInput IsMandatory={true} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
@@ -925,15 +934,15 @@ class St1 extends React.Component{
                         {this.state.organization &&
                         (<div>
                             {/* projectCustomerName */}
-                            <TextInputs IsMandatory={true} defaultInput={this.state.CustomerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustomerName} inputSize="lg" />
+                            <TextInputs defaultInput={this.state.CustomerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustomerName} inputSize="lg" />
                         </div>)}
                     </div>
-                    <ProjectGoals initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
-                    <ProjectModules initalProjectModule={this.state.projectModules} setProjectModules={this.getprojectModules}/>
+                    <ProjectGoals minimum={this.Configs.Goals.minimum} maximumGoalStatus={this.Configs.GoalStatus.maximum} maximumGoalDescription={this.Configs.GoalDescription.maximum} isMandatory={this.Configs.Goals.isMandatory} initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
+                    <ProjectModules minimum={this.Configs.Module.minimum} maximumModuleName={this.Configs.ModuleName.maximum} maximumModuleDescription={this.Configs.ModuleDescription.maximum} isMandatory={this.Configs.Module.isMandatory} initalProjectModule={this.state.projectModules} setProjectModules={this.getprojectModules}/>
                     {/* tag the project */}
-                    <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
+                    <Hashtags isMandatory={this.Configs.HashTags.isMandatory} minimum={this.Configs.HashTags.minimum} chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
                     {/* techs tag */}
-                    <Techs chosenTechs={this.state.chosenTechs} TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
+                    <Techs isMandatory={this.Configs.Technologies.isMandatory} minimum={this.Configs.Technologies.minimum} chosenTechs={this.state.chosenTechs} TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
                     {/* Project links */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:5,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="קישורים"/>
@@ -969,11 +978,15 @@ class St1 extends React.Component{
                                         <FaCameraRetro/>
                                         {this.state.logo.length!==0?`  עריכת לוגו פרויקט`:`  הוספת לוגו פרויקט`}
                                     </Button>
+                                    <br/>
+                                    {this.Configs.ProjectLogo.isMandatory&&(this.Configs.ProjectLogo.minimum&&<span style={{color:'blue'}}>מינימום {this.Configs.ProjectLogo.minimum}</span>)}
                                 </Col>
                                 <Col sm="4">
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Screenshots','')}>
                                         <FaCameraRetro/>{`  הוספת תמונות מסך`}
                                     </Button>
+                                    <br/>
+                                    {this.Configs.ScreenShots.isMandatory&&(this.Configs.ScreenShots.minimum&&<span style={{color:'blue'}}>מינימום {this.Configs.ScreenShots.minimum}</span>)}
                                 </Col>
                                 {this.state.organization ?
                                 <Col sm="4">
@@ -981,6 +994,8 @@ class St1 extends React.Component{
                                          <FaCameraRetro/>
                                          {this.state.customerLogo.length!==0?`  עריכת לוגו לקוח`:`  הוספת לוגו לקוח`}
                                     </Button>
+                                    <br/>
+                                    {this.Configs.CustomerLogo.isMandatory&&(this.Configs.CustomerLogo.minimum&&<span style={{color:'blue'}}>מינימום {this.Configs.CustomerLogo.minimum}</span>)}
                                 </Col>
                                 :
                                 <Col sm="4"></Col>
@@ -997,7 +1012,7 @@ class St1 extends React.Component{
                                 <Col sm="4"></Col>
                             </Row>
                     </div>
-                    <StudentDetails setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
+                    <StudentDetails Students={this.Configs.Students} Name={this.Configs.StudentName} Picture={this.Configs.StudentPicture} Email={this.Configs.StudentEmail} Id={this.Configs.StudentId} setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
                 </Form>
             </div>
         );
