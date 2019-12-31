@@ -276,7 +276,7 @@ export default class ModalExample1 extends React.Component{
                             </Col>
                         </Row>
                     </Col>}
-                    
+                    <br/>
                     {this.props.projectDetails.ProjectPDF &&
                     <Row>
                         <Col xs="0" sm="0" md="1"></Col>

@@ -27,29 +27,6 @@ import {GetHashtags} from '../Common/HashtagsSetup';
 import Vt6 from './Vt6';
 
 
-const sectionNames = {
-    projectServiceName:'שם השירות',
-    projectName:"שם הפרויקט",
-    projectInstructor:"שם המדריך/ה", 
-    projectTargetPopulation:'אוכלוסיית היעד',
-    projectNeedSummery:'תקציר הבעיה',
-    projectGoals:'מטרות ההתערבות',
-    projectRationale:'רציונל ההתערבות',
-    projectDescription:'תיאור ההתערבות',
-    projectRecommendations:'הערכה והמלצות',
-    projectSource:'מקורות',
-
-    projectType:'נושא הפרויקט',
-    projectFirstAdvisor:"מרצה",
-    projectMovie:'קישור לסרטון הפרויקט ביוטיוב',
-    projectMajor:'התמחות',
-    projectCourse:'סוג הפרויקט',
-    projectSemester:'סמסטר',
-    projectYear:'שנה',
-    course :'',
-    projectKey:'',
-    groupData :''
-}
 export default class St3 extends React.Component{
     constructor(props){
         super(props);
@@ -66,8 +43,6 @@ export default class St3 extends React.Component{
             Sources:'',
             ProjectPDF:'',
             ProjectLogo:[],
-
-
             alertTitle:'',
             alertText:'',
             alertShow:false,
@@ -296,7 +271,6 @@ export default class St3 extends React.Component{
     }
     //text input area details
     ChangeInputTextarea = (event,textareaTitle)=>{
-        
         switch (textareaTitle) {
             case sectionNames.projectName:this.setState({ProjectName:event.target.value})
                 break;
@@ -306,7 +280,6 @@ export default class St3 extends React.Component{
                 break;
             case sectionNames.projectTargetPopulation:this.setState({TargetPopulation:event.target.value})
                 break;
-
             case sectionNames.projectNeedSummery:this.setState({Summery:event})
                 break;
             case sectionNames.projectDescription:this.setState({PDescription:event})
@@ -471,27 +444,27 @@ export default class St3 extends React.Component{
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור אוכלוסיית יעד צריך להיות בין 30 ל300 תוים',alertIcon:'warning'})
             return false;
         }
-        if(projectData.Summery.length<30 || projectData.Summery.length<1000){
+        if(projectData.Summery.length<30 || projectData.Summery.length>1000){
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תקציר הבעיה צריך להיות בין 30 ל1000 תוים',alertIcon:'warning'})
             return false;
         }
-        if(projectData.Goals.length<30 || projectData.Goals.length<1000){
+        if(projectData.Goals.length<30 || projectData.Goals.length>1000){
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מטרות ההתערבות צריך להיות בין 30 ל1000 תוים',alertIcon:'warning'})
             return false;
         }
-        if(projectData.Rationale.length<30 || projectData.Rationale.length<1000){
+        if(projectData.Rationale.length<30 || projectData.Rationale.length>1000){
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'רציונאל ההתערבות צריך להיות בין 30 ל1000 תוים',alertIcon:'warning'})
             return false;
         }
-        if(projectData.PDescription.length<30 || projectData.PDescription.length<1000){
+        if(projectData.PDescription.length<30 || projectData.PDescription.length>1000){
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות בין 30 ל1000 תווים',alertIcon:'warning'})
             return false;
         }
-        if(projectData.Recommendations.length<30 || projectData.Recommendations.length<1000){
+        if(projectData.Recommendations.length<30 || projectData.Recommendations.length>1000){
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה מסקנות והמלצות צריך להיות בין 30 ל1000 תווים',alertIcon:'warning'})
             return false;
         }
-        if(projectData.Sources.length<30 || projectData.Sources.length<1000){
+        if(projectData.Sources.length<30 || projectData.Sources.length>1000){
             this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה מקורות צריך להיות בין 30 ל1000 תווים',alertIcon:'warning'})
             return false;
         }
@@ -545,10 +518,6 @@ export default class St3 extends React.Component{
 
                     flag = false;
                 }
-                // if (student.Picture==='') {
-                //     alert('לסטודנט/ית מספר '+(index+1)+' חסרה תמונה');
-                //     flag = false;
-                // }
             })
             if (!flag) {
                 return false;
@@ -645,7 +614,7 @@ export default class St3 extends React.Component{
             })
         }
     }
-    CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
+    CloseAlert = ()=>{this.setState({alertShow:false})}
     render(){
         if (!this.state.isReady) {
             return(
@@ -669,7 +638,6 @@ export default class St3 extends React.Component{
                 <ModalImage fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview for screenshots  */}
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
-                
                 {/* showPreview */}
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <Vt6 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData}/>
@@ -686,7 +654,6 @@ export default class St3 extends React.Component{
                         <TextInputs IsMandatory={true}  defaultInput={this.state.Instructor} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectInstructor} inputSize="lg" />                    
                         {/* project target population */}
                         <TextareaInput IsMandatory={true}  defaultInput={this.state.TargetPopulation} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectTargetPopulation} />
-                        
                         {/* project need summery */}
                         <RichText IsMandatory={true}  defaultInput={this.state.Summery} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectNeedSummery} />
                         {/* project goals */}
@@ -699,8 +666,6 @@ export default class St3 extends React.Component{
                         <RichText IsMandatory={true}  defaultInput={this.state.Recommendations} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectRecommendations} />
                         {/* project sources */}
                         <RichText IsMandatory={true}  defaultInput={this.state.Sources} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSource} />
-                        
-                        
                         <Form.Row dir="rtl">
                             {/* project advisor */}
                             <SelectInput IsMandatory={true}  inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
@@ -774,4 +739,29 @@ export default class St3 extends React.Component{
             </div>
         )
     }
+}
+
+
+const sectionNames = {
+    projectServiceName:'שם השירות',
+    projectName:"שם הפרויקט",
+    projectInstructor:"שם המדריך/ה", 
+    projectTargetPopulation:'אוכלוסיית היעד',
+    projectNeedSummery:'תקציר הבעיה',
+    projectGoals:'מטרות ההתערבות',
+    projectRationale:'רציונל ההתערבות',
+    projectDescription:'תיאור ההתערבות',
+    projectRecommendations:'הערכה והמלצות',
+    projectSource:'מקורות',
+
+    projectType:'נושא הפרויקט',
+    projectFirstAdvisor:"מרצה",
+    projectMovie:'קישור לסרטון הפרויקט ביוטיוב',
+    projectMajor:'התמחות',
+    projectCourse:'סוג הפרויקט',
+    projectSemester:'סמסטר',
+    projectYear:'שנה',
+    course :'',
+    projectKey:'',
+    groupData :''
 }
