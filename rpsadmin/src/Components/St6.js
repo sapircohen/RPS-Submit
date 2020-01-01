@@ -370,7 +370,6 @@ export default class St3 extends React.Component{
         this.setState({
             ProjectPDF:url
         },()=>{
-            console.log(this.state.ProjectPDF)
             ref.update({
                 ProjectPDF:this.state.ProjectPDF,
             })
