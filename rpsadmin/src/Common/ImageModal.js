@@ -12,11 +12,16 @@ import Loader from 'react-loader-spinner';
 
 import {base64StringtoFile,extractImageFileExtensionFromBase64, image64toCanvasRef} from '../Constants/ResuableUtils';
 
+
 import {storage} from '../App';
 
 const acceptedFileType = 'image/x-png, image/png, image/jpg, image/jpeg, image/gif';
 const acceptedFileTypeArray = acceptedFileType.split(",").map((item)=>{return item.trim()});
-
+const aspects = [
+    {Name:'נוף',aspect:16/9,id:'firstAspect',checked:false},
+    {Name:'ריבועית',aspect:1/1,id:'secondAspect',checked:true},
+    {Name:'ורטיקלי',aspect:2/3,id:'thirdAspect',checked:false},
+]
 
 class ModalImage extends React.Component{
     constructor(props){
@@ -28,7 +33,7 @@ class ModalImage extends React.Component{
             croppedAreaPixels:null,
             imgSrc:null,
             crop: { x: 0, y: 0 },
-            aspect: this.props.aspect,
+            aspect: aspects[1].aspect,
             zoom:1
         }
         this.handleOnCropComplete = this.handleOnCropComplete.bind(this);
@@ -170,6 +175,9 @@ class ModalImage extends React.Component{
             console.log(this.state.screenshotName)
         })
     }
+    changeAspect=(e)=>{
+        this.setState({aspect:e.target.value})
+    }
     render(){
         const {imgSrc} = this.state;
          
@@ -186,13 +194,20 @@ class ModalImage extends React.Component{
             <Modal.Body>
             {
                 this.props.title==='Screenshots' &&
-                <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
-                    <Col sm="4"></Col>
-                    <Col sm="4">
-                        <Form.Control onChange={this.screenShotName} size="lg" type="text" dir="rtl"/>
-                    </Col>
-                    <Form.Label column sm="4">שם התמונה</Form.Label>
-                </Form.Group>
+                <div>
+                    <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
+                        <Col sm="4"></Col>
+                        <Col sm="4">
+                            <Form.Control onChange={this.screenShotName} size="lg" type="text" dir="rtl"/>
+                        </Col>
+                        <Form.Label column sm="4">שם התמונה</Form.Label>
+                    </Form.Group>
+                    <Row style={{justifyContent:'center'}}>
+                        {aspects.map((asp,key)=>
+                            <Form.Check defaultChecked={asp.checked} name="formCheck" id={asp.id} onChange={this.changeAspect} key={key} inline label={asp.Name} type='radio' value={asp.aspect} />
+                        )}
+                    </Row>
+                </div>
             }
             <div style={{flex:1,marginTop:'5%'}}>
                 {imgSrc !== null ?
