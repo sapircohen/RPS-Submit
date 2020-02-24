@@ -29,9 +29,8 @@ import ModalExample1 from './PreviewProject';
 import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
 import Validator from '../Classes/Validator';
-// const course = JSON.parse(localStorage.getItem('course'));
-// const projectKey = JSON.parse(localStorage.getItem('projectKey'));
-// const groupData = JSON.parse(localStorage.getItem('groupData'));
+//functions
+import {ValidateData2} from '../functions/functions';
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -464,263 +463,14 @@ class St1 extends React.Component{
         this.state.StudentsDetails[index].Picture = url;
         this.forceUpdate();
     }
-    //old
-    ValidateData = (projectData)=>{
-        // project name validation
-        if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
-            return false;
-        }
-        //project custCustomers(משתמשי המערכת)
-        if(projectData.CustCustomers===''){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר שדה משתמשי המערכת',alertIcon:'warning'})
-            return false;
-        }
-        //project stackholders(בעלי ענייןs)
-        if(projectData.CStackholders===''){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר שדה בעלי עניין',alertIcon:'warning'})
-            return false;
-        }
-        // project short description validation
-        if(projectData.CDescription.length<50){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
-            return false;
-        }
-        if(projectData.CDescription.length>150){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-150 תווים',alertIcon:'warning'})
-            return false;
-        }
-        //project long description -->PDescription
-        if(projectData.PDescription.length<200){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
-            return false;
-        }
-        if(projectData.PDescription.length>500){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
-            return false;
-        }
-        // project Challenges -->Challenges
-        if(projectData.Challenges.length<50){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה אתגרי הפרויקט צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
-            return false;
-        }
-        if(projectData.Challenges.length>200){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה אתגרי הפרויקט צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
-            return false;
-        }
-        //project comments
-        if(projectData.Comments.length<5 && projectData.Comments!==''){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה הערות צריך להיות גדול מ-5 תווים',alertIcon:'warning'})
-            return false;
-        }
-        //project Topic 
-        if (projectData.ProjectTopic==='בחר') {
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו נושא פרויקט'})
-            return false;
-        }
-        //project year
-        if (projectData.Year === "" || projectData.Year === "בחר") {
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו שנה',alertIcon:'warning'})
-            return false;
-        }
-        //project semester
-        if (projectData.Semester === "" || projectData.Semester === "בחר") {
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו סמסטר',alertIcon:'warning'})
-            return false;
-        }
-        //project Advisors
-        if(projectData.advisor[0]===''){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה חלק א חסר',alertIcon:'warning'})
-            return false;
-        } 
-        if(projectData.advisor[1]===''){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה חלק ב חסר',alertIcon:'warning'})
-            return false;
-        } 
-        //project goals-->Goals
-        if(projectData.Goals.length<2){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מטרות הפרויקט צריך להיות לפחות 2',alertIcon:'warning'})
-            return false;
-        }
-        else{
-            let flag = true;
-            projectData.Goals.forEach((goal,index)=>{
-                if (goal.GoalDescription.length<2) {
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
-                    flag= false;
-                }
-                if (goal.GoalDescription.length>100) {
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
-                    flag= false;
-                }
-                if(goal.GoalStatus.length<2){
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
-                    flag= false;
-                }
-                if(goal.GoalStatus.length>100){
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
-                    flag= false;
-                }
-            })
-            if (!flag) {
-                return false;
-            }
-        }
-        //project modules -->Module
-        if(projectData.Module.length<2){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מודולי הפרויקט צריך להיות לפחות 2',alertIcon:'warning'})
-
-            return false;
-        }
-        else{
-            let flag = true;
-            projectData.Module.forEach((mod,index)=>{
-                if (mod.ModuleDescription.length<20) {
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ",alertIcon:'warning'})
-                    flag= false;
-                }
-                if (mod.ModuleDescription.length>400) {
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ400 תווים ",alertIcon:'warning'})
-                    flag= false;
-                }
-                if(mod.ModuleName.length<3){
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" שם מודול מספר " +(index+1)+" צריך להיות גדול מ3 תווים ",alertIcon:'warning'})
-
-                    flag= false;
-                }
-                if(mod.ModuleName.length>100){
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ",alertIcon:'warning'})
-                    flag= false;
-                }
-            })
-            if (!flag) {
-                return false;
-            }
-        }
-        //project technologies -->Technologies
-        if(projectData.Technologies.length<5){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר הטכנולוגיות צריך להיות לפחות 5',alertIcon:'warning'})
-
-            return false;
-        }
-        //project screenshots
-        if (projectData.ScreenShots.length<5) {
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר תמונות המסך צריך להיות לפחות 5'})
-
-            return false;
-        }        
-        //project logo
-        if (projectData.ProjectLogo<1) {
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר לוגו הפרויקט',alertIcon:'warning'})
-
-            return false;
-        }
-        //project github
-        if(projectData.Github===''){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר קישור לפרויקט בגיטהאב',alertIcon:'warning'})
-
-            return false;
-        }
-        //project students
-        if(projectData.Students.length<1){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חייב להיות לפחות חבר צוות אחד',alertIcon:'warning'})
-
-            return false;
-        }
-        else{
-            let flag = true;
-            projectData.Students.forEach((student,index)=>{
-                if(student.Name===''){
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר שם',alertIcon:'warning'})
-
-                    flag = false;
-                }
-                if (student.Picture==='') {
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר תמונה',alertIcon:'warning'})
-
-                    flag = false;
-                }
-            })
-            if (!flag) {
-                return false;
-            }
-        }
-        this.setState({
-            isSaved:true
-        })
-        return true;
-    }
-    //new
-    ValidateData2=(projectData)=>{
+    //new validation
+    CheckValidation=(projectData)=>{
         const { templateValidators} = this.state;
-        let isPublish = true;
-        templateValidators.forEach((validator,key)=>{
-            switch (validator.fieldType) {
-                case "text":
-                    if(validator.isLength && !validator.isMandatory){
-                        if(projectData[validator.Name]!==''&&(projectData[validator.Name].length<validator.minimum || projectData[validator.Name].length>validator.maximum)){
-                            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                            isPublish=false;
-                        }
-                    }
-                    else if(validator.isLength && validator.isMandatory){
-                        if(projectData[validator.Name].length<validator.minimum || projectData[validator.Name].length>validator.maximum ){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                        isPublish=false;
-                        }
-                    }
-                    else{
-                        if(projectData[validator.Name]===''  && validator.isMandatory){
-                            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                            isPublish=false;
-                        }
-                    }
-                    break;
-                case "array":
-                        if(validator.isLength && validator.isMandatory){
-                            if(projectData[validator.Name].length<validator.minimum || projectData[validator.Name].length>validator.maximum ){
-                            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                            isPublish=false;
-                            }
-                        }
-                    break;
-                case "arraytext":
-                        if(validator.isLength && validator.isMandatory){
-                            projectData[validator.LinkedArray].forEach((value,index)=>{
-                                if(value[validator.Name].length<validator.minimum || value[validator.Name].length>validator.maximum){
-                                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:index + " - "+ validator.alertText,alertIcon:'warning'})
-                                    isPublish=false;
-                                }
-                            })
-                            
-                        }
-                        else if(validator.isMandatory){
-                            projectData[validator.LinkedArray].forEach((value,index)=>{
-                                if(value[validator.Name]===''){
-                                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:index + " - "+ validator.alertText,alertIcon:'warning'})
-                                    isPublish=false;
-                                }
-                            })
-                        }
-                    break;
-                case "select":
-                        if((projectData[validator.Name]==='' || projectData[validator.Name]==='בחר') && validator.isMandatory){
-                            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                            isPublish=false;
-                        }
-                    break;
-                case "arrayselect":
-                        if((projectData[validator.Name][validator.index]==='' || projectData[validator.Name][validator.index]==='בחר') && validator.isMandatory){
-                            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning'})
-                            isPublish=false;
-                        }
-                    break;
-                default:
-                    break;
-            }
-        })
-        return isPublish;
-        
+        const validation = ValidateData2(projectData,templateValidators);
+        if(!validation.isPublish){
+            this.setState({alertShow:validation.alertShow,alertTitle:validation.alertTitle,alertText:validation.alertText,alertIcon:validation.alertIcon})
+        }
+        return validation.isPublish;
     }
     SaveData = ()=>{
         //const arrayOfTags = this.state.tags.map((text)=>text.text);
@@ -851,7 +601,7 @@ class St1 extends React.Component{
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        const isPublish = this.ValidateData2(this.getProjectDetails());
+        const isPublish = this.CheckValidation(this.getProjectDetails());
         if(isPublish){
             this.setState({isPublished:temp},()=>{
                     if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
@@ -895,27 +645,30 @@ class St1 extends React.Component{
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <NavbarProjs />
                 <HeaderForm title={this.state.GroupName}/>
+
                 {/* preview project card */}
                 <ModalExample1 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
                 {/* <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}
                 {/*publish project? */}
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
+                <br/>
+                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails())}>אמת נתונים</Button>
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Poject details */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:5,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* projectName */}
-                        <TextInputs IsMandatory={this.Configs.ProjectName.isMandatory} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.ProjectName.maximum} InputTitle={sectionNames.projectName} inputSize="lg" />
+                        <TextInputs IsMandatory={this.Configs.ProjectName.isMandatory} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.ProjectName.maximum} minimum={this.Configs.ProjectName.minimum} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* stalkholders */}
-                        <TextInputs IsMandatory={this.Configs.CStackholders.isMandatory}  defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CStackholders.maximum} InputTitle={sectionNames.projectStackholders} inputSize="lg" />
+                        <TextInputs IsMandatory={this.Configs.CStackholders.isMandatory}  defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CStackholders.maximum} minimum={this.Configs.CStackholders.minimum}  InputTitle={sectionNames.projectStackholders} inputSize="lg" />
                         {/* CustCustomers */}
-                        <TextInputs  IsMandatory={this.Configs.CustCustomers.isMandatory}  defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CustCustomers.maximum}  InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
+                        <TextInputs  IsMandatory={this.Configs.CustCustomers.isMandatory}  defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CustCustomers.maximum} minimum={this.Configs.CustCustomers.minimum}  InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
                         {/* project Small Description */}
-                        <TextareaInput IsMandatory={this.Configs.CDescription.isMandatory} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CDescription.maximum}  InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput IsMandatory={this.Configs.CDescription.isMandatory} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CDescription.maximum} minimum={this.Configs.CDescription.minimum} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <RichText IsMandatory={this.Configs.PDescription.isMandatory} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.PDescription.maximum} InputTitle={sectionNames.projectDesc} />
+                        <RichText IsMandatory={this.Configs.PDescription.isMandatory} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.PDescription.maximum} minimum={this.Configs.PDescription.minimum}  InputTitle={sectionNames.projectDesc} />
                         {/* project Challenges  */}
-                        <TextareaInput IsMandatory={this.Configs.Challenges.isMandatory}  defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.Challenges.maximum} InputTitle={sectionNames.projectChallenges} />
+                        <TextareaInput IsMandatory={this.Configs.Challenges.isMandatory}  defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.Challenges.maximum} minimum={this.Configs.Challenges.minimum} InputTitle={sectionNames.projectChallenges} />
                         {/* project Comments */}
                         <TextareaInput IsMandatory={this.Configs.Comments.isMandatory} defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
                         <Form.Row dir="rtl">

@@ -2,18 +2,19 @@ import React from 'react';
 import {Form,Col,Row} from 'react-bootstrap';
 
 const TextInputs =(props)=>{
+    const {InputTitle,IsMandatory,maximum,minimum,defaultInput,inputSize} = props;
     return(
         <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
             <Col sm="3"></Col>
             <Col sm="7">
-                <Form.Control defaultValue={props.defaultInput} size={props.inputSize} onChange={(e)=>props.ChangeInputTextarea(e,props.InputTitle)} type="text" dir="rtl"/>
-                <p style={{border:'solid #CED4DA 0.5px',color:'#1C5F8A'}}>{props.defaultInput.length}</p>
+                <Form.Control defaultValue={defaultInput} size={inputSize} onChange={(e)=>props.ChangeInputTextarea(e,InputTitle)} type="text" dir="rtl"/>
+                <p style={{border:'solid #CED4DA 0.5px',color:'#1C5F8A'}}>{defaultInput.length}</p>
             </Col>
             <Form.Label style={{textAlign:'right'}} column sm="2">
-                {props.IsMandatory&&<span style={{color:'red'}}>*</span>}
-                {props.InputTitle}
+                {IsMandatory&&<span style={{color:'red'}}>*</span>}
+                {InputTitle}
                 <br/>
-                {props.IsMandatory&&<span style={{color:'blue'}}> {props.maximum&&'מקסימום '+ props.maximum + ' תוים'}</span>}
+                {IsMandatory&&<span style={{color:'blue'}}>{maximum} - {minimum}</span>}
             </Form.Label>
         </Form.Group>
     )

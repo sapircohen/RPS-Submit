@@ -49,7 +49,7 @@ export default class RichText extends React.Component {
         {this.props.IsMandatory&&<span style={{color:'red'}}>*</span>}
         {this.props.InputTitle}
         <br/>
-        {this.props.IsMandatory&&<span style={{color:'blue'}}> {this.props.maximum&&'מקסימום '+ this.props.maximum + ' תוים'}</span>}
+        {this.props.IsMandatory&&<span style={{color:'blue'}}> {this.props.maximum} - {this.props.minimum}</span>}
 
         </Form.Label>
     </Form.Group>
