@@ -122,7 +122,6 @@ class St1 extends React.Component{
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
         this.TechsChosen = this.TechsChosen.bind(this);
-        //HashsChosen
         this.HashsChosen = this.HashsChosen.bind(this);
         this.Configs=[];
         this.getTemplateValidators();
@@ -216,7 +215,6 @@ class St1 extends React.Component{
             },()=>{
                 this.setState({projectDetails:this.getProjectDetails()})
             })
-            //this.getTemplateValidators();
             //get list of advisors from firebase
             this.getAdvisors();
             //get technologies from firebase
