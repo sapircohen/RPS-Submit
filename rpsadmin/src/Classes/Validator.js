@@ -27,16 +27,46 @@ export default class Validator{
                 case 'ProjectTopic':
                     this.ProjectTopic = element;
                     break;
+                case 'ProjectGoal':
+                    this.ProjectGoal = element;
+                    break;
+                case 'ProjectNeed':
+                    this.ProjectNeed = element;
+                    break;
+                case 'ProjectSolution':
+                    this.ProjectSolution = element;
+                    break;
+                case 'ProjectConclusion':
+                    this.ProjectConclusion = element;
+                    break;
+                case 'ProjectFindings':
+                    this.ProjectFindings = element;
+                    break;
+                case 'Major':
+                    this.Major = element;
+                    break;
+                case 'ProjectPDF':
+                    this.ProjectPDF = element;
+                    break;
+                case 'SystemDescriptionPDF':
+                    this.SystemDescriptionPDF = element;
+                    break;
+                case 'ProjectCourse':
+                    this.ProjectCourse = element;
+                    break;
+                case 'ProjectSummery':
+                    this.ProjectSummery = element;
+                    break;
                 case 'Year':
                     this.Year = element;
                     break;
                 case 'Semester':
                     this.Semester = element;
                     break;
-                case 'advisor[0]':
+                case 'advisorOne':
                     this.FirstAdvisor = element;
                     break;
-                case 'advisor[1]':
+                case 'advisorTwo':
                     this.SecondAdvisor = element;
                     break;
                 case 'Goals':
@@ -72,6 +102,12 @@ export default class Validator{
                 case 'Github':
                     this.Github = element;
                     break;
+                case 'MovieLink':
+                    this.MovieLink = element;
+                    break;
+                case 'FunctionalityMovie':
+                    this.FunctionalityMovie = element;
+                    break;
                 case 'Students':
                     this.Students = element;
                     break;
@@ -87,6 +123,9 @@ export default class Validator{
                 case 'Id':
                     this.StudentId = element;
                     break;
+                case 'CustomerName':
+                    this.CustomerName = element;
+                    break;
                 case 'CustomerLogo':
                     this.CustomerLogo = element;
                     break;
@@ -96,8 +135,8 @@ export default class Validator{
                 case 'GooglePlay':
                     this.GooglePlay = element;
                     break;
-                case 'CustomerName':
-                    this.CustomerName = element;
+                case 'PartnerDescription':
+                    this.PartnerDescription = element;
                     break;
                 default:
                     break;

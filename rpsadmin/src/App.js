@@ -22,6 +22,19 @@ firebase.initializeApp(FirebaseTestConfig);
 export const storage =  firebase.storage();
 
 class App extends Component {
+  componentDidMount(){
+    this.getTemplatesConfig();
+  }
+  getTemplatesConfig=()=>{
+    const ref = firebase.database().ref('Data').child('Configs');
+    ref.once("value", (snapshot)=> {
+      snapshot.forEach((config)=>{
+          localStorage.setItem(config.key,JSON.stringify(config.val()));          
+      })
+      }, (errorObject)=> {
+          console.log("The read failed: " + errorObject.code);
+      })
+  }
   render() {
     return (
       <div className="App">

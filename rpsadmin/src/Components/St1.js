@@ -117,20 +117,22 @@ class St1 extends React.Component{
             projectKey:'',
             groupData :'',
             showRatio:false,
-            templateValidators:[]
+            templateValidators:[],
+            Configs:null
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
         this.TechsChosen = this.TechsChosen.bind(this);
         this.HashsChosen = this.HashsChosen.bind(this);
-        this.Configs=[];
-        this.getTemplateValidators();
     }
     componentDidMount(){
         this.setState({
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
-            groupData :JSON.parse(localStorage.getItem('groupData'))
+            groupData :JSON.parse(localStorage.getItem('groupData')),
+            templateValidators:JSON.parse(localStorage.getItem('st1')),
+            Configs:new Validator(JSON.parse(localStorage.getItem('st1')))
+
         },()=>{
             this.GetData();
         })
@@ -228,25 +230,6 @@ class St1 extends React.Component{
         })
     })
     }
-    getTemplateValidators=()=>{
-        const groupData = JSON.parse(localStorage.getItem('groupData'));
-        const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(groupData.Faculty).child('Departments').child(groupData.Department).child('Experties').child(groupData.Major).child('Courses');
-        ref.once("value", (snapshot)=> {
-            snapshot.forEach((course)=>{
-                if(course.val()["Submit Template"]==="st1"){
-                    this.setState({
-                        templateValidators:course.val().TemplateConfig
-                    },()=>{
-                        this.Configs= new Validator(this.state.templateValidators);
-                        console.log(this.state.templateValidators);
-                    })
-                }
-            })
-        }, (errorObject)=> {
-            console.log("The read failed: " + errorObject.code);
-        })
-
-    }
     getProjectDetails=()=>{
         // const arrayOfTags = this.state.tags.map((text)=>text.text);
         const project = {
@@ -279,7 +262,7 @@ class St1 extends React.Component{
             ScreenShotsNames:this.state.ScreenShotsNames,
             Github:this.state.Github,
             isApproved:1,
-            functionalityMovie:this.state.functionalityMovie
+            FunctionalityMovie:this.state.functionalityMovie
         }
         this.setState({
             isReady:true
@@ -622,6 +605,7 @@ class St1 extends React.Component{
     }
     CloseAlert = ()=>{this.setState({alertShow:false})}
     render(){
+        const {Configs} = this.state;
         if (!this.state.isReady) {
             return(
                 <div style={{flex:1,backgroundColor:'#eee'}}>
@@ -656,30 +640,30 @@ class St1 extends React.Component{
                     <div style={{border:'solid 1px',padding:15,borderRadius:5,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* projectName */}
-                        <TextInputs IsMandatory={this.Configs.ProjectName.isMandatory} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.ProjectName.maximum} minimum={this.Configs.ProjectName.minimum} InputTitle={sectionNames.projectName} inputSize="lg" />
+                        <TextInputs configs={Configs.ProjectName} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* stalkholders */}
-                        <TextInputs IsMandatory={this.Configs.CStackholders.isMandatory}  defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CStackholders.maximum} minimum={this.Configs.CStackholders.minimum}  InputTitle={sectionNames.projectStackholders} inputSize="lg" />
+                        <TextInputs configs={Configs.CStackholders} defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectStackholders} inputSize="lg" />
                         {/* CustCustomers */}
-                        <TextInputs  IsMandatory={this.Configs.CustCustomers.isMandatory}  defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CustCustomers.maximum} minimum={this.Configs.CustCustomers.minimum}  InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
+                        <TextInputs configs={Configs.CustCustomers} defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea}  InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
                         {/* project Small Description */}
-                        <TextareaInput IsMandatory={this.Configs.CDescription.isMandatory} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.CDescription.maximum} minimum={this.Configs.CDescription.minimum} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput configs={Configs.CDescription} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <RichText IsMandatory={this.Configs.PDescription.isMandatory} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.PDescription.maximum} minimum={this.Configs.PDescription.minimum}  InputTitle={sectionNames.projectDesc} />
+                        <RichText configs={Configs.PDescription} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc}/>
                         {/* project Challenges  */}
-                        <TextareaInput IsMandatory={this.Configs.Challenges.isMandatory}  defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} maximum={this.Configs.Challenges.maximum} minimum={this.Configs.Challenges.minimum} InputTitle={sectionNames.projectChallenges} />
+                        <TextareaInput configs={Configs.Challenges} defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectChallenges} />
                         {/* project Comments */}
-                        <TextareaInput IsMandatory={this.Configs.Comments.isMandatory} defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
+                        <TextareaInput configs={Configs.Comments} defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
                         <Form.Row dir="rtl">
                             {/* year  */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.Year.isMandatory} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.Semester}   inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.Semester.isMandatory} defaultInput={this.state.Semester}   inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* projectType */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.ProjectTopic}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
+                            <SelectInput IsMandatory={Configs.ProjectTopic.isMandatory} defaultInput={this.state.ProjectTopic}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}
-                            <SelectInput IsMandatory={true}  defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.FirstAdvisor.isMandatory} defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* second advisor */}
-                            <SelectInput IsMandatory={true}  defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.SecondAdvisor.isMandatory} defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                         {/* if the topic is organization */}
                         {this.state.organization &&
@@ -688,23 +672,23 @@ class St1 extends React.Component{
                             <TextInputs defaultInput={this.state.CustomerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustomerName} inputSize="lg" />
                         </div>)}
                     </div>
-                    <ProjectGoals minimum={this.Configs.Goals.minimum} maximumGoalStatus={this.Configs.GoalStatus.maximum} maximumGoalDescription={this.Configs.GoalDescription.maximum} isMandatory={this.Configs.Goals.isMandatory} initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
-                    <ProjectModules minimum={this.Configs.Module.minimum} maximumModuleName={this.Configs.ModuleName.maximum} maximumModuleDescription={this.Configs.ModuleDescription.maximum} isMandatory={this.Configs.Module.isMandatory} initalProjectModule={this.state.projectModules} setProjectModules={this.getprojectModules}/>
+                    <ProjectGoals minimum={Configs.Goals.minimum} maximumGoalStatus={Configs.GoalStatus.maximum} maximumGoalDescription={Configs.GoalDescription.maximum} isMandatory={Configs.Goals.isMandatory} initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
+                    <ProjectModules minimum={Configs.Module.minimum} maximumModuleName={Configs.ModuleName.maximum} maximumModuleDescription={Configs.ModuleDescription.maximum} isMandatory={Configs.Module.isMandatory} initalProjectModule={this.state.projectModules} setProjectModules={this.getprojectModules}/>
                     {/* tag the project */}
-                    <Hashtags isMandatory={this.Configs.HashTags.isMandatory} minimum={this.Configs.HashTags.minimum} chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
+                    <Hashtags isMandatory={Configs.HashTags.isMandatory} minimum={Configs.HashTags.minimum} chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
                     {/* techs tag */}
-                    <Techs isMandatory={this.Configs.Technologies.isMandatory} minimum={this.Configs.Technologies.minimum} chosenTechs={this.state.chosenTechs} TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
+                    <Techs isMandatory={Configs.Technologies.isMandatory} minimum={Configs.Technologies.minimum} chosenTechs={this.state.chosenTechs} TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
                     {/* Project links */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:5,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="קישורים"/>
                         {/* project site link */}
-                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.ProjectSite} InputTitle={sectionNames.projectLink} inputSize="sm" placeholder="http://proj.ruppin.ac.il/..."/>
+                        <LinkInput IsMandatory={Configs.ProjectSite.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.ProjectSite} InputTitle={sectionNames.projectLink} inputSize="sm" placeholder="http://proj.ruppin.ac.il/..."/>
                         {/* project movie link */}
-                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
+                        <LinkInput IsMandatory={Configs.MovieLink.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
                         {/* project usability movie link */}
-                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.functionalityMovie} InputTitle={sectionNames.projectFunctionalityMovie} inputSize="sm" placeholder="www.youtube.com.."/>
+                        <LinkInput IsMandatory={Configs.FunctionalityMovie.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.functionalityMovie} InputTitle={sectionNames.projectFunctionalityMovie} inputSize="sm" placeholder="www.youtube.com.."/>
                         {/* project github link */}
-                        <LinkInput IsMandatory={true} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.Github} InputTitle={sectionNames.Github} inputSize="sm" placeholder="www.github.com"/>
+                        <LinkInput IsMandatory={Configs.Github.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.Github} InputTitle={sectionNames.Github} inputSize="sm" placeholder="www.github.com"/>
                         <Form.Group dir="rtl" style={{marginTop:15}} as={Row}>
                             <Col sm="1">
                             <Form.Check checked={this.state.appExists} onChange={this.appExisting} id="projectApplication" type="checkbox"/> 
@@ -730,14 +714,14 @@ class St1 extends React.Component{
                                         {this.state.logo.length!==0?`  עריכת לוגו פרויקט`:`  הוספת לוגו פרויקט`}
                                     </Button>
                                     <br/>
-                                    {this.Configs.ProjectLogo.isMandatory&&(this.Configs.ProjectLogo.minimum&&<span style={{color:'blue'}}>מינימום {this.Configs.ProjectLogo.minimum}</span>)}
+                                    {Configs.ProjectLogo.isMandatory&&(Configs.ProjectLogo.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ProjectLogo.minimum}</span>)}
                                 </Col>
                                 <Col sm="4">
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Screenshots','')}>
                                         <FaCameraRetro/>{`  הוספת תמונות מסך`}
                                     </Button>
                                     <br/>
-                                    {this.Configs.ScreenShots.isMandatory&&(this.Configs.ScreenShots.minimum&&<span style={{color:'blue'}}>מינימום {this.Configs.ScreenShots.minimum}</span>)}
+                                    {Configs.ScreenShots.isMandatory&&(Configs.ScreenShots.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ScreenShots.minimum}</span>)}
                                 </Col>
                                 {this.state.organization ?
                                 <Col sm="4">
@@ -746,7 +730,7 @@ class St1 extends React.Component{
                                          {this.state.customerLogo.length!==0?`  עריכת לוגו לקוח`:`  הוספת לוגו לקוח`}
                                     </Button>
                                     <br/>
-                                    {this.Configs.CustomerLogo.isMandatory&&(this.Configs.CustomerLogo.minimum&&<span style={{color:'blue'}}>מינימום {this.Configs.CustomerLogo.minimum}</span>)}
+                                    {Configs.CustomerLogo.isMandatory&&(Configs.CustomerLogo.minimum&&<span style={{color:'blue'}}>מינימום {Configs.CustomerLogo.minimum}</span>)}
                                 </Col>
                                 :
                                 <Col sm="4"></Col>
@@ -763,7 +747,7 @@ class St1 extends React.Component{
                                 <Col sm="4"></Col>
                             </Row>
                     </div>
-                    <StudentDetails Students={this.Configs.Students} Name={this.Configs.StudentName} Picture={this.Configs.StudentPicture} Email={this.Configs.StudentEmail} Id={this.Configs.StudentId} setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
+                    <StudentDetails Students={Configs.Students} Name={Configs.StudentName} Picture={Configs.StudentPicture} Email={Configs.StudentEmail} Id={Configs.StudentId} setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
                 </Form>
             </div>
         );

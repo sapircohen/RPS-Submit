@@ -39,6 +39,7 @@ export default class RichText extends React.Component {
         })
     }
     render() {
+      const {isMandatory,maximum,minimum} = this.props.configs;
       return (
         <Form.Group as={Row}>
         <Col dir='rtl' sm="10">
@@ -46,10 +47,10 @@ export default class RichText extends React.Component {
             <p style={{border:'solid #CED4DA 0.5px',color:'#1C5F8A'}}>{this.props.defaultInput.length}</p>
         </Col>
         <Form.Label style={{textAlign:'right'}} column sm="2">
-        {this.props.IsMandatory&&<span style={{color:'red'}}>*</span>}
+        {isMandatory&&<span style={{color:'red'}}>*</span>}
         {this.props.InputTitle}
         <br/>
-        {this.props.IsMandatory&&<span style={{color:'blue'}}> {this.props.maximum} - {this.props.minimum}</span>}
+        {isMandatory&&<span style={{color:'blue'}}> {maximum} - {minimum}</span>}
 
         </Form.Label>
     </Form.Group>

@@ -323,7 +323,7 @@ class St2 extends React.Component{
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט הוא שדה חובה',alertIcon:'warning'})
                 return false;
             }
-            if(projectData.PDescription.length>6000){
+            if(projectData.PDescription.length>5000){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-5000 תווים',alertIcon:'warning'})
                 return false;
             }

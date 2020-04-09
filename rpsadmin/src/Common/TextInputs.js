@@ -2,7 +2,8 @@ import React from 'react';
 import {Form,Col,Row} from 'react-bootstrap';
 
 const TextInputs =(props)=>{
-    const {InputTitle,IsMandatory,maximum,minimum,defaultInput,inputSize} = props;
+    const {InputTitle,defaultInput,inputSize} = props;
+    const {isMandatory,maximum,minimum} = props.configs;
     return(
         <Form.Group style={{marginTop:'2%'}} as={Row} id="projectName">
             <Col sm="3"></Col>
@@ -11,10 +12,10 @@ const TextInputs =(props)=>{
                 <p style={{border:'solid #CED4DA 0.5px',color:'#1C5F8A'}}>{defaultInput.length}</p>
             </Col>
             <Form.Label style={{textAlign:'right'}} column sm="2">
-                {IsMandatory&&<span style={{color:'red'}}>*</span>}
+                {isMandatory&&<span style={{color:'red'}}>*</span>}
                 {InputTitle}
                 <br/>
-                {IsMandatory&&<span style={{color:'blue'}}>{maximum} - {minimum}</span>}
+                {isMandatory&&<span style={{color:'blue'}}>{maximum} - {minimum}</span>}
             </Form.Label>
         </Form.Group>
     )

@@ -57,6 +57,7 @@ class LoginScreen extends React.Component{
     groupName:'',
     isReady:true
   }
+  
   CheckUser = (event)=>{
     const {history} = this.props;
     event.preventDefault();
@@ -131,44 +132,43 @@ class LoginScreen extends React.Component{
     }
     return (
       <div>
-                <Header/>
-                <main className={classes.main}>
-        <CssBaseline />
-        <Paper className={classes.paper}>
-          <Avatar style={{backgroundColor:'transparent'}} className={classes.avatar}>
-            <img
-              alt="ruppin logo"
-              src='http://sn2e.co.il/wp-content/uploads/2016/07/logo.Ruppin_round-300x296.png'
-              width='70'
-              height='70'
-            />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            ממשק הזנת תוצרים
-          </Typography>
-          <form className={classes.form}>
-            <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="email">שם משתמש</InputLabel>
-              <Input id="groupName" onChange={this.changedGroupName} name="groupName" autoFocus />
-            </FormControl>
-            <FormControl margin="normal" required fullWidth>
-              <InputLabel htmlFor="password">סיסמה</InputLabel>
-              <Input name="password" onChange={this.changedPassword} type="password" id="password" autoComplete="current-password" />
-            </FormControl>
-            <Button
-              onClick={this.CheckUser}
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              התחבר
-            </Button>
-          </form>
-        </Paper>
-      </main>
-    
+        <Header/>
+        <main className={classes.main}>
+          <CssBaseline />
+          <Paper className={classes.paper}>
+            <Avatar style={{backgroundColor:'transparent'}} className={classes.avatar}>
+              <img
+                alt="ruppin logo"
+                src='http://sn2e.co.il/wp-content/uploads/2016/07/logo.Ruppin_round-300x296.png'
+                width='70'
+                height='70'
+              />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              ממשק הזנת תוצרים
+            </Typography>
+            <form className={classes.form}>
+              <FormControl margin="normal" required fullWidth>
+                <InputLabel htmlFor="email">שם משתמש</InputLabel>
+                <Input id="groupName" onChange={this.changedGroupName} name="groupName" autoFocus />
+              </FormControl>
+              <FormControl margin="normal" required fullWidth>
+                <InputLabel htmlFor="password">סיסמה</InputLabel>
+                <Input name="password" onChange={this.changedPassword} type="password" id="password" autoComplete="current-password" />
+              </FormControl>
+              <Button
+                onClick={this.CheckUser}
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
+                התחבר
+              </Button>
+            </form>
+          </Paper>
+        </main>
       </div>
     );
   }

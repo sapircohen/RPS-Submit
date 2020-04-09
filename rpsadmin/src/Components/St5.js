@@ -28,6 +28,8 @@ import Idle from '../Common/Idle';
 import ModalExample1 from './PreviewProject';
 import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
+import Validator from '../Classes/Validator';
+import {ValidateData2} from '../functions/functions';
 
 const sectionNames = {
     projectDesc : "רקע ומטרת הפרויקט *עד 400 תוים",
@@ -100,7 +102,10 @@ export default class St5 extends React.Component{
         course :'',
         projectKey:'',
         groupData :'',
-        showRatio:false
+        showRatio:false,
+        templateValidators:JSON.parse(localStorage.getItem('st5')),
+        Configs:new Validator(JSON.parse(localStorage.getItem('st5')))
+
     }
     componentDidMount(){
         this.setState({
@@ -119,7 +124,7 @@ export default class St5 extends React.Component{
             else{
             this.SaveData();
             if(this.state.isPublished){
-                if(!this.ValidateData(this.getProjectDetails())){
+                if(!this.ValidateData2(this.getProjectDetails())){
                     this.setState({isPublished:false});
                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                 }
@@ -127,6 +132,7 @@ export default class St5 extends React.Component{
         }
         },6000)
     }
+    
     GetData=()=>{
         const ref = firebase.database().ref('RuppinProjects').child(this.state.projectKey);
         let dataForGroup ={};
@@ -381,7 +387,7 @@ export default class St5 extends React.Component{
             Technologies:this.state.chosenTechs,
             ProjectCourse:this.state.course,
             ProjectConclusion:this.state.ProjectConclusion,
-            projectFindings:this.state.projectFindings,
+            ProjectFindings:this.state.projectFindings,
             PartnerDescription:this.state.PartnerDescription,
             HashTags:this.state.tags,
         }
@@ -441,7 +447,6 @@ export default class St5 extends React.Component{
                 ProjectLogo:this.state.logo,
                 CDescription:this.state.CDescription,
                 ScreenShotsNames:this.state.ScreenShotsNames,
-                projectGoals:this.state.projectGoals,
                 isPublished:this.state.isPublished,
                 Technologies:this.state.chosenTechs,
                 ProjectConclusion:this.state.ProjectConclusion,
@@ -450,6 +455,14 @@ export default class St5 extends React.Component{
                 ProjectSummery:this.state.ProjectSummery,
                 HashTags:this.state.tags,
             })
+    }
+    CheckValidation=(projectData)=>{
+        const { templateValidators} = this.state;
+        const validation = ValidateData2(projectData,templateValidators);
+        if(!validation.isPublish){
+            this.setState({alertShow:validation.alertShow,alertTitle:validation.alertTitle,alertText:validation.alertText,alertIcon:validation.alertIcon})
+        }
+        return validation.isPublish;
     }
     changeStudentImage = (url,index)=>{
         this.state.StudentsDetails[index].Picture = url;
@@ -558,11 +571,11 @@ export default class St5 extends React.Component{
                 return false;
             }
             //project findings
-            if(projectData.projectFindings.length>2200){
+            if(projectData.ProjectFindings.length>2200){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה תוצאות הפרויקט צריך להיות קטן מ-2000 תווים',alertIcon:'warning'})
                 return false;
             }
-            if(projectData.projectFindings.length===0){
+            if(projectData.ProjectFindings.length===0){
                 this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה תוצאות הפרויט חסר',alertIcon:'warning'})
                 return false;
             }
@@ -681,7 +694,8 @@ export default class St5 extends React.Component{
     closePreview = ()=>this.setState({showPreview:false})
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        if(this.ValidateData(this.getProjectDetails())){
+        const isPublish = this.CheckValidation(this.getProjectDetails());
+        if(isPublish){
             this.setState({isPublished:temp},()=>{
                 if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
                     const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
@@ -702,6 +716,7 @@ export default class St5 extends React.Component{
     }
     CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
     render(){
+        const {Configs} = this.state;
         if (!this.state.isReady) {
             return(
                 <div style={{flex:1,backgroundColor:'#eee'}}>
@@ -731,29 +746,29 @@ export default class St5 extends React.Component{
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* projectName */}
-                        <TextInputs IsMandatory={true} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
+                        <TextInputs configs={Configs.ProjectName} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* project Small Description */}
-                        <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput configs={Configs.CDescription} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* Project Summery*/}
-                        <RichText IsMandatory={true} defaultInput={this.state.ProjectSummery} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectSummery} />
+                        <RichText configs={Configs.ProjectSummery} defaultInput={this.state.ProjectSummery} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectSummery} />
                         {/* project background and motivation */}
-                        <RichText IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <RichText configs={Configs.PDescription} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         {/* Project Findings*/}
-                        <RichText IsMandatory={true}   defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
+                        <RichText configs={Configs.ProjectFindings} defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
                         {/* Project Conclusion*/}
-                        <RichText IsMandatory={true}   defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
+                        <RichText configs={Configs.ProjectConclusion} defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
                         {/* project partner Description */}
-                        <TextareaInput IsMandatory={false}  defaultInput={this.state.PartnerDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectPartnerDescription} />
+                        <TextareaInput configs={Configs.PartnerDescription} defaultInput={this.state.PartnerDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectPartnerDescription} />
                         <Form.Row dir="rtl">
                             {/* year  */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.Year.isMandatory} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.Semester} inputList={['שנתי']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
-                            <SelectInput IsMandatory={true} defaultInput={this.state.ProjectTopic}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
+                            <SelectInput IsMandatory={Configs.Semester.isMandatory} defaultInput={this.state.Semester} inputList={['שנתי']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.ProjectTopic.isMandatory} defaultInput={this.state.ProjectTopic}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}
-                            <SelectInput IsMandatory={true}  defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.FirstAdvisor.isMandatory} defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* second advisor */}
-                            <SelectInput IsMandatory={false}  defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.SecondAdvisor.isMandatory} defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                     </div>
                     <ProjectGoals title={"מטרות ודרישות הנדסיות"} initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
@@ -763,7 +778,7 @@ export default class St5 extends React.Component{
                         <Row dir="rtl" style={{marginTop:'2%'}} >
                             <Col sm="4"></Col>
                             <Col sm="4">
-                                <LabelTextPDF ProjectPDF={this.state.SystemDescriptionPDF} IsMandatory={true} />
+                                <LabelTextPDF ProjectPDF={this.state.SystemDescriptionPDF} IsMandatory={Configs.ProjectPDF.isMandatory} />
                                 <PDFupload DeletePdf={this.DeleteDescPdf} pdfFileSize={30000000} wordFileSize={5000000} savePDF={this.saveDescPDF}/>
                             </Col>
                         </Row>
@@ -772,7 +787,7 @@ export default class St5 extends React.Component{
                         <Row dir="rtl" style={{marginTop:'2%'}} >
                             <Col sm="4"></Col>
                             <Col sm="4">
-                                <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={true} />
+                                <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={Configs.SystemDescriptionPDF.isMandatory} />
                                 <PDFupload DeletePdf={this.DeletePdf} pdfFileSize={30000000} wordFileSize={5000000} savePDF={this.savePDF}/>
                             </Col>
                         </Row>
@@ -788,18 +803,24 @@ export default class St5 extends React.Component{
                                         <FaCameraRetro/>
                                         {this.state.logo.length!==0?`  עריכת תמונה מייצגת`:`  הוספת תמונה מייצגת`}
                                     </Button>
+                                    <br/>
+                                    {Configs.ProjectLogo.isMandatory&&(Configs.ProjectLogo.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ProjectLogo.minimum}</span>)}
                                 </Col>
                                 <Col sm="4">
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Screenshots','')}>
                                         <FaCameraRetro/>
                                         {`  הוספת תמונות תוצרי הפרויקט`}
                                     </Button>
+                                    <br/>
+                                    {Configs.ScreenShots.isMandatory&&(Configs.ScreenShots.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ScreenShots.minimum}</span>)}
                                 </Col>
                                 <Col sm="4">
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Customer Logo','Clogo')}>
                                          <FaCameraRetro/>
                                          {this.state.customerLogo.length!==0?`  עריכת לוגו לקוח תעשייתי`:`  הוספת לוגו לקוח תעשייתי`}
                                     </Button>
+                                    <br/>
+                                    {Configs.CustomerLogo.isMandatory&&(Configs.CustomerLogo.minimum&&<span style={{color:'blue'}}>מינימום {Configs.CustomerLogo.minimum}</span>)}
                                 </Col>
                                 :
                                 <Col sm="4"></Col>
@@ -816,11 +837,11 @@ export default class St5 extends React.Component{
                             </Row>
                             
                             {/* project movie link */}
-                            <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
+                            <LinkInput IsMandatory={Configs.MovieLink.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
                     </div>
                     {/* tag the project */}
                     <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
-                    <StudentDetails setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
+                    <StudentDetails Students={Configs.Students} setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
                 </Form>
             </div>
 
