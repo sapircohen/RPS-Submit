@@ -111,8 +111,11 @@ export default class St5 extends React.Component{
         this.setState({
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
-            groupData :JSON.parse(localStorage.getItem('groupData'))
+            groupData :JSON.parse(localStorage.getItem('groupData')),
+            templateValidators:JSON.parse(localStorage.getItem('st5')),
+            Configs:new Validator(JSON.parse(localStorage.getItem('st5')))    
         },()=>{
+            console.log(this.state.Configs)
             this.GetData();
         })
         window.setInterval(()=>{
@@ -738,10 +741,11 @@ export default class St5 extends React.Component{
                 <ModalImage showRatio={this.state.showRatio}  aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 {/* preview project card */}
-                {/* <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}
                 <ModalExample1 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData}/>
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
+                <br/>
+                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails())}>אמת נתונים</Button>
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
@@ -840,8 +844,8 @@ export default class St5 extends React.Component{
                             <LinkInput IsMandatory={Configs.MovieLink.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
                     </div>
                     {/* tag the project */}
-                    <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
-                    <StudentDetails Students={Configs.Students} setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
+                    <Hashtags isMandatory={Configs.HashTags.isMandatory} minimum={Configs.HashTags.minimum} chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
+                    <StudentDetails Students={Configs.Students} Name={Configs.StudentName} Picture={Configs.StudentPicture} Email={Configs.StudentEmail} Id={Configs.StudentId} setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
                 </Form>
             </div>
 

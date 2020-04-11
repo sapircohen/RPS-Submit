@@ -110,8 +110,12 @@ export default class St3 extends React.Component{
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData')),
+            templateValidators:JSON.parse(localStorage.getItem('st3')),
+            Configs:new Validator(JSON.parse(localStorage.getItem('st3')))
 
         },()=>{
+            console.log(this.state.Configs);
+            
             this.GetData();
         })
         window.setInterval(()=>{
@@ -555,6 +559,8 @@ export default class St3 extends React.Component{
                 <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
+                <br/>
+                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails())}>אמת נתונים</Button>
                 <ModalImage showRatio={this.state.showRatio} fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview for screenshots  */}
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
@@ -630,12 +636,16 @@ export default class St3 extends React.Component{
                                     <FaPlusCircle size={15}/>
                                     {` הוספת תמונות/תרשימים`}
                                 </Button>
+                                <br/>
+                                {Configs.ScreenShots.isMandatory&&(Configs.ScreenShots.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ScreenShots.minimum}</span>)}
                             </Col>
                             <Col sm="4">
                                 <Button onClick={()=>this.OpenImageModal('Project Logo')} variant="primary">
                                     <FaPlusCircle size={15}/>
                                     {this.state.poster.length!==0?`  עריכת תמונה מייצגת`:`  הוספת תמונה מייצגת`}   
                                 </Button>
+                                <br/>
+                                {Configs.ProjectLogo.isMandatory&&(Configs.ProjectLogo.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ProjectLogo.minimum}</span>)}
                             </Col>
                             <Col sm="2"> </Col>
                         </Row>
@@ -652,7 +662,7 @@ export default class St3 extends React.Component{
                         </Row>
                     </div>
                     {/* tag the project */}
-                    <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
+                    <Hashtags isMandatory={Configs.HashTags.isMandatory} minimum={Configs.HashTags.minimum} chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
                     {/* Students details */}
                     <StudentDetails Students={Configs.Students} Name={Configs.StudentName} Picture={Configs.StudentPicture} Email={Configs.StudentEmail} Id={Configs.StudentId} setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
                 </Form>

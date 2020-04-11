@@ -627,10 +627,8 @@ class St1 extends React.Component{
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <NavbarProjs />
                 <HeaderForm title={this.state.GroupName}/>
-
                 {/* preview project card */}
                 <ModalExample1 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
-                {/* <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}
                 {/*publish project? */}
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
                 <br/>

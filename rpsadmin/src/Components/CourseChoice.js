@@ -37,7 +37,6 @@ export default class CourseChoice extends React.Component{
     }
     GoToTemplate = ()=>{
         localStorage.setItem('course', JSON.stringify(this.state.course));
-        localStorage.setItem(this.state.template,JSON.stringify(this.state.template))
         this.props.history.push('/'+this.state.template);
     }
     render(){
