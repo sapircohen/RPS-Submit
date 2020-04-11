@@ -30,14 +30,32 @@ export default class Validator{
                 case 'ProjectGoal':
                     this.ProjectGoal = element;
                     break;
+                case 'Rationale':
+                    this.Rationale = element;
+                    break;
+                case 'Instructor':
+                    this.Instructor = element;
+                    break;
+                case 'Sources':
+                    this.Sources = element;
+                    break;
+                case 'TargetPopulation':
+                    this.TargetPopulation= element;
+                    break;
                 case 'ProjectNeed':
                     this.ProjectNeed = element;
                     break;
                 case 'ProjectSolution':
                     this.ProjectSolution = element;
                     break;
+                case 'ServiceName':
+                    this.ServiceName = element;
+                    break;
                 case 'ProjectConclusion':
                     this.ProjectConclusion = element;
+                    break;
+                case 'Recommendations':
+                    this.Recommendations = element;
                     break;
                 case 'ProjectFindings':
                     this.ProjectFindings = element;

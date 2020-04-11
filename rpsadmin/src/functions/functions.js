@@ -1,6 +1,6 @@
 export const ValidateData2=(projectData,templateValidators)=>{
     let isPublish = true;
-    let validation = {};
+    let validation = {isPublish:isPublish};
     try {
         templateValidators.forEach((validator,key)=>{
             switch (validator.fieldType) {

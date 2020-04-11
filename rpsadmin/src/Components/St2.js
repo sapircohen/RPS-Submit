@@ -90,8 +90,6 @@ class St2 extends React.Component{
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData'))
         },()=>{
-            console.log(this.state.Configs);
-            
             this.GetData();
         })
        window.setInterval(()=>{
@@ -103,7 +101,7 @@ class St2 extends React.Component{
         else{
         this.SaveData();
         if(this.state.isPublished){
-            if(!this.ValidateData2(this.getProjectDetails())){
+            if(!ValidateData2(this.getProjectDetails(),this.state.templateValidators)){
                 this.setState({isPublished:false});
                 this.setState({alertShow:true,alertTitle:'הפרויקט לא יפורסם',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
             }
@@ -388,11 +386,14 @@ class St2 extends React.Component{
         
         
     }
-    CheckValidation=(projectData)=>{
+    CheckValidation=(projectData,trigger)=>{
         const { templateValidators} = this.state;
         const validation = ValidateData2(projectData,templateValidators);
         if(!validation.isPublish){
             this.setState({alertShow:validation.alertShow,alertTitle:validation.alertTitle,alertText:validation.alertText,alertIcon:validation.alertIcon})
+        }
+        if(trigger === "check" && validation.isPublish){
+            this.setState({alertShow:true,alertTitle:'אימות נתונים',alertText:'הנתונים מאומתים, ניתן לפרסם את הפרויקט',alertIcon:'success'})
         }
         return validation.isPublish;
     }

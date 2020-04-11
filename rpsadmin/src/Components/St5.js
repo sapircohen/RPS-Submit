@@ -127,7 +127,7 @@ export default class St5 extends React.Component{
             else{
             this.SaveData();
             if(this.state.isPublished){
-                if(!this.ValidateData2(this.getProjectDetails())){
+                if(!ValidateData2(this.getProjectDetails(),this.state.templateValidators)){
                     this.setState({isPublished:false});
                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                 }
@@ -459,11 +459,14 @@ export default class St5 extends React.Component{
                 HashTags:this.state.tags,
             })
     }
-    CheckValidation=(projectData)=>{
+    CheckValidation=(projectData,trigger)=>{
         const { templateValidators} = this.state;
         const validation = ValidateData2(projectData,templateValidators);
         if(!validation.isPublish){
             this.setState({alertShow:validation.alertShow,alertTitle:validation.alertTitle,alertText:validation.alertText,alertIcon:validation.alertIcon})
+        }
+        if(trigger === "check" && validation.isPublish){
+            this.setState({alertShow:true,alertTitle:'אימות נתונים',alertText:'הנתונים מאומתים, ניתן לפרסם את הפרויקט',alertIcon:'success'})
         }
         return validation.isPublish;
     }

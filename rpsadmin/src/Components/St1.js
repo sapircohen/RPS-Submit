@@ -117,8 +117,8 @@ class St1 extends React.Component{
             projectKey:'',
             groupData :'',
             showRatio:false,
-            templateValidators:[],
-            Configs:null
+            templateValidators:JSON.parse(localStorage.getItem('st1')),
+            Configs:new Validator(JSON.parse(localStorage.getItem('st1')))
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
@@ -130,8 +130,6 @@ class St1 extends React.Component{
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData')),
-            templateValidators:JSON.parse(localStorage.getItem('st1')),
-            Configs:new Validator(JSON.parse(localStorage.getItem('st1')))
 
         },()=>{
             this.GetData();
@@ -145,7 +143,7 @@ class St1 extends React.Component{
             else{
                 this.SaveData();
                 if(this.state.isPublished){
-                    if(!this.ValidateData2(this.getProjectDetails())){
+                    if(!ValidateData2(this.getProjectDetails(),this.state.templateValidators)){
                         this.setState({isPublished:false});
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                     }
@@ -215,7 +213,7 @@ class St1 extends React.Component{
                 googleLink:dataForGroup.GooglePlay?dataForGroup.GooglePlay:'',
                 appExists:dataForGroup.GooglePlay?true:false
             },()=>{
-                this.setState({projectDetails:this.getProjectDetails()})
+                this.setState({projectDetails:this.getProjectDetails(),isReady:true})
             })
             //get list of advisors from firebase
             this.getAdvisors();
@@ -445,11 +443,14 @@ class St1 extends React.Component{
         this.forceUpdate();
     }
     //new validation
-    CheckValidation=(projectData)=>{
+    CheckValidation=(projectData,trigger)=>{
         const { templateValidators} = this.state;
         const validation = ValidateData2(projectData,templateValidators);
         if(!validation.isPublish){
             this.setState({alertShow:validation.alertShow,alertTitle:validation.alertTitle,alertText:validation.alertText,alertIcon:validation.alertIcon})
+        }
+        if(trigger === "check" && validation.isPublish){
+            this.setState({alertShow:true,alertTitle:'אימות נתונים',alertText:'הנתונים מאומתים, ניתן לפרסם את הפרויקט',alertIcon:'success'})
         }
         return validation.isPublish;
     }
@@ -632,7 +633,7 @@ class St1 extends React.Component{
                 {/*publish project? */}
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
                 <br/>
-                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails())}>אמת נתונים</Button>
+                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails(),"check")}>אמת נתונים</Button>
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Poject details */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:5,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
