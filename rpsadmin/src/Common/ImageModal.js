@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Dropzone from 'react-dropzone';
 import 'react-image-crop/dist/ReactCrop.css'
 import Cropper from 'react-easy-crop'
-import Slider from '@material-ui/lab/Slider';
+import Slider from '@material-ui/core/Slider';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';

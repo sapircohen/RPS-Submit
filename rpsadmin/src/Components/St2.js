@@ -26,6 +26,7 @@ import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
 import {ValidateData2} from '../functions/functions';
 import Validator from '../Classes/Validator';
+const configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st2'));
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -81,14 +82,15 @@ class St2 extends React.Component{
             Semester:'',
             projectKey:'',
             groupData :'',
-            templateValidators:JSON.parse(localStorage.getItem('st2')),
-            Configs:new Validator(JSON.parse(localStorage.getItem('st2')))
+            templateValidators:configs,
+            Configs:new Validator(configs)
         }
     }
     componentDidMount(){
         this.setState({
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
-            groupData :JSON.parse(localStorage.getItem('groupData'))
+            groupData :JSON.parse(localStorage.getItem('groupData')),
+            
         },()=>{
             this.GetData();
         })
@@ -96,7 +98,7 @@ class St2 extends React.Component{
         let currentTime = JSON.parse(localStorage.getItem('currentTime'));
         let time = new Date();
         if((time-currentTime)>10000){
-            console.log("not save:", time-currentTime);
+            //console.log("not save:", time-currentTime);
         }
         else{
         this.SaveData();
@@ -120,10 +122,8 @@ class St2 extends React.Component{
             let tagsList = [];
             if(dataForGroup.HashTags){
                 dataForGroup.HashTags.forEach((tag)=>{
-                    console.log(tag)
                     let t={};
                     if(tag.__isNew__ || tag.label){
-                        console.log(tag)
                         t = {
                             'value':tag.value,
                             'label':tag.label
@@ -143,7 +143,7 @@ class St2 extends React.Component{
                 Year:dataForGroup.Year?dataForGroup.Year:'',
                 Semester:dataForGroup.Semester?dataForGroup.Semester:'',
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'',
-                projectCourse:course,
+                projectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:course,
                 projectMajor:dataForGroup.Major?dataForGroup.Major:'',
                 MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
                 GroupName:dataForGroup.GroupName,
@@ -316,83 +316,19 @@ class St2 extends React.Component{
         })
     }
     closePreview = ()=>this.setState({showPreview:false})
-    ValidateData = (projectData)=>{          
-            // project name validation
-            if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
-                return false;
-            }
-            //project long description -->PDescription
-            if(projectData.PDescription.length===0){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט הוא שדה חובה',alertIcon:'warning'})
-                return false;
-            }
-            if(projectData.PDescription.length>5000){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-5000 תווים',alertIcon:'warning'})
-                return false;
-            }
-            //project year
-            if(projectData.Year === "" || projectData.Year === "בחר"){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור שנה',alertIcon:'warning'})
-                return false;
-            }
-            //project Semester
-            if(projectData.Semester === "" || projectData.Semester === "בחר"){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור סמסטר',alertIcon:'warning'})
-                return false;
-            }
-            //project major/experties
-            if(projectData.Major === ""){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור התמחות',alertIcon:'warning'})
 
-                return false;
-            }
-            //project course
-            if(projectData.ProjectCourse === ""){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור סוג',alertIcon:'warning'})
-                return false;
-            }
-            //project topic
-            if(projectData.ProjectTopic === ""){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור נושא',alertIcon:'warning'})
-                return false;
-            }
-            //project advisor
-            if(projectData.advisor[0] === ""){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור מנחה',alertIcon:'warning'})
-                return false;
-            }
-            //project students
-            if(projectData.Students.length<1){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חייב להיות לפחות חבר צוות אחד',alertIcon:'success'})
-                return false;
-            }
-            else{
-                let flag = true;
-                projectData.Students.forEach((student,index)=>{
-                    if(student.Name===''){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר שם',alertIcon:'warning'})
-                        flag = false;
-                    }
-                })
-                if (!flag) {
-                    return false;
-                }
-            }
-            this.setState({
-                isSaved:true
-            })
-            return true;
-        
-        
-    }
-    CheckValidation=(projectData,trigger)=>{
+    CheckValidation=(projectData,isCheck=false)=>{
         const { templateValidators} = this.state;
         const validation = ValidateData2(projectData,templateValidators);
         if(!validation.isPublish){
-            this.setState({alertShow:validation.alertShow,alertTitle:validation.alertTitle,alertText:validation.alertText,alertIcon:validation.alertIcon})
+            this.setState({
+                alertShow:validation.alertShow,
+                alertTitle:validation.alertTitle,
+                alertText:validation.alertText,
+                alertIcon:validation.alertIcon
+            })
         }
-        if(trigger === "check" && validation.isPublish){
+        if(isCheck && validation.isPublish){
             this.setState({alertShow:true,alertTitle:'אימות נתונים',alertText:'הנתונים מאומתים, ניתן לפרסם את הפרויקט',alertIcon:'success'})
         }
         return validation.isPublish;
@@ -401,28 +337,25 @@ class St2 extends React.Component{
     SaveData = ()=>{
         //event.preventDefault();
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
-                ref.update({
-                    templateSubmit:'st2',
-                    templateView:'vt2',
-                    ProjectName: this.state.ProjectName,
-                    isPublished:this.state.isPublished,
-                    Year:this.state.Year,
-                    Semester:this.state.Semester,
-                    isApproved:1,
-                    Major:this.state.projectMajor,
-                    Students:this.state.StudentsDetails,
-                    Advisor:this.state.ProjectAdvisor,
-                    ProjectLogo:this.state.poster?this.state.poster:'',
-                    MovieLink:this.state.MovieLink,
-                    PDescription:this.state.PDescription,
-                    ProjectCourse:this.state.projectCourse,
-                    ProjectTopic:this.state.ProjectTopic,
-                    ProjectPDF:this.state.ProjectPDF?this.state.ProjectPDF:'',
-                    HashTags:this.state.tags,
-                })
-                .then(()=>{
-                    console.log('saved')
-                })
+        ref.update({
+            templateSubmit:'st2',
+            templateView:'vt2',
+            ProjectName: this.state.ProjectName,
+            isPublished:this.state.isPublished,
+            Year:this.state.Year,
+            Semester:this.state.Semester,
+            isApproved:1,
+            Major:this.state.projectMajor,
+            Students:this.state.StudentsDetails,
+            Advisor:this.state.ProjectAdvisor,
+            ProjectLogo:this.state.poster?this.state.poster:'',
+            MovieLink:this.state.MovieLink,
+            PDescription:this.state.PDescription,
+            ProjectCourse:this.state.projectCourse,
+            ProjectTopic:this.state.ProjectTopic,
+            ProjectPDF:this.state.ProjectPDF?this.state.ProjectPDF:'',
+            HashTags:this.state.tags,
+        })
     }
     //delete pdf/word file
     DeletePdf=()=>{
@@ -484,25 +417,34 @@ class St2 extends React.Component{
     CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
     changePublished = ()=>{
         const temp = !this.state.isPublished;
-        const isPublish = this.CheckValidation(this.getProjectDetails());
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
-        if(isPublish){
-            this.setState({isPublished:temp},()=>{
-                if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
-                    ref.update({
-                        isPublished:this.state.isPublished,
-                    })
-                    .then(()=>{
-                        if(this.state.isPublished===true){
-                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
-                            const groupData = JSON.parse(localStorage.getItem('groupData'));
-                            GetHashtags(groupData.Faculty);
-                        }
-                        else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
-                    })
-                }
+        if(!temp){
+            this.setState({isPublished:temp})
+            ref.update({
+                isPublished:false,
             })
         }
+        else{
+            const isPublish = this.CheckValidation(this.getProjectDetails());
+            if(isPublish){
+                this.setState({isPublished:temp},()=>{
+                    if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
+                        ref.update({
+                            isPublished:this.state.isPublished,
+                        })
+                        .then(()=>{
+                            if(this.state.isPublished===true){
+                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                                const groupData = JSON.parse(localStorage.getItem('groupData'));
+                                GetHashtags(groupData.Faculty);
+                            }
+                            else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
+                        })
+                    }
+                })
+            }
+        }
+        
     }
     render(){
         const {Configs} = this.state;
@@ -522,7 +464,7 @@ class St2 extends React.Component{
                 <PublishProject ChangePublish={this.changePublished} isPublished={this.state.isPublished}  />
                 <ModalImage showRatio={this.state.showRatio} fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <br/>
-                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails())}>אמת נתונים</Button>
+                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails(),true)}>אמת נתונים</Button>
                 <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 {/* preview project card */}
                 {/* <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}

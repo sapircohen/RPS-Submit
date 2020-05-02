@@ -12,39 +12,8 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import firebase from 'firebase';
 import Loader from 'react-loader-spinner';
 import Header from './MainHeader';
+import {findCourseForProject,getConfigsForProject} from '../functions/functions'
 
-
-const styles = theme => ({
-  main: {
-    width: 'auto',
-    display: 'block', // Fix IE 11 issue.
-    marginLeft: theme.spacing.unit * 3,
-    marginRight: theme.spacing.unit * 3,
-    [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
-      width: 400,
-      marginLeft: 'auto',
-      marginRight: 'auto',
-    },
-  },
-  paper: {
-    marginTop: theme.spacing.unit * 8,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
-  },
-  avatar: {
-    margin: theme.spacing.unit,
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing.unit,
-  },
-  submit: {
-    marginTop: theme.spacing.unit * 3,
-  },
-});
 
 class LoginScreen extends React.Component{
   constructor(props){
@@ -58,7 +27,7 @@ class LoginScreen extends React.Component{
     isReady:true
   }
   
-  CheckUser = (event)=>{
+  CheckUser = async (event)=>{
     const {history} = this.props;
     event.preventDefault();
     this.setState({
@@ -81,18 +50,27 @@ class LoginScreen extends React.Component{
     let logged = false;
     const ref = firebase.database().ref('RuppinProjects');
     ref.once("value", (snapshot)=> {
-      snapshot.forEach((project)=> {
+      snapshot.forEach( (project)=> {
         if(this.state.groupName === project.val().GroupName && project.val().Password==='notEditableDontEvenTry'){
           alert('התוצר נעול לעריכה, פנה למנהל מערכת');
           logged=true;
         }
         if (parseInt(this.state.password.trim()) === project.val().Password && this.state.groupName === project.val().GroupName) {
           logged = true;          
-          //console.log(project.val())
           localStorage.setItem('groupData', JSON.stringify(project.val()));
           localStorage.setItem('projectKey',JSON.stringify(project.key))
           if(project.val().templateSubmit){
-              history.push('/'+project.val().templateSubmit);
+              if(project.val().ProjectCourse){
+                getConfigsForProject(project.val(),project.val().ProjectCourse);
+                window.setTimeout(()=>history.push('/'+project.val().templateSubmit),3000)
+
+              }
+              else{
+                console.log(project.val())
+                findCourseForProject(project.val());
+                window.setTimeout(()=>history.push('/'+project.val().templateSubmit),3000)
+                
+              }
           }
           else history.push('/CourseChoice');
         }
@@ -101,17 +79,16 @@ class LoginScreen extends React.Component{
       console.log("The read failed: " + errorObject.code);
     })
     .then(()=>{
-      this.setState({isReady:true},()=>{
         if (!logged) {
           alert('נתונים שגויים, נסה שוב');
+          this.setState({isReady:true})
         }
-      });
     })
 
   })
   }
   changedGroupName(e){
-    this.setState({groupName:e.target.value.trim()});
+    this.setState({groupName:e.target.value.trim()},()=>console.log(this.state.groupName));
   }
   changedPassword(e){
     this.setState({password:e.target.value.trim()})
@@ -176,5 +153,35 @@ class LoginScreen extends React.Component{
 LoginScreen.propTypes = {
   classes: PropTypes.object.isRequired,
 };
-
+const styles = theme => ({
+  main: {
+    width: 'auto',
+    display: 'block', // Fix IE 11 issue.
+    marginLeft: theme.spacing.unit * 3,
+    marginRight: theme.spacing.unit * 3,
+    [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
+      width: 400,
+      marginLeft: 'auto',
+      marginRight: 'auto',
+    },
+  },
+  paper: {
+    marginTop: theme.spacing.unit * 8,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
+  },
+  avatar: {
+    margin: theme.spacing.unit,
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing.unit,
+  },
+  submit: {
+    marginTop: theme.spacing.unit * 3,
+  },
+});
 export default withStyles(styles)(LoginScreen);

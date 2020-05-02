@@ -108,7 +108,7 @@ export default class StudentsDetails extends React.Component{
                                 <Form.Control defaultValue={students[idx].Name} onChange={(e)=>this.changeName(idx,e)} type="text" dir="rtl"/>
                                 </Col>
                                 <Form.Label column sm="2">
-                                {this.props.Name.isMandatory&&<span style={{color:'red'}}>*</span>}
+                                {this.props.Email.isMandatory&&<span style={{color:'red'}}>*</span>}
 
                                 אימייל</Form.Label>
                                 <Col sm="4">

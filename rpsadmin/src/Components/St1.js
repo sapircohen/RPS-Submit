@@ -56,6 +56,7 @@ const sectionNames = {
 class St1 extends React.Component{
     constructor(props){
         super(props); 
+        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st1'));
         this.state={
             alertTitle:'',
             alertText:'',
@@ -117,8 +118,8 @@ class St1 extends React.Component{
             projectKey:'',
             groupData :'',
             showRatio:false,
-            templateValidators:JSON.parse(localStorage.getItem('st1')),
-            Configs:new Validator(JSON.parse(localStorage.getItem('st1')))
+            templateValidators:this.configs,
+            Configs:new Validator(this.configs)
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
@@ -130,7 +131,7 @@ class St1 extends React.Component{
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData')),
-
+            
         },()=>{
             this.GetData();
         })
@@ -205,7 +206,7 @@ class St1 extends React.Component{
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
-                ProjectCourse:this.state.course,
+                ProjectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
                 tags:tagsList,
                 functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:'',
@@ -235,7 +236,7 @@ class St1 extends React.Component{
             PDescription:this.state.PDescription,
             Challenges:this.state.Challenges,
             ProjectTopic:this.state.ProjectTopic,
-            ProjectCourse:this.state.course,
+            ProjectCourse:this.state.ProjectCourse,
             advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
             HashTags:this.state.tags,
             Technologies:this.state.chosenTechs,
@@ -583,25 +584,33 @@ class St1 extends React.Component{
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        const isPublish = this.CheckValidation(this.getProjectDetails());
-        if(isPublish){
-            this.setState({isPublished:temp},()=>{
-                    if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
-                        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
-                        ref.update({
-                            isPublished:this.state.isPublished,
-                        })
-                        .then(()=>{
-                            if(this.state.isPublished===true){
-                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
-                                const groupData = JSON.parse(localStorage.getItem('groupData'));
-                                GetHashtags(groupData.Faculty);
-                            }
-                            else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
-                        })
-                        
-                    }
+        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
+        if(!temp){
+            this.setState({isPublished:temp})
+            ref.update({
+                isPublished:false,
             })
+        }
+        else{
+            const isPublish = this.CheckValidation(this.getProjectDetails());
+            if(isPublish){
+                this.setState({isPublished:temp},()=>{
+                        if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
+                            ref.update({
+                                isPublished:this.state.isPublished,
+                            })
+                            .then(()=>{
+                                if(this.state.isPublished===true){
+                                    this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                                    const groupData = JSON.parse(localStorage.getItem('groupData'));
+                                    GetHashtags(groupData.Faculty);
+                                }
+                                else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
+                            })
+                            
+                        }
+                })
+            }
         }
     }
     CloseAlert = ()=>{this.setState({alertShow:false})}
@@ -609,7 +618,7 @@ class St1 extends React.Component{
         const {Configs} = this.state;
         if (!this.state.isReady) {
             return(
-                <div style={{flex:1,backgroundColor:'#eee'}}>
+                <div style={{flex:1,marginTop:'20%'}}>
                     <Loader 
                     type="Watch"
                     color="#58947B"
@@ -668,7 +677,7 @@ class St1 extends React.Component{
                         {this.state.organization &&
                         (<div>
                             {/* projectCustomerName */}
-                            <TextInputs defaultInput={this.state.CustomerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustomerName} inputSize="lg" />
+                            <TextInputs configs={Configs.CustomerName} defaultInput={this.state.CustomerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustomerName} inputSize="lg" />
                         </div>)}
                     </div>
                     <ProjectGoals minimum={Configs.Goals.minimum} maximumGoalStatus={Configs.GoalStatus.maximum} maximumGoalDescription={Configs.GoalDescription.maximum} isMandatory={Configs.Goals.isMandatory} initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>

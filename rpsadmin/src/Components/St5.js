@@ -30,6 +30,7 @@ import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
 import Validator from '../Classes/Validator';
 import {ValidateData2} from '../functions/functions';
+const configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st5'));
 
 const sectionNames = {
     projectDesc : "רקע ומטרת הפרויקט *עד 400 תוים",
@@ -103,17 +104,15 @@ export default class St5 extends React.Component{
         projectKey:'',
         groupData :'',
         showRatio:false,
-        templateValidators:JSON.parse(localStorage.getItem('st5')),
-        Configs:new Validator(JSON.parse(localStorage.getItem('st5')))
-
+        templateValidators:configs,
+        Configs:new Validator(configs)    
     }
     componentDidMount(){
         this.setState({
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData')),
-            templateValidators:JSON.parse(localStorage.getItem('st5')),
-            Configs:new Validator(JSON.parse(localStorage.getItem('st5')))    
+            
         },()=>{
             console.log(this.state.Configs)
             this.GetData();
@@ -186,7 +185,8 @@ export default class St5 extends React.Component{
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
-                ProjectCourse:this.state.course,
+                ProjectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
+
                 ProjectConclusion:dataForGroup.ProjectConclusion?dataForGroup.ProjectConclusion:'',
                 projectFindings:dataForGroup.projectFindings?dataForGroup.projectFindings:'',
                 PartnerDescription:dataForGroup.PartnerDescription?dataForGroup.PartnerDescription:'',
@@ -388,7 +388,7 @@ export default class St5 extends React.Component{
             Goals:this.state.projectGoals,
             isPublished:this.state.isPublished,
             Technologies:this.state.chosenTechs,
-            ProjectCourse:this.state.course,
+            ProjectCourse:this.state.ProjectCourse,
             ProjectConclusion:this.state.ProjectConclusion,
             ProjectFindings:this.state.projectFindings,
             PartnerDescription:this.state.PartnerDescription,
@@ -545,179 +545,37 @@ export default class St5 extends React.Component{
                 break;
         }
     }
-    ValidateData = (projectData)=>{
-            if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
-                return false;
-            }
-            if(projectData.CDescription.length>200 || projectData.CDescription.length===0){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
-                return false;
-            }
-            if(projectData.CDescription.length===0){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר חסר',alertIcon:'warning'})
-                return false;
-            }
-            //project summery
-            if(projectData.ProjectSummery.length>1100 || projectData.ProjectSummery.length===0){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'התקציר צריך להיות קטן מ-1000 תווים',alertIcon:'warning'})
-                return false;
-            }
-            if(projectData.ProjectSummery.length===0){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'התקציר חסר',alertIcon:'warning'})
-                return false;
-            }
-            //project long description -->PDescription
-            if(projectData.PDescription.length>500 || projectData.PDescription.length===0){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור רקע מטרת הפרויקט צריך להיות קטן מ-400 תווים',alertIcon:'warning'})
-                return false;
-            }
-            if( projectData.PDescription.length===0){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור רקע מטרת הפרויקט חסר',alertIcon:'warning'})
-                return false;
-            }
-            //project findings
-            if(projectData.ProjectFindings.length>2200){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה תוצאות הפרויקט צריך להיות קטן מ-2000 תווים',alertIcon:'warning'})
-                return false;
-            }
-            if(projectData.ProjectFindings.length===0){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה תוצאות הפרויט חסר',alertIcon:'warning'})
-                return false;
-            }
-            //project Conclusion
-            if(projectData.ProjectConclusion.length>1100){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה סיכום ומסקנות הפרויקט צריך להיות קטן מ-1000 תווים',alertIcon:'warning'})
-                return false;
-            }
-            if(projectData.ProjectConclusion.length===0){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה סיכום ומסקנות הפרויקט חסר',alertIcon:'warning'})
-                return false;
-            }
-
-            //project year
-            if (projectData.Year === "" || projectData.Year === "בחר") {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו שנה',alertIcon:'warning'})
-                return false;
-            }
-            //project semester
-            if (projectData.Semester === "" || projectData.Semester === "בחר") {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו סמסטר',alertIcon:'warning'})
-                return false;
-            }
-            //project Advisors
-            if(projectData.advisor[0]===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה א חסר',alertIcon:'warning'})
-                return false;
-            } 
-            //project Topic 
-            if (projectData.ProjectTopic==='בחר' || projectData.ProjectTopic==='') {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו נושא פרויקט'})
-                return false;
-            }
-            //project goals-->Goals
-            if(projectData.Goals.length<2){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מטרות ודרישות הנדסיות צריך להיות לפחות 2',alertIcon:'warning'})
-                return false;
-            }
-            else{
-                let flag = true;
-                projectData.Goals.forEach((goal,index)=>{
-                    if (goal.GoalDescription.length<2) {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
-                        flag= false;
-                    }
-                    if (goal.GoalDescription.length>150) {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
-                        flag= false;
-                    }
-                    if(goal.GoalStatus.length<2){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
-                        flag= false;
-                    }
-                    if(goal.GoalStatus.length>150){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
-                        flag= false;
-                    }
-                })
-                if (!flag) {
-                    return false;
-                }
-            }
-            //project technologies -->Technologies
-            if(projectData.Technologies.length<3){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר הטכנולוגיות צריך להיות לפחות 5',alertIcon:'warning'})
-                return false;
-            }
-            //project screenshots
-            if (projectData.ScreenShots.length<2) {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מינימום 5 תמונות של תוצרי פרויקט.'})
-                return false;
-            }        
-            //project logo
-            if (projectData.ProjectLogo<1) {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסרה תמונה מייצגת',alertIcon:'warning'})
-                return false;
-            }
-            //project book pdf
-            if(projectData.ProjectPDF ===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר מסמך PDF של ספר הפרויקט',alertIcon:'warning'})
-                return false;
-            }
-            //project system pdf
-            if(projectData.SystemDescriptionPDF ===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר מסמך PDF של תיאור מערכת / תכנון הנדסי ',alertIcon:'warning'})
-                return false;
-            }
-            //project students
-            if(projectData.Students.length<1){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חייב להיות לפחות חבר צוות אחד',alertIcon:'warning'})
-                return false;
-            }
-            else{
-                let flag = true;
-                projectData.Students.forEach((student,index)=>{
-                    if(student.Name===''){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר שם',alertIcon:'warning'})
-                        flag = false;
-                    }
-                    if (student.Picture==='') {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר תמונה',alertIcon:'warning'})
-                        flag = false;
-                    }
-                })
-                if (!flag) {
-                    return false;
-                }
-            }
-            this.setState({
-                isSaved:true
-            })
-            return true;
-    }
     handleClose = ()=> {this.setState({ openModal: false });}
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     closePreview = ()=>this.setState({showPreview:false})
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        const isPublish = this.CheckValidation(this.getProjectDetails());
-        if(isPublish){
-            this.setState({isPublished:temp},()=>{
-                if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
-                    const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
-                    ref.update({
-                        isPublished:this.state.isPublished,
-                    })
-                    .then(()=>{
-                        if(this.state.isPublished===true){
-                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
-                            const groupData = JSON.parse(localStorage.getItem('groupData'));
-                            GetHashtags(groupData.Faculty);
-                        }
-                        else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
-                    })
-                }
+        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
+        if(!temp){
+            this.setState({isPublished:temp})
+            ref.update({
+                isPublished:false,
             })
+        }
+        else{
+            const isPublish = this.CheckValidation(this.getProjectDetails());
+            if(isPublish){
+                this.setState({isPublished:temp},()=>{
+                    if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
+                        ref.update({
+                            isPublished:this.state.isPublished,
+                        })
+                        .then(()=>{
+                            if(this.state.isPublished===true){
+                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                                const groupData = JSON.parse(localStorage.getItem('groupData'));
+                                GetHashtags(groupData.Faculty);
+                            }
+                            else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
+                        })
+                    }
+                })
+            }
         }
     }
     CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}

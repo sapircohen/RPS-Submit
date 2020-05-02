@@ -4,7 +4,6 @@ import NavbarProjs from './NavbarStudents';
 import {Form,Row,Col,Button} from 'react-bootstrap';
 import SelectInput from '../Common/inputSelect';
 import TextInputs from '../Common/TextInputs';
-import TextareaInput from '../Common/TextAreaInputs';
 import SmallHeaderForm from '../Common/SmallHeaderForm';
 import { FaPlusCircle,FaCameraRetro } from "react-icons/fa";
 import PDFupload from '../Common/PdfFileUpload';
@@ -32,6 +31,8 @@ import Validator from '../Classes/Validator';
 export default class St3 extends React.Component{
     constructor(props){
         super(props);
+        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st6'));
+
         this.state = {
             ProjectName:'',
             ServiceName:'',
@@ -79,15 +80,17 @@ export default class St3 extends React.Component{
             ScreenShotsNames:[],
             MovieLink:'',
             showImagesMode:false,
-            templateValidators:JSON.parse(localStorage.getItem('st6')),
-            Configs:new Validator(JSON.parse(localStorage.getItem('st6')))
+            templateValidators:this.configs,
+            Configs:new Validator(this.configs)
         }
     }
     componentDidMount(){
+
         this.setState({
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData')),
+            
         },()=>{
             this.GetData();
         })
@@ -138,7 +141,7 @@ export default class St3 extends React.Component{
                 Year:dataForGroup.Year?dataForGroup.Year:'',
                 Semester:dataForGroup.Semester?dataForGroup.Semester:'',
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'',
-                projectCourse:this.state.course,
+                projectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
                 projectMajor:dataForGroup.Major?dataForGroup.Major:'',
                 MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
                 GroupName:dataForGroup.GroupName,
@@ -495,25 +498,34 @@ export default class St3 extends React.Component{
     }
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        const isPublish = this.CheckValidation(this.getProjectDetails());
-        if(isPublish){
-            this.setState({isPublished:temp},()=>{
-                if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
-                    const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
-                    ref.update({
-                        isPublished:this.state.isPublished,
-                    })
-                    .then(()=>{
-                        if(this.state.isPublished===true){
-                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
-                            const groupData = JSON.parse(localStorage.getItem('groupData'));
-                            GetHashtags(groupData.Faculty);
-                        }
-                        else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
-                    })
-                }
+        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
+        if(!temp){
+            this.setState({isPublished:temp})
+            ref.update({
+                isPublished:false,
             })
         }
+        else{
+            const isPublish = this.CheckValidation(this.getProjectDetails());
+            if(isPublish){
+                this.setState({isPublished:temp},()=>{
+                    if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
+                        ref.update({
+                            isPublished:this.state.isPublished,
+                        })
+                        .then(()=>{
+                            if(this.state.isPublished===true){
+                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                                const groupData = JSON.parse(localStorage.getItem('groupData'));
+                                GetHashtags(groupData.Faculty);
+                            }
+                            else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
+                        })
+                    }
+                })
+            }
+        }
+        
     }
     CloseAlert = ()=>{this.setState({alertShow:false})}
     render(){

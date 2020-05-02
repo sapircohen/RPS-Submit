@@ -1,8 +1,7 @@
 import React from 'react';
 import {Col,Row} from 'react-bootstrap'
-import makeAnimated from 'react-select/lib/animated';
-//import Badge from 'react-bootstrap/Badge';
-import {Creatable} from 'react-select';
+import makeAnimated from 'react-select/animated';
+import Creatable from 'react-select/creatable';
 import SmallHeaderForm from '../Common/SmallHeaderForm';
 export default class Hashtags extends React.Component{
     render(){

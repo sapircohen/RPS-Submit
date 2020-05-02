@@ -1,6 +1,6 @@
 import React from 'react';
 import {Col,Row} from 'react-bootstrap'
-import makeAnimated from 'react-select/lib/animated';
+import makeAnimated from 'react-select/animated';
 //import Badge from 'react-bootstrap/Badge';
 import Select from 'react-select';
 import SmallHeaderForm from '../Common/SmallHeaderForm';

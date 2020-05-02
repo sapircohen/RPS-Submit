@@ -50,9 +50,11 @@ const sectionNames = {
     projectSolution:'פתרון',
     customerName:'שם הלקוח',
 }
+
 export default class St3 extends React.Component{
     constructor(props){
         super(props);
+        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st4'));
         this.state = {
             alertTitle:'',
             alertText:'',
@@ -103,8 +105,8 @@ export default class St3 extends React.Component{
             projectKey:'',
             groupData :'',
             showRatio:false,
-            templateValidators:JSON.parse(localStorage.getItem('st4')),
-            Configs:new Validator(JSON.parse(localStorage.getItem('st4')))
+            templateValidators:this.configs,
+            Configs:new Validator(this.configs)
         }
     }
     componentDidMount(){
@@ -165,7 +167,7 @@ export default class St3 extends React.Component{
                 Year:dataForGroup.Year?dataForGroup.Year:'',
                 Semester:dataForGroup.Semester?dataForGroup.Semester:'',
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'',
-                projectCourse:this.state.course,
+                projectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
                 projectMajor:dataForGroup.Major?dataForGroup.Major:'',
                 MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
                 GroupName:dataForGroup.GroupName,
@@ -526,24 +528,33 @@ export default class St3 extends React.Component{
     }
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        const isPublish = this.CheckValidation(this.getProjectDetails());
-        if(isPublish){
-            this.setState({isPublished:temp},()=>{
-                if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
-                    const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
-                    ref.update({
-                        isPublished:this.state.isPublished,
-                    })
-                    .then(()=>{
-                        if(this.state.isPublished===true){
-                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
-                            const groupData = JSON.parse(localStorage.getItem('groupData'));
-                            GetHashtags(groupData.Faculty);
-                        }
-                        else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
-                        })                    
-                }
+        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
+        if(!temp){
+            this.setState({isPublished:temp})
+            ref.update({
+                isPublished:false,
             })
+        }
+        else{
+            const isPublish = this.CheckValidation(this.getProjectDetails());
+            if(isPublish){
+                this.setState({isPublished:temp},()=>{
+                    if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
+                        
+                        ref.update({
+                            isPublished:this.state.isPublished,
+                        })
+                        .then(()=>{
+                            if(this.state.isPublished===true){
+                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                                const groupData = JSON.parse(localStorage.getItem('groupData'));
+                                GetHashtags(groupData.Faculty);
+                            }
+                            else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
+                            })                    
+                    }
+                })
+            }
         }
     }
     CloseAlert = ()=>{this.setState({alertShow:false})}
