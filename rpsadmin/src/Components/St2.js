@@ -26,7 +26,7 @@ import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
 import {ValidateData2} from '../functions/functions';
 import Validator from '../Classes/Validator';
-const configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st2'));
+
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -45,6 +45,7 @@ const sectionNames = {
 class St2 extends React.Component{
     constructor(props){
         super(props);
+        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st2'));
         this.state = {
             alertTitle:'',
             alertText:'',
@@ -82,8 +83,8 @@ class St2 extends React.Component{
             Semester:'',
             projectKey:'',
             groupData :'',
-            templateValidators:configs,
-            Configs:new Validator(configs)
+            templateValidators:this.configs,
+            Configs:new Validator(this.configs)
         }
     }
     componentDidMount(){

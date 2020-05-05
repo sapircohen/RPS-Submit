@@ -561,7 +561,7 @@ export default class St3 extends React.Component{
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Project details */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>   
-                        <SmallHeaderForm title={"תיאור הפרויקט"}/>
+                        <SmallHeaderForm title={"תיאור התערבות מעבר לרמת הפרט וקהילתית"}/>
                         {/* project name */}
                         <TextInputs configs={Configs.ProjectName} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* project service name */}
