@@ -606,7 +606,7 @@ export default class St5 extends React.Component{
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
                 <br/>
-                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails())}>אמת נתונים</Button>
+                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails(),"check")}>אמת נתונים</Button>
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>

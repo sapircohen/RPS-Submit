@@ -133,26 +133,28 @@ export const getGeneralConfigsTemplates = ()=>{
 }
 
 export const findCourseForProject = (project)=>{
-     firebase.database().ref('Data').child('Ruppin').child('Faculties').child(project.Faculty)
+    let isFound = false;
+    firebase.database().ref('Data').child('Ruppin').child('Faculties').child(project.Faculty)
     .child('Departments').child(project.Department)
     .child('Experties').child(project.Major)
     .child('Courses').once('value',snapshot=>{
-        snapshot.forEach((course)=>{
-            if(project.templateSubmit===course.val()['Submit Template']){
-                localStorage.setItem('course', JSON.stringify(course.key));
+        snapshot.forEach(async (course)=>{
+            if(project.templateSubmit===course.val()['Submit Template'] && !isFound){
+                await localStorage.setItem('course', JSON.stringify(course.key));
+                isFound=true;
                 getConfigsForProject(project,course.key);
             }
         })
     })
 }
 
-export const getConfigsForProject = async (project,course)=>{
-    await firebase.database().ref('Data').child('Ruppin')
+export const getConfigsForProject =  (project,course)=>{
+    firebase.database().ref('Data').child('Ruppin')
     .child('Faculties').child(project.Faculty)
     .child('Departments').child(project.Department)
     .child('Experties').child(project.Major)
     .child('Courses').child(course)
-    .once('value',data=>{
-        localStorage.setItem('TemplateConfig',JSON.stringify(data.val().TemplateConfig?data.val().TemplateConfig:[]))
+    .once('value',async data=>{
+        await localStorage.setItem('TemplateConfig',JSON.stringify(data.val().TemplateConfig?data.val().TemplateConfig:[]))
     })
 }

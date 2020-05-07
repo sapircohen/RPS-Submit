@@ -21,7 +21,7 @@ import PreviewModal from '../Common/imagesModalPrevies'
 import RichText from '../Common/RichText2';
 import SAlert from '../Common/SAlert';
 import Idle from '../Common/Idle';
-import ModalExample1 from './PreviewProject';
+import Vt7 from './Vt7'
 import Hashtags from '../Common/Tag2';
 import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
@@ -29,12 +29,12 @@ import {ValidateData2} from '../functions/functions';
 import Validator from '../Classes/Validator';
 
 const sectionNames = {
-    projectNeed:'הבעיה/הצורך',
-    projectDesc : "תיאור הפרויקט",
+    projectNeed:'שיטה',
+    projectDesc : "שאלות המחקר",
     projectChallenges:"אתגרי הפרויקט",
-    projectSmallDesc:"תיאור קצר",
-    projectGoal:"מטרת הפרויקט",
-    projectName:"שם הפרויקט",
+    projectSmallDesc:"רקע תיאורתי ומדעי",
+    projectGoal:"מטרת המחקר",
+    projectName:"נושא המחקר",
     projectStackholders:"בעלי עניין",
     projectCustCustomers:"משתמשי המערכת",
     projectCustomerName:'שם הלקוח',
@@ -45,9 +45,9 @@ const sectionNames = {
     projectCourse:'סוג הפרויקט',
     projectSemester:'סמסטר',
     projectYear:'שנה',
-    ProjectConclusion:'מסקנות',
+    ProjectConclusion:'דיון ומסקנות',
+    projectNeedSummery:'תקציר',
     projectFindings:'ממצאים',
-    projectSolution:'פתרון',
     course :'',
     projectKey:'',
     groupData :'',
@@ -55,7 +55,7 @@ const sectionNames = {
 export default class St3 extends React.Component{
     constructor(props){
         super(props);
-        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st3'));
+        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st7'));
         this.state = {
             alertTitle:'',
             alertText:'',
@@ -96,12 +96,11 @@ export default class St3 extends React.Component{
             ProjectNeed:'',
             ProjectConclusion:'',
             projectFindings:'',
-            projectSolution:'',
             ScreenShots:[],
             ScreenShotsNames:[],
-            MovieLink:'',
             showImagesMode:false,
             showRatio:false,
+            Summery:'',
             templateValidators:this.configs,
             Configs:new Validator(this.configs)
         }
@@ -142,10 +141,8 @@ export default class St3 extends React.Component{
             let tagsList = [];
             if(dataForGroup.HashTags){
                 dataForGroup.HashTags.forEach((tag)=>{
-                    console.log(tag)
                     let t={};
                     if(tag.__isNew__ || tag.label){
-                        console.log(tag)
                         t = {
                             'value':tag.value,
                             'label':tag.label
@@ -166,7 +163,6 @@ export default class St3 extends React.Component{
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'',
                 projectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
                 projectMajor:dataForGroup.Major?dataForGroup.Major:'',
-                MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
                 GroupName:dataForGroup.GroupName,
                 ProjectGoal:dataForGroup.ProjectGoal?dataForGroup.ProjectGoal:'',
                 ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
@@ -177,10 +173,10 @@ export default class St3 extends React.Component{
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
                 ProjectAdvisor:dataForGroup.Advisor?dataForGroup.Advisor:'',
-                projectSolution:dataForGroup.projectSolution?dataForGroup.projectSolution:'',
                 projectFindings:dataForGroup.projectFindings?dataForGroup.projectFindings:'',
                 ProjectConclusion:dataForGroup.ProjectConclusion?dataForGroup.ProjectConclusion:'',
                 ProjectNeed:dataForGroup.ProjectNeed?dataForGroup.ProjectNeed:'',
+                Summery:dataForGroup.Summery?dataForGroup.Summery:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
                 tags:tagsList,
@@ -206,15 +202,14 @@ export default class St3 extends React.Component{
             ProjectTopic:this.state.ProjectTopic,
             Students:this.state.StudentsDetails,
             isPublished:this.state.isPublished,
-            MovieLink:this.state.MovieLink,
             ProjectLogo:this.state.poster[0],
             ProjectPDF:this.state.ProjectPDF,
             CDescription:this.state.CDescription,
             ProjectGoal:this.state.ProjectGoal,
             ProjectNeed:this.state.ProjectNeed,
+            Summery:this.state.Summery,
             ProjectConclusion:this.state.ProjectConclusion,
             ProjectFindings:this.state.projectFindings,
-            ProjectSolution:this.state.projectSolution,
             Year:this.state.Year,
             Semester:this.state.Semester,
             ScreenShots:this.state.ScreenShots,
@@ -303,11 +298,11 @@ export default class St3 extends React.Component{
                     break;
             case sectionNames.projectName:this.setState({ProjectName:event.target.value})
                 break;
+            case sectionNames.projectNeedSummery:this.setState({Summery:event})
+                break;
             case sectionNames.projectFindings:this.setState({projectFindings:event})
                 break;
             case sectionNames.projectGoal:this.setState({ProjectGoal:event})
-                break;
-            case sectionNames.projectSolution:this.setState({projectSolution:event})
                 break;
             case sectionNames.ProjectConclusion:this.setState({ProjectConclusion:event})
                 break;
@@ -431,15 +426,6 @@ export default class St3 extends React.Component{
             ScreenShotsNames:[...this.state.ScreenShotsNames,name]
         })
     }
-    ChangeLinkInput = (event,linkTitle)=>{
-        switch (linkTitle) {
-            case sectionNames.projectMovie:
-                this.setState({MovieLink:event.target.value})
-                break;
-            default:
-                break;
-        }
-    }
     //save project to object and show preview
     SetProjectOnFirbase = ()=>{
         const project = this.getProjectDetails();
@@ -466,8 +452,9 @@ export default class St3 extends React.Component{
     SaveData = ()=>{
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
         ref.update({
-            templateSubmit:'st3',
-            templateView:'vt3',
+            templateSubmit:'st7',
+            templateView:'vt7',
+            Summery:this.state.Summery,
             ProjectName:this.state.ProjectName,
             PDescription:this.state.PDescription,
             Advisor:[this.state.ProjectAdvisor],
@@ -476,7 +463,6 @@ export default class St3 extends React.Component{
             ProjectTopic:this.state.ProjectTopic,
             Students:this.state.StudentsDetails,
             isPublished:this.state.isPublished,
-            MovieLink:this.state.MovieLink,
             ProjectLogo:this.state.poster[0]?this.state.poster[0]:'',
             ProjectPDF:this.state.ProjectPDF,
             CDescription:this.state.CDescription,
@@ -484,13 +470,11 @@ export default class St3 extends React.Component{
             ProjectNeed:this.state.ProjectNeed,
             ProjectConclusion:this.state.ProjectConclusion,
             projectFindings:this.state.projectFindings,
-            projectSolution:this.state.projectSolution,
             Year:this.state.Year,
             Semester:this.state.Semester,
             ScreenShots:this.state.ScreenShots,
             ScreenShotsNames:this.state.ScreenShotsNames,
             HashTags:this.state.tags,
-
         })
        // call hashtag method
        //
@@ -575,16 +559,18 @@ export default class St3 extends React.Component{
                 
                 {/* showPreview */}
                 <SaveAction Save={this.SetProjectOnFirbase}/>
-                <ModalExample1 showRatio={this.state.showRatio} close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData}/>
+                <Vt7 showRatio={this.state.showRatio} close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData}/>
                 {/* inputs */}
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Project details */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>   
-                        <SmallHeaderForm title={"תיאור הפרויקט"}/>
+                        <SmallHeaderForm title={"תיאור המחקר"}/>
                         {/* project name */}
                         <TextInputs configs={Configs.ProjectName} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* project small description */}
                         <TextareaInput configs={Configs.CDescription} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        {/* project need summery */}
+                        <RichText configs={Configs.ProjectSummery} defaultInput={this.state.Summery} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectNeedSummery} />
                         {/* project description */}
                         <RichText configs={Configs.PDescription} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         {/* project Goal */}
@@ -594,7 +580,7 @@ export default class St3 extends React.Component{
                         {/* Project Findings*/}
                         <RichText configs={Configs.ProjectFindings} defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
                         {/* Project solution*/}
-                        <RichText configs={Configs.ProjectSolution} defaultInput={this.state.projectSolution} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSolution} />
+                        {/* <RichText configs={Configs.ProjectSolution} defaultInput={this.state.projectSolution} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSolution} /> */}
                         {/* Project Conclusion*/}
                         <RichText configs={Configs.ProjectConclusion} defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
                         <Form.Row dir="rtl">
@@ -615,8 +601,6 @@ export default class St3 extends React.Component{
                     {/* FILES UPLOAD */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="הוספת קבצים"/>
-                        {/* project movie link */}
-                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com"/>
                         <Row dir="rtl" style={{marginTop:'2%'}} >
                             <Col sm="4"></Col>
                             <Col sm="4">

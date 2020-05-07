@@ -31,8 +31,7 @@ import Validator from '../Classes/Validator';
 export default class St3 extends React.Component{
     constructor(props){
         super(props);
-        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st6'));
-
+        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))!==[]?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st6'));
         this.state = {
             ProjectName:'',
             ServiceName:'',
@@ -202,6 +201,8 @@ export default class St3 extends React.Component{
             ScreenShotsNames:this.state.ScreenShotsNames,
             HashTags:this.state.tags,
         }
+        console.log(project);
+        
         return project;
     }
     CheckValidation=(projectData,trigger)=>{
@@ -296,7 +297,7 @@ export default class St3 extends React.Component{
                 break;
             case sectionNames.projectInstructor:this.setState({Instructor:event.target.value})
                 break;
-            case sectionNames.projectTargetPopulation:this.setState({TargetPopulation:event.target.value})
+            case sectionNames.projectTargetPopulation:this.setState({TargetPopulation:event})
                 break;
             case sectionNames.projectNeedSummery:this.setState({Summery:event})
                 break;
@@ -351,7 +352,6 @@ export default class St3 extends React.Component{
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     //delete image from screenshots
     DeletePic = (picURL)=>{
-        console.log(picURL)
         const desertRef = firebase.storage().refFromURL(picURL);
         // Delete the file
         desertRef.delete().then(()=> {
@@ -405,8 +405,10 @@ export default class St3 extends React.Component{
     handleClose = ()=> this.setState({ openModal: false });
     //save picture
     savePic=(url,title,index,screenshotName)=>{
+        console.log(title,url,index,screenshotName);
+        
         switch (title) {
-            case 'Project Logo':this.setState({poster:[url]})
+            case 'Project Logo':this.setState({ProjectLogo:[url]})
                 break;
             case 'Student Pic': this.changeStudentImage(url,index)
                 break;
@@ -550,7 +552,7 @@ export default class St3 extends React.Component{
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
                 <br/>
-                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails())}>אמת נתונים</Button>
+                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails(),"check")}>אמת נתונים</Button>
                 <ModalImage fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview for screenshots  */}
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
@@ -672,7 +674,6 @@ const sectionNames = {
     projectDescription:'תיאור ההתערבות',
     projectRecommendations:'הערכה והמלצות',
     projectSource:'מקורות',
-
     projectType:'נושא הפרויקט',
     projectFirstAdvisor:"מרצה",
     projectMovie:'קישור לסרטון הפרויקט ביוטיוב',

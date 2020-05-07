@@ -318,7 +318,7 @@ class St2 extends React.Component{
     }
     closePreview = ()=>this.setState({showPreview:false})
 
-    CheckValidation=(projectData,isCheck=false)=>{
+    CheckValidation=(projectData,trigger="")=>{
         const { templateValidators} = this.state;
         const validation = ValidateData2(projectData,templateValidators);
         if(!validation.isPublish){
@@ -329,7 +329,7 @@ class St2 extends React.Component{
                 alertIcon:validation.alertIcon
             })
         }
-        if(isCheck && validation.isPublish){
+        if(trigger === "check" && validation.isPublish){
             this.setState({alertShow:true,alertTitle:'אימות נתונים',alertText:'הנתונים מאומתים, ניתן לפרסם את הפרויקט',alertIcon:'success'})
         }
         return validation.isPublish;
@@ -465,7 +465,7 @@ class St2 extends React.Component{
                 <PublishProject ChangePublish={this.changePublished} isPublished={this.state.isPublished}  />
                 <ModalImage showRatio={this.state.showRatio} fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <br/>
-                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails(),true)}>אמת נתונים</Button>
+                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails(),"check")}>אמת נתונים</Button>
                 <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
                 {/* preview project card */}
                 {/* <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}

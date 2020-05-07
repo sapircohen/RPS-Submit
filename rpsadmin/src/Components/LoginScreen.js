@@ -50,7 +50,7 @@ class LoginScreen extends React.Component{
     let logged = false;
     const ref = firebase.database().ref('RuppinProjects');
     ref.once("value", (snapshot)=> {
-      snapshot.forEach( (project)=> {
+      snapshot.forEach((project)=> {
         if(this.state.groupName === project.val().GroupName && project.val().Password==='notEditableDontEvenTry'){
           alert('התוצר נעול לעריכה, פנה למנהל מערכת');
           logged=true;
@@ -66,10 +66,8 @@ class LoginScreen extends React.Component{
 
               }
               else{
-                console.log(project.val())
                 findCourseForProject(project.val());
                 window.setTimeout(()=>history.push('/'+project.val().templateSubmit),3000)
-                
               }
           }
           else history.push('/CourseChoice');
@@ -88,7 +86,7 @@ class LoginScreen extends React.Component{
   })
   }
   changedGroupName(e){
-    this.setState({groupName:e.target.value.trim()},()=>console.log(this.state.groupName));
+    this.setState({groupName:e.target.value.trim()});
   }
   changedPassword(e){
     this.setState({password:e.target.value.trim()})

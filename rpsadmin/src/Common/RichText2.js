@@ -10,8 +10,8 @@ const RichText = (props) => {
   const [counter,setCounter] = useState(props.defaultInput.length?props.defaultInput.length:0);
   const {isMandatory,maximum,minimum} = props.configs;
   const changeText=(value,title)=>{
-    //this.GetLength(value);
     props.ChangeInputTextarea(value,title);
+    getLength(value);
   }
   const walkTheDOM=(node, func) =>{
     func(node);
@@ -26,7 +26,7 @@ const RichText = (props) => {
       var doc = new DOMParser().parseFromString(xmlString, "text/html");
       let txt = "";
       // Example usage: Process all Text nodes on the page
-      this.WalkTheDOM(doc.body, function (node) {
+      walkTheDOM(doc.body,  (node)=> {
           if (node.nodeType === 3) { // Is it a Text node?
               var text = node.data.trim();
               if (text.length > 0) { // Does it have non white-space text content?
@@ -51,8 +51,8 @@ const RichText = (props) => {
   return ( 
     <Form.Group as={Row}>
         <Col dir='rtl' sm="10">
-            <ReactQuill modules={modules} formats={formats} value={props.defaultInput}  onChange={(value) =>props.ChangeInputTextarea(value,props.InputTitle)} />
-            <p style={{border:'solid #CED4DA 0.5px',color:'#1C5F8A'}}>{props.defaultInput.length}</p>
+            <ReactQuill modules={modules} formats={formats} value={props.defaultInput}  onChange={(value) =>changeText(value,props.InputTitle)} />
+            <p style={{border:'solid #CED4DA 0.5px',color:'#1C5F8A'}}>{counter}</p>
         </Col>
         <Form.Label style={{textAlign:'right'}} column sm="2">
         {props.InputTitle}

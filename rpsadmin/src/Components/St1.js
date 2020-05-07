@@ -444,7 +444,7 @@ class St1 extends React.Component{
         this.forceUpdate();
     }
     //new validation
-    CheckValidation=(projectData,trigger)=>{
+    CheckValidation=(projectData,trigger="")=>{
         const { templateValidators} = this.state;
         const validation = ValidateData2(projectData,templateValidators);
         if(!validation.isPublish){
