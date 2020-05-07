@@ -4,7 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import SmallHeaderForm from './SmallHeaderForm';
 import Form from 'react-bootstrap/Form';
-import { FaPlusCircle,FaCameraRetro,FaEye } from "react-icons/fa";
+import { FaPlusCircle,FaCameraRetro } from "react-icons/fa";
 import { IoIosCloseCircleOutline } from "react-icons/io";
 
 export default class StudentsDetails extends React.Component{
@@ -81,6 +81,9 @@ export default class StudentsDetails extends React.Component{
             <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:5,marginTop:'3%',marginBottom:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                                 
                 <SmallHeaderForm title="חברי הצוות"/>
+                <br/>
+                {this.props.Students.isMandatory&&(this.props.Students.minimum&&<span style={{color:'blue'}}>מינימום {this.props.Students.minimum} סטודנטים</span>)}
+
                 <Row dir="rtl" style={{marginTop:'2%'}}>
                     <Col sm="4">
                         <Button onClick={this.addStudent} variant="success">
@@ -98,13 +101,16 @@ export default class StudentsDetails extends React.Component{
                             <SmallHeaderForm title={`#סטודנט/ית ${idx+1}`}/>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="studentName">
                                 <Form.Label column sm="2">
-                                    <span style={{color:'red'}}>*</span>
+                                    {this.props.Name.isMandatory&&<span style={{color:'red'}}>*</span>}
                                     שם הסטודנט/ית
                                 </Form.Label>
                                 <Col sm="2">
                                 <Form.Control defaultValue={students[idx].Name} onChange={(e)=>this.changeName(idx,e)} type="text" dir="rtl"/>
                                 </Col>
-                                <Form.Label column sm="2">אימייל</Form.Label>
+                                <Form.Label column sm="2">
+                                {this.props.Email.isMandatory&&<span style={{color:'red'}}>*</span>}
+
+                                אימייל</Form.Label>
                                 <Col sm="4">
                                 <Form.Control defaultValue={students[idx].Email} onChange={(e)=>this.changeEmail(idx,e)} type="text" dir="rtl"/>
                                 </Col>
@@ -113,7 +119,9 @@ export default class StudentsDetails extends React.Component{
                                 </Button>
                             </Form.Group>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="studentName">
-                                <Form.Label column sm="2">תעודת זהות</Form.Label>
+                                <Form.Label column sm="2">
+                                {this.props.Id.isMandatory&&<span style={{color:'red'}}>*</span>}
+                                    תעודת זהות</Form.Label>
                                 <Col sm="2">
                                 <Form.Control defaultValue={students[idx].Id} onChange={(e)=>this.changeId(idx,e)} type="text" dir="rtl"/>
                                 </Col>
@@ -121,10 +129,10 @@ export default class StudentsDetails extends React.Component{
                                 
                                 </Col>
                                 <Col sm="2">
-                                    <Button block onClick={()=>this.OpenImageModalStudent(`Student Pic`,idx)} variant="primary">
+                                    <Button block onClick={()=>this.OpenImageModalStudent(`Student Pic`,idx)} variant="outline-primary">
                                         <FaCameraRetro/>
                                         {`  תמונה  `} 
-                                        {this.props.isMandatory&&<span style={{color:'red'}}>*</span>}
+                                        {this.props.Picture.isMandatory&&<span style={{color:'red'}}>*</span>}
                                     </Button>
                                 </Col>
                                 <Col sm="2">

@@ -58,6 +58,9 @@ export default class ProjectModules extends React.Component{
         return(
             <div dir="rtl" style={{border:'solid 1px',padding:20,borderRadius:5,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                 <SmallHeaderForm title={this.props.title?this.props.title:"מודולי הפרויקט"}/>
+                <br/>
+                {this.props.isMandatory&&(this.props.minimum&&<span style={{color:'blue'}}>מינימום {this.props.minimum} מודולים</span>)}
+
                 <Row dir="rtl" style={{marginTop:'2%'}}>
                     <Col sm="4">
                         <Button onClick={this.addModule} variant="success">
@@ -74,12 +77,12 @@ export default class ProjectModules extends React.Component{
                         <div  key={idx}>
                             <SmallHeaderForm title={`#מודול ${idx+1}`}/>
                             <Form.Group dir="rtl" style={{marginTop:'2%'}} as={Row} id="goalName">
-                                <Form.Label column sm="2">שם המודול</Form.Label>
+                                <Form.Label column sm="2">שם המודול<br/>{this.props.isMandatory&&(this.props.maximumModuleName?<span style={{color:'blue'}}> מקסימום {this.props.maximumModuleName} תוים</span>:'')}</Form.Label>
                                 <Col sm="2">
                                     <Form.Control value={modules[idx].ModuleName} onChange={(e)=>this.changeModuleName(idx,e)} dir="rtl" type="text"/>
                                 </Col>
 
-                                <Form.Label column sm="2">תיאור המודול</Form.Label>
+                                <Form.Label column sm="2">תיאור המודול<br/>{this.props.isMandatory&&(this.props.maximumModuleDescription?<span style={{color:'blue'}}> מקסימום {this.props.maximumModuleDescription} תוים</span>:'')}</Form.Label>
                                 <Col sm="5">
                                     <Form.Control value={modules[idx].ModuleDescription} onChange={(e)=>this.changeModuleDesc(idx,e)} dir="rtl" as="textarea" rows="5"/>
                                 </Col>

@@ -1,7 +1,10 @@
 import React from 'react';
 import SelectInput from '../Common/inputSelect';
 import firebase from 'firebase';
+import Loader from 'react-loader-spinner';
+
 import {Button} from 'react-bootstrap';
+import {getConfigsForProject} from '../functions/functions'
 
 
 
@@ -10,15 +13,14 @@ export default class CourseChoice extends React.Component{
         template:'',
         course:'',
         coursesList:[],
-        templateList:[]
+        templateList:[],
+        isReady:true
     }
     componentDidMount(){
         const groupData = JSON.parse(localStorage.getItem('groupData'));
-        //console.log(groupData.Faculty)
         this.coursesFromFirebase(groupData.Faculty,groupData.Department,groupData.Major);
     }
     changeProjectType = (e)=>{
-        //console.log(e.target.options.selectedIndex);
         const template = this.state.templateList[e.target.options.selectedIndex-1];
         const course = this.state.coursesList[e.target.options.selectedIndex-1];
         this.setState({template:template,course:course})
@@ -27,7 +29,6 @@ export default class CourseChoice extends React.Component{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(fac).child('Departments').child(dep).child('Experties').child(exp).child('Courses');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((course)=>{
-                //console.log(course.val())
                 this.setState({coursesList:[...this.state.coursesList,course.val().Name]});
                 this.setState({templateList:[...this.state.templateList,course.val()['Submit Template']]});
             })
@@ -35,11 +36,27 @@ export default class CourseChoice extends React.Component{
             console.log("The read failed: " + errorObject.code);
         })
     }
-    GoToTemplate = ()=>{
-        localStorage.setItem('course', JSON.stringify(this.state.course));
-        this.props.history.push('/'+this.state.template);
+    GoToTemplate =  ()=>{
+        this.setState({isReady:false},()=>{
+            const groupData = JSON.parse(localStorage.getItem('groupData'));
+            localStorage.setItem('course', JSON.stringify(this.state.course));
+            getConfigsForProject(groupData,this.state.course)
+            window.setTimeout(()=>this.props.history.push('/'+this.state.template),4000)    
+        })
     }
     render(){
+        if(!this.state.isReady){
+            return(
+              <div style={{flex:1,marginTop:'20%'}}>
+                <Loader 
+                type="Watch"
+                color="#58947B"
+                height="100"	
+                width="100"
+                />  
+              </div> 
+            )
+          }
         return(
             <div style={{width:'50%',margin:'20px auto'}}>
                 <SelectInput inputList={this.state.coursesList} InputTitle='בחרו קורס' ChangeSelectInput={this.changeProjectType} />

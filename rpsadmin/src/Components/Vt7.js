@@ -44,15 +44,14 @@ const params = {
     pagination: {
       el: '.swiper-pagination'
 }}
-export default class Vt6 extends React.Component{
-
+export default class Vt7 extends React.Component{
     render(){  
         return (
             <Modal style={{backgroundColor:'transparent',fontFamily:'Calibri'}} onHide={this.props.close} show={this.props.openPreview} size="xl" aria-labelledby="contained-modal-title-vcenter">
               <Modal.Header  style={{margin:'0px auto'}} closeButton>
                 <Modal.Title style={{textAlign:'right',fontFamily:'Rubik, sans-serif'}}>
                     {
-                        this.props.projectDetails.ProjectName?this.props.projectDetails.ProjectName:'שם הפרויקט'
+                        this.props.projectDetails.ProjectName?this.props.projectDetails.ProjectName:'נושא המחקר'
                     }
                 </Modal.Title>
               </Modal.Header>
@@ -121,13 +120,13 @@ export default class Vt6 extends React.Component{
                                         </Card.Body>
                                     </Card>
                                 </Col>}
-                                {this.props.projectDetails.CustomerName&&
+                                {this.props.projectDetails.Major&&
                                 <Col>
                                     <Card border="dark">
-                                        <Card.Header>לקוח</Card.Header>
+                                        <Card.Header>התמחות</Card.Header>
                                         <Card.Body>
                                         <Card.Text>
-                                            {this.props.projectDetails.CustomerName}
+                                            {this.props.projectDetails.Major}
                                         </Card.Text>
                                         </Card.Body>
                                     </Card>
@@ -159,118 +158,67 @@ export default class Vt6 extends React.Component{
                                     </Col>
                                 </Row>
                             }
-                            {/* project ServiceName and Instructor*/}
-                            {
-                                ((this.props.projectDetails.ServiceName) || (this.props.projectDetails.Instructor)) &&
-                                <Row dir="rtl" style={{marginTop:'1%'}}>
-                                    <Col>
-                                        <Card border="dark">
-                                            <Card.Header>שם השירות</Card.Header>
-                                            <Card.Body>
-                                            <Card.Text>
-                                                {this.props.projectDetails.ServiceName}
-                                            </Card.Text>
-                                            </Card.Body>
-                                        </Card>
-                                    </Col>
-                                    <Col>
-                                        <Card border="dark">
-                                            <Card.Header>שם  המדריך/ה</Card.Header>
-                                            <Card.Body>
-                                            <Card.Text>
-                                                {this.props.projectDetails.Instructor}
-                                            </Card.Text>
-                                            </Card.Body>
-                                        </Card>
-                                    </Col>
-                                </Row>
-                            }
-                            {/* project Target population */}
-                            {
-                                ((this.props.projectDetails.TargetPopulation)) &&
-                                <Row dir="rtl" style={{marginTop:'1%'}}>
-                                    <Col>
-                                        <Card border="dark">
-                                            <Card.Header>אוכלוסיית היעד</Card.Header>
-                                            <Card.Body>
-                                            <Card.Text>
-                                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.TargetPopulation} Title=""/>
-                                            </Card.Text>
-                                            </Card.Body>
-                                        </Card>
-                                    </Col>
-                                </Row>
-                            }
                         </Col>
                     </Row>
-                    <Divider style={{margin:'0px auto',marginTop:'6px',width:'80%',color:'#444'}}/>
-                    
-
-
-                    {/* project video */}
-                    {
-                    this.props.projectDetails.MovieLink &&
-                    <Col className="Box" style={{marginTop:'2%',textAlign:'center'}}>
-                        <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
-                            {this.props.projectDetails.MovieLink &&
-                            <Col style={{padding:'50px'}}>
-                                <h4><MdOndemandVideo size={20}/> סרטון הפרויקט</h4>
-                                <VideoPlayer MovieLink={this.props.projectDetails.MovieLink} />
-                            </Col>}
-                        {    this.props.projectDetails.functionalityMovie &&
-                            <Col style={{padding:'50px'}}>
-                                <h4><MdExtension size={20}/> סרטון שימושיות</h4>
-                                <VideoPlayer MovieLink={this.props.projectDetails.functionalityMovie} />
-                            </Col>}
-                        </Row>
-                        <Divider style={{margin:'0px auto',marginTop:'6px',width:'80%',color:'#444'}}/>
-                    </Col>
-                    }
+                    <Row style={{textAlign:'center',marginTop:'4%'}}>
+                        <Col></Col>
+                        <Col style={{direction:'rtl'}}>
+                        {/* project small summery */}
+                        {
+                        this.props.projectDetails.CDescription &&
+                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.CDescription} Icon={''} Title="רקע תיאורתי ומדעי"/>
+                        }
+                        </Col>
+                        <Col></Col>
+                    </Row>
                     {/* project summery */}
                     {
                     this.props.projectDetails.ProjectSummery &&
-                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Summery} Title="תקציר הבעיה" Icon={IoMdSkipForward} />
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Summery} Title="תקציר" Icon={IoMdSkipForward} />
                     }
-
-                    {(this.props.projectDetails.ProjectGoal||this.props.projectDetails.Rationale||this.props.projectDetails.PDescription)&&
+                    <Divider style={{margin:'0px auto',marginTop:'6px',width:'80%',color:'#444'}}/>
+                    
+                    {(this.props.projectDetails.ProjectGoal||this.props.projectDetails.ProjectNeed||this.props.projectDetails.PDescription)&&
                     <Col className="Box" style={{marginTop:'2%',textAlign:'center'}}>
                         <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                             {this.props.projectDetails.PDescription&&
                             <Col xs="12">
-                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="תיאור ההתערבות" Icon={GoBook} />
+                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="שאלות המחקר" Icon={GoBook} />
+                                <br/>
                             </Col>}
-                            {(this.props.projectDetails.Goals||this.props.projectDetails.Rationale)&&
+                            {(this.props.projectDetails.ProjectGoal||this.props.projectDetails.ProjectNeed)&&
                             <Col xs="12">
                                 <Col>
                                     <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
-                                        {this.props.projectDetails.Goals&&
+                                        {this.props.projectDetails.ProjectGoal&&
                                         <Col dir="rtl" >
-                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Goals} Title="רציונל ההתערבות" Icon={IoIosRocket} />
+                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectGoal} Title="תיאור מטרת המחקר" Icon={IoIosRocket} />
                                         </Col>}
-                                        {this.props.projectDetails.Rationale &&
+                                        {this.props.projectDetails.ProjectNeed &&
                                         <Col dir="rtl" >
-                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Rationale} Title="מטרות ההתערבות" Icon={IoIosContacts} />
+                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectNeed} Title="שיטה" Icon={IoIosContacts} />
                                         </Col>}
                                     </Row>
                                 </Col>
                             </Col>}
                         </Row>
+                        <br/>
                         <Divider style={{margin:'0px auto',marginTop:'6px',width:'80%',color:'#444'}}/>
                     </Col>
                     }
-
-                    {(this.props.projectDetails.Recommendations||this.props.projectDetails.Sources)&&
+                    
+                    {(this.props.projectDetails.ProjectConclusion||this.props.projectDetails.ProjectFindings)&&
                     <Col className="Box" style={{marginTop:'2%',textAlign:'center'}}>
                         <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                             <Col>
                                 <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
-                                    {this.props.projectDetails.Recommendations &&
+                                    {this.props.projectDetails.ProjectConclusion &&
                                     <Col dir="rtl" >
-                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Recommendations} Title="מסקנות והמלצות" Icon={GiCrosshair} />
+                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="דיון ומסקנות" Icon={GiCrosshair} />
                                     </Col>}
-                                    {this.props.projectDetails.Sources &&
+                                    {this.props.projectDetails.ProjectFindings &&
                                     <Col dir="rtl" >
-                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Sources} Title="מקורות" Icon={FiFlag} />
+                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectFindings} Title="ממצאים" Icon={FiFlag} />
                                     </Col>}
                                 </Row>
                             </Col>

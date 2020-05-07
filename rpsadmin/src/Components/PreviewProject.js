@@ -58,7 +58,7 @@ export default class ModalExample1 extends React.Component{
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                <Container>
+                <Container>                 
                     {/* students details */}
                     <div style={{marginTop:'2%'}} className="Box">
                         <Row style={{justifyContent:'space-between',alignContent:'center',marginTop:'2%'}} className="show-grid">
@@ -191,8 +191,18 @@ export default class ModalExample1 extends React.Component{
                             }
                         </Col>
                     </Row>
+                    <Row style={{textAlign:'center',marginTop:'4%'}}>
+                        <Col></Col>
+                        <Col style={{direction:'rtl'}}>
+                        {/* project small summery */}
+                        {
+                        this.props.projectDetails.CDescription &&
+                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.CDescription} Icon={''} Title="תקציר הפרויקט"/>
+                        }
+                        </Col>
+                        <Col></Col>
+                    </Row>
                     <Divider style={{margin:'0px auto',marginTop:'6px',width:'80%',color:'#444'}}/>
-
                     {/* project video */}
                     {
                     this.props.projectDetails.MovieLink &&
@@ -240,7 +250,6 @@ export default class ModalExample1 extends React.Component{
                                 </Col>
                             </Col>}
                         </Row>
-                        <Divider style={{margin:'0px auto',marginTop:'6px',width:'80%',color:'#444'}}/>
                     </Col>
                     }
                     {(this.props.projectDetails.projectFindings||this.props.projectDetails.ProjectGoal ||this.props.projectDetails.ProjectNeed)&&
@@ -266,11 +275,11 @@ export default class ModalExample1 extends React.Component{
                                     </Col>}
                                     {this.props.projectDetails.ProjectConclusion &&
                                     <Col dir="rtl" >
-                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="מסקנות" Icon={GoBook} />}                            
+                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="מסקנות" Icon={GoBook} />                            
                                     </Col>}
                                 </Row>
                             </Col>
-                            <Col>
+                            <Col style={{textAlign:'center'}}>
                                 {this.props.projectDetails.projectSolution &&
                                 <RichTextPreviewParagraph Paragraph={this.props.projectDetails.projectSolution} Title="פתרון" Icon={FiAward} />}
                             </Col>
@@ -284,77 +293,75 @@ export default class ModalExample1 extends React.Component{
                     
                     {/* project goals + modules (for IS project) */}
                     {
-                        (this.props.projectDetails.Goals || this.props.projectDetails.Module)&&
-                        <Col className="Box" style={{marginTop:'2%',textAlign:'center'}}>
-                            <Row>
-                                {this.props.projectDetails.Goals &&
-                                <Col xs="12" sm={this.props.projectDetails.Module?"6":"12"}>
-                                    <Row style={{marginTop:'5%',textAlign:'center'}}>
-                                        <Col></Col>
-                                        <Col style={{textAlign:'center'}}>
-                                            <h4>מטרות המערכת<GiCrosshair size={20}/></h4>
-                                        </Col>
-                                        <Col></Col>
-                                    </Row>
-                                    <Row style={{marginTop:'2%'}}>
-                                        <Col>
-                                            <Accordion dir="rtl" defaultActiveKey="0">
-                                                    {
-                                                        this.props.projectDetails.Goals.map((goal,key)=>
-                                                        <Card style={{textAlign:'right'}} dir="rtl" key={key}>
-                                                            <Accordion.Toggle as={Card.Header} eventKey={key===0?"0":key}>
-                                                               <FiStar/> {goal.GoalDescription}
-                                                            </Accordion.Toggle>
-                                                            <Accordion.Collapse eventKey={key===0?"0":key}>
-                                                            <Card.Body>
-                                                                {/* <u>תיאור המטרה: </u>{goal.GoalDescription}
-                                                                <br/> */}
-                                                                <u>סטטוס המטרה: </u>{goal.GoalStatus}
-                                                            </Card.Body>
-                                                            </Accordion.Collapse>
-                                                        </Card>
-                                                        )
-                                                    }
-                                            </Accordion>
-                                        </Col>
-                                    </Row>
-                                </Col>}
-                                {this.props.projectDetails.Module &&
-                                <Col xs="12" sm={this.props.projectDetails.Goals?"6":"12"}>
-                                    <Row style={{marginTop:'5%',textAlign:'center'}}>
-                                        <Col></Col>
-                                        <Col style={{textAlign:'center'}}>
-                                            <h4>מודולי המערכת<FaBuffer size={20}/></h4>
-                                        </Col>
-                                        <Col></Col>
-                                    </Row>
-                                    <Row style={{marginTop:'2%'}}>
-                                        <Col>
-                                            <Accordion dir="rtl" defaultActiveKey="0">
-                                                    {
-                                                        this.props.projectDetails.Module.map((module,key)=>
-                                                        <Card style={{textAlign:'right'}} dir="rtl" key={key}>
-                                                            <Accordion.Toggle as={Card.Header} eventKey={key===0?"0":module.ModuleName}>
-                                                            <FiStar/> {module.ModuleName}
-                                                            </Accordion.Toggle>
-                                                            <Accordion.Collapse eventKey={key===0?"0":module.ModuleName}>
-                                                            <Card.Body>{module.ModuleDescription}</Card.Body>
-                                                            </Accordion.Collapse>
-                                                        </Card>
-                                                        )
-                                                    }
-                                            </Accordion>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                                }
-                            </Row>
-                        </Col>
+                    (this.props.projectDetails.Goals || this.props.projectDetails.Module)&&
+                    <Col className="Box" style={{marginTop:'2%',textAlign:'center'}}>
+                        <Row>
+                            {this.props.projectDetails.Goals &&
+                            <Col xs="12" sm={this.props.projectDetails.Module?"6":"12"}>
+                                <Row style={{marginTop:'5%',textAlign:'center'}}>
+                                    <Col></Col>
+                                    <Col style={{textAlign:'center'}}>
+                                        <h4>מטרות המערכת<GiCrosshair size={20}/></h4>
+                                    </Col>
+                                    <Col></Col>
+                                </Row>
+                                <Row style={{marginTop:'2%'}}>
+                                    <Col>
+                                        <Accordion dir="rtl" defaultActiveKey="0">
+                                                {
+                                                    this.props.projectDetails.Goals.map((goal,key)=>
+                                                    <Card style={{textAlign:'right'}} dir="rtl" key={key}>
+                                                        <Accordion.Toggle as={Card.Header} eventKey={key===0?"0":key}>
+                                                            <FiStar/> {goal.GoalDescription}
+                                                        </Accordion.Toggle>
+                                                        <Accordion.Collapse eventKey={key===0?"0":key}>
+                                                        <Card.Body>
+                                                            {/* <u>תיאור המטרה: </u>{goal.GoalDescription}
+                                                            <br/> */}
+                                                            <u>סטטוס המטרה: </u>{goal.GoalStatus}
+                                                        </Card.Body>
+                                                        </Accordion.Collapse>
+                                                    </Card>
+                                                    )
+                                                }
+                                        </Accordion>
+                                    </Col>
+                                </Row>
+                            </Col>}
+                            {this.props.projectDetails.Module &&
+                            <Col xs="12" sm={this.props.projectDetails.Goals?"6":"12"}>
+                                <Row style={{marginTop:'5%',textAlign:'center'}}>
+                                    <Col></Col>
+                                    <Col style={{textAlign:'center'}}>
+                                        <h4>מודולי המערכת<FaBuffer size={20}/></h4>
+                                    </Col>
+                                    <Col></Col>
+                                </Row>
+                                <Row style={{marginTop:'2%'}}>
+                                    <Col>
+                                        <Accordion dir="rtl" defaultActiveKey="0">
+                                                {
+                                                    this.props.projectDetails.Module.map((module,key)=>
+                                                    <Card style={{textAlign:'right'}} dir="rtl" key={key}>
+                                                        <Accordion.Toggle as={Card.Header} eventKey={key===0?"0":module.ModuleName}>
+                                                        <FiStar/> {module.ModuleName}
+                                                        </Accordion.Toggle>
+                                                        <Accordion.Collapse eventKey={key===0?"0":module.ModuleName}>
+                                                        <Card.Body>{module.ModuleDescription}</Card.Body>
+                                                        </Accordion.Collapse>
+                                                    </Card>
+                                                    )
+                                                }
+                                        </Accordion>
+                                    </Col>
+                                </Row>
+                            </Col>
+                            }
+                        </Row>
+                    </Col>
                     }
-                    
-                    
                     {this.props.projectDetails.ProjectPDF &&
-                    <Row>
+                    <Row style={{marginTop:'5%'}}>
                         {/* <Divider style={{margin:'0px auto',marginTop:'10px',marginBottom:'10px',width:'80%',color:'#444'}}/> */}
                         <Col xs="0" sm="0" md="1"></Col>
                         <Col className="Frame" xs="0" sm="0" md="10" style={{textAlign:'center'}}>
@@ -387,32 +394,32 @@ export default class ModalExample1 extends React.Component{
                     
                     {/* project screenshots (for IS project) */}
                     {
-                        (this.props.projectDetails.ScreenShots &&this.props.projectDetails.ScreenShots!==[])&&
-                        <Col className="Box"  style={{marginTop:'4%',textAlign:'center'}}>
-                            <Col style={{textAlign:'center',fontFamily:'Calibri'}} sm="12">
-                                <h3>תמונות מסך <FaCameraRetro size={20}/></h3>
-                            </Col>
-                            <Row style={{marginTop:'4%',textAlign:'center'}} dir="rtl" className="show-grid">
-                                <Col style={{textAlign:'right'}} sm="2"></Col>
-                                <Col sm="8" style={{textAlign:'center',height:'auto'}}>
-                                    {/* <ImageGallery showPlayButton={true}  slideDuration={1000} items={this.state.gallery}/> */}
-                                    <Swiper {...params}>
-                                        {this.props.projectDetails.ScreenShots.map((image,key)=>
-                                            <div key={key} className="swiper-slide">
-                                                <img
-                                                    style={{height:'auto',maxHeight: '500px'}}
-                                                    className="swiper-slide"
-                                                    src={image}
-                                                    alt="screen shot preview"
-                                                />
-                                            </div>
-                                        )}
-                                    </Swiper>
-
-                                </Col>
-                                <Col style={{textAlign:'right'}} sm="2"></Col>
-                            </Row>
+                    (this.props.projectDetails.ScreenShots &&this.props.projectDetails.ScreenShots!==[])&&
+                    <Col className="Box"  style={{marginTop:'4%',textAlign:'center'}}>
+                        <Col style={{textAlign:'center',fontFamily:'Calibri'}} sm="12">
+                            <h3>תמונות מסך <FaCameraRetro size={20}/></h3>
                         </Col>
+                        <Row style={{marginTop:'4%',textAlign:'center'}} dir="rtl" className="show-grid">
+                            <Col style={{textAlign:'right'}} sm="2"></Col>
+                            <Col sm="8" style={{textAlign:'center',height:'auto'}}>
+                                {/* <ImageGallery showPlayButton={true}  slideDuration={1000} items={this.state.gallery}/> */}
+                                <Swiper {...params}>
+                                    {this.props.projectDetails.ScreenShots.map((image,key)=>
+                                        <div key={key} className="swiper-slide">
+                                            <img
+                                                style={{height:'auto',maxHeight: '500px'}}
+                                                className="swiper-slide"
+                                                src={image}
+                                                alt="screen shot preview"
+                                            />
+                                        </div>
+                                    )}
+                                </Swiper>
+
+                            </Col>
+                            <Col style={{textAlign:'right'}} sm="2"></Col>
+                        </Row>
+                    </Col>
                     }
                     {/* project techs (for IS project)   */}
                     {

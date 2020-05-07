@@ -28,9 +28,9 @@ import Idle from '../Common/Idle';
 import ModalExample1 from './PreviewProject';
 import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
-// const course = JSON.parse(localStorage.getItem('course'));
-// const projectKey = JSON.parse(localStorage.getItem('projectKey'));
-// const groupData = JSON.parse(localStorage.getItem('groupData'));
+import Validator from '../Classes/Validator';
+//functions
+import {ValidateData2} from '../functions/functions';
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -55,7 +55,8 @@ const sectionNames = {
 }
 class St1 extends React.Component{
     constructor(props){
-        super(props);
+        super(props); 
+        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st1'));
         this.state={
             alertTitle:'',
             alertText:'',
@@ -115,21 +116,22 @@ class St1 extends React.Component{
             functionalityMovie:'',
             course :'',
             projectKey:'',
-            groupData :''
-
+            groupData :'',
+            showRatio:false,
+            templateValidators:this.configs,
+            Configs:new Validator(this.configs)
         }
         this.handleDelete = this.handleDelete.bind(this);
         this.handleAddition = this.handleAddition.bind(this);
         this.TechsChosen = this.TechsChosen.bind(this);
-        //HashsChosen
         this.HashsChosen = this.HashsChosen.bind(this);
-
     }
     componentDidMount(){
         this.setState({
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
-            groupData :JSON.parse(localStorage.getItem('groupData'))
+            groupData :JSON.parse(localStorage.getItem('groupData')),
+            
         },()=>{
             this.GetData();
         })
@@ -142,7 +144,7 @@ class St1 extends React.Component{
             else{
                 this.SaveData();
                 if(this.state.isPublished){
-                    if(!this.ValidateData(this.getProjectDetails())){
+                    if(!ValidateData2(this.getProjectDetails(),this.state.templateValidators)){
                         this.setState({isPublished:false});
                         this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                     }
@@ -156,7 +158,6 @@ class St1 extends React.Component{
         let dataForGroup ={};
         ref.once("value", (snapshot)=> {
             dataForGroup=snapshot.val();
-            console.log(snapshot.val())
         })
         .then(()=>{
             let tagsList = [];
@@ -205,7 +206,7 @@ class St1 extends React.Component{
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
-                ProjectCourse:this.state.course,
+                ProjectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
                 tags:tagsList,
                 functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:'',
@@ -213,7 +214,7 @@ class St1 extends React.Component{
                 googleLink:dataForGroup.GooglePlay?dataForGroup.GooglePlay:'',
                 appExists:dataForGroup.GooglePlay?true:false
             },()=>{
-                this.setState({projectDetails:this.getProjectDetails()})
+                this.setState({projectDetails:this.getProjectDetails(),isReady:true})
             })
             //get list of advisors from firebase
             this.getAdvisors();
@@ -235,7 +236,7 @@ class St1 extends React.Component{
             PDescription:this.state.PDescription,
             Challenges:this.state.Challenges,
             ProjectTopic:this.state.ProjectTopic,
-            ProjectCourse:this.state.course,
+            ProjectCourse:this.state.ProjectCourse,
             advisor:[this.state.firstAdvisor,this.state.secondAdvisor],
             HashTags:this.state.tags,
             Technologies:this.state.chosenTechs,
@@ -260,7 +261,7 @@ class St1 extends React.Component{
             ScreenShotsNames:this.state.ScreenShotsNames,
             Github:this.state.Github,
             isApproved:1,
-            functionalityMovie:this.state.functionalityMovie
+            FunctionalityMovie:this.state.functionalityMovie
         }
         this.setState({
             isReady:true
@@ -375,7 +376,17 @@ class St1 extends React.Component{
             })
         })
     }
-    OpenImageModal = (title,pic)=>this.setState({openModal:true,modalTitle:title,picTitle:pic})
+    OpenImageModal = (title,pic)=>{
+        let temp = false;
+        if(title==='Screenshots'){
+            temp = true;
+        }
+        this.setState({
+        showRatio:temp,
+        openModal:true,
+        modalTitle:title,
+        picTitle:pic})
+    }
     OpenImagePreviewForStudent = (index)=>{
         if(this.state.StudentsDetails[index].Picture !==''){
             let temp = [];
@@ -432,190 +443,17 @@ class St1 extends React.Component{
         this.state.StudentsDetails[index].Picture = url;
         this.forceUpdate();
     }
-    ValidateData = (projectData)=>{
-            // project name validation
-            if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
-                return false;
-            }
-            //project custCustomers(משתמשי המערכת)
-            if(projectData.CustCustomers===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר שדה משתמשי המערכת',alertIcon:'warning'})
-                return false;
-            }
-            //project stackholders(בעלי ענייןs)
-            if(projectData.CStackholders===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר שדה בעלי עניין',alertIcon:'warning'})
-                return false;
-            }
-            // project short description validation
-            if(projectData.CDescription.length<50){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
-                return false;
-            }
-            if(projectData.CDescription.length>150){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-150 תווים',alertIcon:'warning'})
-                return false;
-            }
-            //project long description -->PDescription
-            if(projectData.PDescription.length<200){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
-                return false;
-            }
-            if(projectData.PDescription.length>600){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
-                return false;
-            }
-            // project Challenges -->Challenges
-            if(projectData.Challenges.length<50){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה אתגרי הפרויקט צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
-                return false;
-            }
-            if(projectData.Challenges.length>200){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה אתגרי הפרויקט צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
-                return false;
-            }
-            //project comments
-            if(projectData.Comments.length<5 && projectData.Comments!==''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שדה הערות צריך להיות גדול מ-5 תווים',alertIcon:'warning'})
-                return false;
-            }
-            //project Topic 
-            if (projectData.ProjectTopic==='בחר') {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו נושא פרויקט'})
-                return false;
-            }
-            //project year
-            if (projectData.Year === "" || projectData.Year === "בחר") {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו שנה',alertIcon:'warning'})
-                return false;
-            }
-            //project semester
-            if (projectData.Semester === "" || projectData.Semester === "בחר") {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'בחרו סמסטר',alertIcon:'warning'})
-                return false;
-            }
-            //project Advisors
-            if(projectData.advisor[0]===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה חלק א חסר',alertIcon:'warning'})
-                return false;
-            } 
-            if(projectData.advisor[1]===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מנחה חלק ב חסר',alertIcon:'warning'})
-                return false;
-            } 
-            //project goals-->Goals
-            if(projectData.Goals.length<2){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מטרות הפרויקט צריך להיות לפחות 2',alertIcon:'warning'})
-                return false;
-            }
-            else{
-                let flag = true;
-                projectData.Goals.forEach((goal,index)=>{
-                    if (goal.GoalDescription.length<2) {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
-                        flag= false;
-                    }
-                    if (goal.GoalDescription.length>100) {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' תיאור מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
-                        flag= false;
-                    }
-                    if(goal.GoalStatus.length<2){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות גדול מ2 תווים ',alertIcon:'warning'})
-                        flag= false;
-                    }
-                    if(goal.GoalStatus.length>100){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:' סטטוס מטרה מספר ' +(index+1)+' צריך להיות קטן מ100 תווים ',alertIcon:'warning'})
-                        flag= false;
-                    }
-                })
-                if (!flag) {
-                    return false;
-                }
-            }
-            //project modules -->Module
-            if(projectData.Module.length<2){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר מודולי הפרויקט צריך להיות לפחות 2',alertIcon:'warning'})
-
-                return false;
-            }
-            else{
-                let flag = true;
-                projectData.Module.forEach((mod,index)=>{
-                    if (mod.ModuleDescription.length<20) {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות גדול מ20 תווים ",alertIcon:'warning'})
-                        flag= false;
-                    }
-                    if (mod.ModuleDescription.length>400) {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ400 תווים ",alertIcon:'warning'})
-                        flag= false;
-                    }
-                    if(mod.ModuleName.length<3){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" שם מודול מספר " +(index+1)+" צריך להיות גדול מ3 תווים ",alertIcon:'warning'})
-
-                        flag= false;
-                    }
-                    if(mod.ModuleName.length>100){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:" תיאור מודול מספר " +(index+1)+" צריך להיות קטן מ100 תווים ",alertIcon:'warning'})
-                        flag= false;
-                    }
-                })
-                if (!flag) {
-                    return false;
-                }
-            }
-            //project technologies -->Technologies
-            if(projectData.Technologies.length<5){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר הטכנולוגיות צריך להיות לפחות 5',alertIcon:'warning'})
-
-                return false;
-            }
-            //project screenshots
-            if (projectData.ScreenShots.length<5) {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר תמונות המסך צריך להיות לפחות 5'})
-
-                return false;
-            }        
-            //project logo
-            if (projectData.ProjectLogo<1) {
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר לוגו הפרויקט',alertIcon:'warning'})
-
-                return false;
-            }
-            //project github
-            if(projectData.Github===''){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חסר קישור לפרויקט בגיטהאב',alertIcon:'warning'})
-
-                return false;
-            }
-            //project students
-            if(projectData.Students.length<1){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חייב להיות לפחות חבר צוות אחד',alertIcon:'warning'})
-
-                return false;
-            }
-            else{
-                let flag = true;
-                projectData.Students.forEach((student,index)=>{
-                    if(student.Name===''){
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר שם',alertIcon:'warning'})
-
-                        flag = false;
-                    }
-                    if (student.Picture==='') {
-                        this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר תמונה',alertIcon:'warning'})
-
-                        flag = false;
-                    }
-                })
-                if (!flag) {
-                    return false;
-                }
-            }
-            this.setState({
-                isSaved:true
-            })
-            return true;
+    //new validation
+    CheckValidation=(projectData,trigger="")=>{
+        const { templateValidators} = this.state;
+        const validation = ValidateData2(projectData,templateValidators);
+        if(!validation.isPublish){
+            this.setState({alertShow:validation.alertShow,alertTitle:validation.alertTitle,alertText:validation.alertText,alertIcon:validation.alertIcon})
+        }
+        if(trigger === "check" && validation.isPublish){
+            this.setState({alertShow:true,alertTitle:'אימות נתונים',alertText:'הנתונים מאומתים, ניתן לפרסם את הפרויקט',alertIcon:'success'})
+        }
+        return validation.isPublish;
     }
     SaveData = ()=>{
         //const arrayOfTags = this.state.tags.map((text)=>text.text);
@@ -746,31 +584,41 @@ class St1 extends React.Component{
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        if(this.ValidateData(this.getProjectDetails())){
-            this.setState({isPublished:temp},()=>{
-                    if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
-                        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
-                        ref.update({
-                            isPublished:this.state.isPublished,
-                        })
-                        .then(()=>{
-                            if(this.state.isPublished===true){
-                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
-                                const groupData = JSON.parse(localStorage.getItem('groupData'));
-                                GetHashtags(groupData.Faculty);
-                            }
-                            else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
-                            })
-                        
-                    }
+        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
+        if(!temp){
+            this.setState({isPublished:temp})
+            ref.update({
+                isPublished:false,
             })
+        }
+        else{
+            const isPublish = this.CheckValidation(this.getProjectDetails());
+            if(isPublish){
+                this.setState({isPublished:temp},()=>{
+                        if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
+                            ref.update({
+                                isPublished:this.state.isPublished,
+                            })
+                            .then(()=>{
+                                if(this.state.isPublished===true){
+                                    this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                                    const groupData = JSON.parse(localStorage.getItem('groupData'));
+                                    GetHashtags(groupData.Faculty);
+                                }
+                                else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
+                            })
+                            
+                        }
+                })
+            }
         }
     }
     CloseAlert = ()=>{this.setState({alertShow:false})}
     render(){
+        const {Configs} = this.state;
         if (!this.state.isReady) {
             return(
-                <div style={{flex:1,backgroundColor:'#eee'}}>
+                <div style={{flex:1,marginTop:'20%'}}>
                     <Loader 
                     type="Watch"
                     color="#58947B"
@@ -784,70 +632,71 @@ class St1 extends React.Component{
             <div style={{flex:1,backgroundColor:'#eee'}}>
                 <Idle/>
                 <SAlert alertIcon={this.state.alertIcon} CloseAlert={this.CloseAlert} show={this.state.alertShow} title={this.state.alertTitle} text={this.state.alertText}/>
-                <ModalImage aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <ModalImage showRatio={this.state.showRatio} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 <SaveAction Save={this.SetProjectOnFirbase}/>
                 <NavbarProjs />
                 <HeaderForm title={this.state.GroupName}/>
                 {/* preview project card */}
                 <ModalExample1 close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} />
-                {/* <PreviewCard close={this.closePreview} projectDetails={this.state.projectDetails} openPreview={this.state.showPreview} SaveData={this.SaveData} /> */}
                 {/*publish project? */}
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
+                <br/>
+                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails(),"check")}>אמת נתונים</Button>
                 <Form style={{marginTop:'4%',marginLeft:'10%',marginRight:'10%'}}>
                     {/* Poject details */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:5,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* projectName */}
-                        <TextInputs IsMandatory={true} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
+                        <TextInputs configs={Configs.ProjectName} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* stalkholders */}
-                        <TextInputs IsMandatory={true}  defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectStackholders} inputSize="lg" />
+                        <TextInputs configs={Configs.CStackholders} defaultInput={this.state.CStackholders} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectStackholders} inputSize="lg" />
                         {/* CustCustomers */}
-                        <TextInputs IsMandatory={true}  defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
+                        <TextInputs configs={Configs.CustCustomers} defaultInput={this.state.CustCustomers} ChangeInputTextarea={this.ChangeInputTextarea}  InputTitle={sectionNames.projectCustCustomers} inputSize="lg" />
                         {/* project Small Description */}
-                        <TextareaInput IsMandatory={true}  defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput configs={Configs.CDescription} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <RichText IsMandatory={true}  defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <RichText configs={Configs.PDescription} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc}/>
                         {/* project Challenges  */}
-                        <TextareaInput IsMandatory={true}  defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectChallenges} />
+                        <TextareaInput configs={Configs.Challenges} defaultInput={this.state.Challenges} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectChallenges} />
                         {/* project Comments */}
-                        <TextareaInput defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
+                        <TextareaInput configs={Configs.Comments} defaultInput={this.state.comments} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectComments} />
                         <Form.Row dir="rtl">
                             {/* year  */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.Year.isMandatory} defaultInput={this.state.Year} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.Semester}   inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.Semester.isMandatory} defaultInput={this.state.Semester}   inputList={['א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* projectType */}
-                            <SelectInput IsMandatory={true} defaultInput={this.state.ProjectTopic}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
+                            <SelectInput IsMandatory={Configs.ProjectTopic.isMandatory} defaultInput={this.state.ProjectTopic}  inputList={this.state.topicList} InputTitle={sectionNames.projectType} ChangeSelectInput={this.changeProjectType} />
                             {/* first advisor */}
-                            <SelectInput IsMandatory={true}  defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.FirstAdvisor.isMandatory} defaultInput={this.state.firstAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* second advisor */}
-                            <SelectInput IsMandatory={true}  defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.SecondAdvisor.isMandatory} defaultInput={this.state.secondAdvisor} inputList={this.state.advisorsList} InputTitle={sectionNames.projectSecondAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                         {/* if the topic is organization */}
                         {this.state.organization &&
                         (<div>
                             {/* projectCustomerName */}
-                            <TextInputs IsMandatory={true} defaultInput={this.state.CustomerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustomerName} inputSize="lg" />
+                            <TextInputs configs={Configs.CustomerName} defaultInput={this.state.CustomerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectCustomerName} inputSize="lg" />
                         </div>)}
                     </div>
-                    <ProjectGoals initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
-                    <ProjectModules initalProjectModule={this.state.projectModules} setProjectModules={this.getprojectModules}/>
+                    <ProjectGoals minimum={Configs.Goals.minimum} maximumGoalStatus={Configs.GoalStatus.maximum} maximumGoalDescription={Configs.GoalDescription.maximum} isMandatory={Configs.Goals.isMandatory} initalProjectGoals={this.state.projectGoals} setProjectGoals={this.getProjectGoals}/>
+                    <ProjectModules minimum={Configs.Module.minimum} maximumModuleName={Configs.ModuleName.maximum} maximumModuleDescription={Configs.ModuleDescription.maximum} isMandatory={Configs.Module.isMandatory} initalProjectModule={this.state.projectModules} setProjectModules={this.getprojectModules}/>
                     {/* tag the project */}
-                    <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
+                    <Hashtags isMandatory={Configs.HashTags.isMandatory} minimum={Configs.HashTags.minimum} chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
                     {/* techs tag */}
-                    <Techs chosenTechs={this.state.chosenTechs} TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
+                    <Techs isMandatory={Configs.Technologies.isMandatory} minimum={Configs.Technologies.minimum} chosenTechs={this.state.chosenTechs} TechsChosen={this.TechsChosen} techs={this.state.techOptions}/>
                     {/* Project links */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:5,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="קישורים"/>
                         {/* project site link */}
-                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.ProjectSite} InputTitle={sectionNames.projectLink} inputSize="sm" placeholder="http://proj.ruppin.ac.il/..."/>
+                        <LinkInput IsMandatory={Configs.ProjectSite.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.ProjectSite} InputTitle={sectionNames.projectLink} inputSize="sm" placeholder="http://proj.ruppin.ac.il/..."/>
                         {/* project movie link */}
-                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
+                        <LinkInput IsMandatory={Configs.MovieLink.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
                         {/* project usability movie link */}
-                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.functionalityMovie} InputTitle={sectionNames.projectFunctionalityMovie} inputSize="sm" placeholder="www.youtube.com.."/>
+                        <LinkInput IsMandatory={Configs.FunctionalityMovie.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.functionalityMovie} InputTitle={sectionNames.projectFunctionalityMovie} inputSize="sm" placeholder="www.youtube.com.."/>
                         {/* project github link */}
-                        <LinkInput IsMandatory={true} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.Github} InputTitle={sectionNames.Github} inputSize="sm" placeholder="www.github.com"/>
+                        <LinkInput IsMandatory={Configs.Github.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.Github} InputTitle={sectionNames.Github} inputSize="sm" placeholder="www.github.com"/>
                         <Form.Group dir="rtl" style={{marginTop:15}} as={Row}>
                             <Col sm="1">
                             <Form.Check checked={this.state.appExists} onChange={this.appExisting} id="projectApplication" type="checkbox"/> 
@@ -872,11 +721,15 @@ class St1 extends React.Component{
                                         <FaCameraRetro/>
                                         {this.state.logo.length!==0?`  עריכת לוגו פרויקט`:`  הוספת לוגו פרויקט`}
                                     </Button>
+                                    <br/>
+                                    {Configs.ProjectLogo.isMandatory&&(Configs.ProjectLogo.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ProjectLogo.minimum}</span>)}
                                 </Col>
                                 <Col sm="4">
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Screenshots','')}>
                                         <FaCameraRetro/>{`  הוספת תמונות מסך`}
                                     </Button>
+                                    <br/>
+                                    {Configs.ScreenShots.isMandatory&&(Configs.ScreenShots.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ScreenShots.minimum}</span>)}
                                 </Col>
                                 {this.state.organization ?
                                 <Col sm="4">
@@ -884,6 +737,8 @@ class St1 extends React.Component{
                                          <FaCameraRetro/>
                                          {this.state.customerLogo.length!==0?`  עריכת לוגו לקוח`:`  הוספת לוגו לקוח`}
                                     </Button>
+                                    <br/>
+                                    {Configs.CustomerLogo.isMandatory&&(Configs.CustomerLogo.minimum&&<span style={{color:'blue'}}>מינימום {Configs.CustomerLogo.minimum}</span>)}
                                 </Col>
                                 :
                                 <Col sm="4"></Col>
@@ -900,7 +755,7 @@ class St1 extends React.Component{
                                 <Col sm="4"></Col>
                             </Row>
                     </div>
-                    <StudentDetails setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
+                    <StudentDetails Students={Configs.Students} Name={Configs.StudentName} Picture={Configs.StudentPicture} Email={Configs.StudentEmail} Id={Configs.StudentId} setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
                 </Form>
             </div>
         );

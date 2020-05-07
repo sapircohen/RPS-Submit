@@ -25,6 +25,8 @@ import Idle from '../Common/Idle';
 import ModalExample1 from './PreviewProject';
 import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
+import {ValidateData2} from '../functions/functions';
+import Validator from '../Classes/Validator';
 
 const sectionNames = {
     projectNeed:'הבעיה/הצורך',
@@ -48,9 +50,11 @@ const sectionNames = {
     projectSolution:'פתרון',
     customerName:'שם הלקוח',
 }
+
 export default class St3 extends React.Component{
     constructor(props){
         super(props);
+        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st4'));
         this.state = {
             alertTitle:'',
             alertText:'',
@@ -99,14 +103,17 @@ export default class St3 extends React.Component{
             showImagesMode:false,
             course :'',
             projectKey:'',
-            groupData :''
+            groupData :'',
+            showRatio:false,
+            templateValidators:this.configs,
+            Configs:new Validator(this.configs)
         }
     }
     componentDidMount(){
         this.setState({
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
-            groupData :JSON.parse(localStorage.getItem('groupData'))
+            groupData :JSON.parse(localStorage.getItem('groupData')),
         },()=>{
             this.GetData();
         })
@@ -119,7 +126,7 @@ export default class St3 extends React.Component{
             else{
             this.SaveData();
             if(this.state.isPublished){
-                if(!this.ValidateData(this.getProjectDetails())){
+                if(!ValidateData2(this.getProjectDetails(),this.state.templateValidators)){
                     this.setState({isPublished:false});
                     this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם, תקנו את הנדרש ופרסמו שוב',alertIcon:'warning'})
                 }
@@ -160,7 +167,7 @@ export default class St3 extends React.Component{
                 Year:dataForGroup.Year?dataForGroup.Year:'',
                 Semester:dataForGroup.Semester?dataForGroup.Semester:'',
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'',
-                projectCourse:this.state.course,
+                projectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
                 projectMajor:dataForGroup.Major?dataForGroup.Major:'',
                 MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
                 GroupName:dataForGroup.GroupName,
@@ -210,8 +217,8 @@ export default class St3 extends React.Component{
             ProjectGoal:this.state.ProjectGoal,
             ProjectNeed:this.state.ProjectNeed,
             ProjectConclusion:this.state.ProjectConclusion,
-            projectFindings:this.state.projectFindings,
-            projectSolution:this.state.projectSolution,
+            ProjectFindings:this.state.projectFindings,
+            ProjectSolution:this.state.projectSolution,
             CustomerName:this.state.customerName,
             CustomerLogo:this.state.customerLogo,
             Year:this.state.Year,
@@ -433,11 +440,15 @@ export default class St3 extends React.Component{
     }
     //image modal
     OpenImageModal = (title,index,fileSize)=>{
+        let temp = false;
+        if(title==='Screenshots'){
+            temp = true;
+        }
         if(title==='Project Logo'){
-            this.setState({modalTitle:title,picTitle:index,fileSize:fileSize,openModal:true})
+            this.setState({modalTitle:title,picTitle:index,fileSize:fileSize,openModal:true,showRatio:temp})
         }
         else{
-            this.setState({openModal:true,modalTitle:title,picTitle:index,fileSize:0})
+            this.setState({openModal:true,modalTitle:title,picTitle:index,fileSize:0,showRatio:temp})
         }
     }
     handleClose = ()=> this.setState({ openModal: false });
@@ -473,126 +484,16 @@ export default class St3 extends React.Component{
     }
     //close project preview
     closePreview = ()=>this.setState({showPreview:false})
-    ValidateData = (projectData)=>{
-        // project name validation
-        if (projectData.ProjectName==='' || projectData.ProjectName.length<2) {
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'שם הפרויקט חסר',alertIcon:'warning'})
-            return false;
+    CheckValidation=(projectData,trigger)=>{
+        const { templateValidators} = this.state;
+        const validation = ValidateData2(projectData,templateValidators);
+        if(!validation.isPublish){
+            this.setState({alertShow:validation.alertShow,alertTitle:validation.alertTitle,alertText:validation.alertText,alertIcon:validation.alertIcon})
         }
-        // project short description validation
-        if(projectData.CDescription.length<50){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות גדול מ-50 תווים',alertIcon:'warning'})
-            return false;
+        if(trigger === "check" && validation.isPublish){
+            this.setState({alertShow:true,alertTitle:'אימות נתונים',alertText:'הנתונים מאומתים, ניתן לפרסם את הפרויקט',alertIcon:'success'})
         }
-        if(projectData.CDescription.length>150){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור קצר צריך להיות קטן מ-150 תווים',alertIcon:'warning'})
-            return false;
-        }
-        //project long description -->PDescription
-        if(projectData.PDescription.length<200){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות גדול מ-200 תווים',alertIcon:'warning'})
-            return false;
-        }
-        if(projectData.PDescription.length>600){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפרויקט צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
-            return false;
-        }
-        //project goal
-        if(projectData.ProjectGoal!==''){
-            if(projectData.ProjectGoal.length>300){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור מטרת הפרויקט הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
-                return false;
-            }
-        }
-        //project need
-        if(projectData.ProjectNeed!==''){
-            if(projectData.ProjectNeed.length>300){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הבעיה/צורך הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
-                return false;
-            }
-        }
-        //projectFindings
-        if(projectData.projectFindings!==''){
-            if(projectData.projectFindings.length>300){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הממצאים הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-200 תווים',alertIcon:'warning'})
-                return false;
-            }
-        }
-        //projectSolution
-        if(projectData.projectSolution!==''){
-            if(projectData.projectSolution.length>600){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור הפתרון הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
-                return false;
-            }
-        }
-        //ProjectConclusion
-        if(projectData.ProjectConclusion!==''){
-            if(projectData.ProjectConclusion.length>600){
-                this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'תיאור המסקנות הוא שדה אופציונאלי אבל אם החלטתם להוסיפו - הוא צריך להיות קטן מ-500 תווים',alertIcon:'warning'})
-                return false;
-            }
-        }
-        //project year
-        if(projectData.Year === "" || projectData.Year === "בחר"){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור שנה',alertIcon:'warning'})
-            return false;
-        }
-        //project Semester
-        if(projectData.Semester === "" || projectData.Semester === "בחר"){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור סמסטר',alertIcon:'warning'})
-            return false;
-        }
-        //project major/experties
-        if(projectData.Major === ""){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור התמחות',alertIcon:'warning'})
-            return false;
-        }
-        //project course
-        if(projectData.ProjectCourse === ""){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור סוג',alertIcon:'warning'})
-            return false;
-        }
-        //project topic
-        if(projectData.ProjectTopic === ""){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור נושא',alertIcon:'warning'})
-            return false;
-        }
-        //project advisor
-        if(projectData.advisor[0] === ""){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'יש לבחור מנחה',alertIcon:'warning'})
-            return false;
-        }
-        //project students
-        if(projectData.Students.length<1){
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'חובה שיהיה לפחות חבר צוות אחד',alertIcon:'warning'})
-            return false;
-        }
-        else{
-            let flag = true;
-            projectData.Students.forEach((student,index)=>{
-                if(student.Name===''){
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסר שם',alertIcon:'warning'})
-
-                    flag= false;
-                }
-                if (student.Picture==='') {
-                    this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'לסטודנט/ית מספר '+(index+1)+' חסרה תמונה',alertIcon:'warning'})
-                    flag= false;
-                }
-            })
-            if (!flag) {
-                return false;
-            }
-        }
-        //project screenshots
-        if (projectData.ScreenShots.length>5) {
-            this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'מספר תמונות המסך הוא עד 5',alertIcon:'warning'})
-            return false;
-        }       
-        this.setState({
-            isSaved:true
-        })
-        return true;
+        return validation.isPublish;
     }
     SaveData = ()=>{
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
@@ -627,28 +528,39 @@ export default class St3 extends React.Component{
     }
     ChangePublish = ()=>{
         const temp = !this.state.isPublished;
-        if(this.ValidateData(this.getProjectDetails())){
-            this.setState({isPublished:temp},()=>{
-                if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
-                    const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
-                    ref.update({
-                        isPublished:this.state.isPublished,
-                    })
-                    .then(()=>{
-                        if(this.state.isPublished===true){
-                            this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
-                            const groupData = JSON.parse(localStorage.getItem('groupData'));
-                            GetHashtags(groupData.Faculty);
-                        }
-                        else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
-                        })                    
-                }
+        const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
+        if(!temp){
+            this.setState({isPublished:temp})
+            ref.update({
+                isPublished:false,
             })
+        }
+        else{
+            const isPublish = this.CheckValidation(this.getProjectDetails());
+            if(isPublish){
+                this.setState({isPublished:temp},()=>{
+                    if(this.state.isSaved===true || this.state.groupData.ProjectName!==undefined){
+                        
+                        ref.update({
+                            isPublished:this.state.isPublished,
+                        })
+                        .then(()=>{
+                            if(this.state.isPublished===true){
+                                this.setState({alertShow:true,alertTitle:'הפרויקט פורסם',alertText:'',alertIcon:'success'});
+                                const groupData = JSON.parse(localStorage.getItem('groupData'));
+                                GetHashtags(groupData.Faculty);
+                            }
+                            else this.setState({alertShow:true,alertTitle:'שימו לב',alertText:'הפרויקט לא יפורסם',alertIcon:'warning'})
+                            })                    
+                    }
+                })
+            }
         }
     }
     CloseAlert = ()=>{this.setState({alertShow:false})}
 
     render(){
+        const {Configs} = this.state;
         if (!this.state.isReady) {
             return(
                 <div style={{flex:1,backgroundColor:'#eee'}}>
@@ -664,7 +576,9 @@ export default class St3 extends React.Component{
 
                 <HeaderForm title={this.state.GroupName}/>
                 <PublishProject ChangePublish={this.ChangePublish} isPublished={this.state.isPublished}  />
-                <ModalImage fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
+                <br/>
+                <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.CheckValidation(this.getProjectDetails(),"check")}>אמת נתונים</Button>
+                <ModalImage showRatio={this.state.showRatio}  fileSize={this.state.fileSize} aspect={this.state.imageAspect} savePic={this.savePic} picTitle={this.state.picTitle} title={this.state.modalTitle} modalClose={this.handleClose} modalOpen={this.state.openModal} />
                 {/* preview for screenshots  */}
                 <PreviewModal deletePic={this.DeletePic} title={this.state.modalTitle} onHide={this.imagesModalClose} images={this.state.imagesToShowInModal} modalOpen={this.state.showImagesMode}/>
                 {/* showPreview */}
@@ -677,48 +591,48 @@ export default class St3 extends React.Component{
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>   
                         <SmallHeaderForm title={"תיאור הפרויקט"}/>
                         {/* project name */}
-                        <TextInputs IsMandatory={true}  defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
+                        <TextInputs configs={Configs.ProjectName} defaultInput={this.state.ProjectName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectName} inputSize="lg" />
                         {/* customer name */}
-                        <TextInputs IsMandatory={true} defaultInput={this.state.customerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.customerName} inputSize="lg" />
+                        <TextInputs configs={Configs.CustomerName} defaultInput={this.state.customerName} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.customerName} inputSize="lg" />
                         {/* project small description */}
-                        <TextareaInput IsMandatory={true} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
+                        <TextareaInput configs={Configs.CDescription} defaultInput={this.state.CDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSmallDesc} />
                         {/* project description */}
-                        <RichText IsMandatory={true} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
+                        <RichText configs={Configs.PDescription} defaultInput={this.state.PDescription} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectDesc} />
                         {/* project Goal */}
-                        <RichText  defaultInput={this.state.ProjectGoal} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectGoal} />
+                        <RichText configs={Configs.ProjectGoal} defaultInput={this.state.ProjectGoal} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectGoal} />
                         {/* project need */}
-                        <RichText  defaultInput={this.state.ProjectNeed} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectNeed} />
+                        <RichText configs={Configs.ProjectNeed} defaultInput={this.state.ProjectNeed} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectNeed} />
                         {/* Project Findings*/}
-                        <RichText  defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
+                        <RichText configs={Configs.ProjectFindings} defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
                         {/* Project solution*/}
-                        <RichText  defaultInput={this.state.projectSolution} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSolution} />
+                        <RichText configs={Configs.ProjectSolution} defaultInput={this.state.projectSolution} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSolution} />
                         {/* Project Conclusion*/}
-                        <RichText  defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
+                        <RichText configs={Configs.ProjectConclusion} defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
                         <Form.Row dir="rtl">
                             {/* project major */}
-                            <SelectInput IsMandatory={true}  inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.Major.isMandatory} inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* project advisor */}
-                            <SelectInput IsMandatory={true}  inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.FirstAdvisor.isMandatory} inputList={this.state.advisorsList} defaultInput={this.state.ProjectAdvisor} InputTitle={sectionNames.projectFirstAdvisor} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                         <Form.Row dir="rtl">
                             {/* year  */}
-                            <SelectInput IsMandatory={true} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.Year.isMandatory} inputList={Years} InputTitle={sectionNames.projectYear} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/* semester */}
-                            <SelectInput IsMandatory={true}  inputList={['שנתי','א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.Semester.isMandatory} inputList={['שנתי','א','ב','קיץ']} InputTitle={sectionNames.projectSemester} ChangeSelectInput={this.ChangeSelectedInputs} />
                             {/*project topic */}
-                            <SelectInput IsMandatory={true}  inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
+                            <SelectInput IsMandatory={Configs.ProjectTopic.isMandatory} inputList={this.state.topicsList} defaultInput={this.state.ProjectTopic} InputTitle={sectionNames.projectType} ChangeSelectInput={this.ChangeSelectedInputs} />
                         </Form.Row>
                     </div>
                     {/* FILES UPLOAD */}
                     <div style={{border:'solid 1px',padding:15,borderRadius:20,marginTop:30,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="הוספת קבצים"/>
                         {/* project movie link */}
-                        <LinkInput ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com"/>
+                        <LinkInput IsMandatory={Configs.MovieLink.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com"/>
                         {/* pdf */}
                         <Row dir="rtl" style={{marginTop:'2%'}} >
                             <Col sm="4"></Col>
                             <Col sm="4">
-                                <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={false} />
+                                <LabelTextPDF ProjectPDF={this.state.ProjectPDF} IsMandatory={Configs.ProjectPDF.isMandatory} />
                                 <PDFupload DeletePdf={this.DeletePdf} pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePDF}/>
                             </Col>
                         </Row>
@@ -741,18 +655,24 @@ export default class St3 extends React.Component{
                                     <FaPlusCircle size={15}/>
                                     {` הוספת תמונות/תרשימים`}
                                 </Button>
+                                <br/>
+                                {Configs.ScreenShots.isMandatory&&(Configs.ScreenShots.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ScreenShots.minimum}</span>)}
                             </Col>
                             <Col sm="4">
                                 <Button onClick={()=>this.OpenImageModal('Project Logo')} variant="primary">
                                     <FaPlusCircle size={15}/>
                                     {this.state.poster.length!==0?`  עריכת תמונה מייצגת`:`  הוספת תמונה מייצגת`}   
                                 </Button>
+                                <br/>
+                                {Configs.ProjectLogo.isMandatory&&(Configs.ProjectLogo.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ProjectLogo.minimum}</span>)}
                             </Col>
                             <Col sm="4">
                                 <Button onClick={()=>this.OpenImageModal('Customer Logo')} variant="primary">
                                     <FaPlusCircle size={15}/>
                                     {`  הוספת לוגו לקוח`}   
                                 </Button>
+                                <br/>
+                                {Configs.CustomerLogo.isMandatory&&(Configs.CustomerLogo.minimum&&<span style={{color:'blue'}}>מינימום {Configs.CustomerLogo.minimum}</span>)}
                             </Col>
                         </Row>
                         <Row dir="rtl" style={{marginTop:'2%'}} >
@@ -767,11 +687,11 @@ export default class St3 extends React.Component{
                         </Row>
                     </div>
                     {/* tag the project */}
-                    <Hashtags chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
+                    <Hashtags isMandatory={Configs.HashTags.isMandatory} minimum={Configs.HashTags.minimum} chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions}/>
 
 
                     {/* Students details */}
-                    <StudentDetails setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
+                    <StudentDetails Students={Configs.Students} Name={Configs.StudentName} Picture={Configs.StudentPicture} Email={Configs.StudentEmail} Id={Configs.StudentId} setStudents={this.getStudentsDetails} studentInitalDetails={this.state.StudentDetails} OpenImageModal={this.OpenImageModal}/>
                 </Form>
             </div>
         )
