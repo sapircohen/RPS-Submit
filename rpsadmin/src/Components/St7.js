@@ -32,7 +32,7 @@ const sectionNames = {
     projectNeed:'שיטה',
     projectDesc : "שאלות המחקר",
     projectChallenges:"אתגרי הפרויקט",
-    projectSmallDesc:"רקע תיאורתי ומדעי",
+    projectSmallDesc:"רקע תיאורטי ומדעי",
     projectGoal:"מטרת המחקר",
     projectName:"נושא המחקר",
     projectStackholders:"בעלי עניין",
@@ -50,6 +50,7 @@ const sectionNames = {
     projectFindings:'ממצאים',
     course :'',
     projectKey:'',
+    projectSource:'מקורות',
     groupData :'',
 }
 export default class St3 extends React.Component{
@@ -101,6 +102,7 @@ export default class St3 extends React.Component{
             showImagesMode:false,
             showRatio:false,
             Summery:'',
+            Sources:'',
             templateValidators:this.configs,
             Configs:new Validator(this.configs)
         }
@@ -179,6 +181,7 @@ export default class St3 extends React.Component{
                 Summery:dataForGroup.Summery?dataForGroup.Summery:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
+                Sources:dataForGroup.Sources?dataForGroup.Sources:'',
                 tags:tagsList,
             })
             //get list of advisors from firebase
@@ -215,6 +218,7 @@ export default class St3 extends React.Component{
             ScreenShots:this.state.ScreenShots,
             ScreenShotsNames:this.state.ScreenShotsNames,
             HashTags:this.state.tags,
+            Sources:this.state.Sources,
         }
         return project;
     }
@@ -307,6 +311,8 @@ export default class St3 extends React.Component{
             case sectionNames.ProjectConclusion:this.setState({ProjectConclusion:event})
                 break;
             case sectionNames.projectNeed:this.setState({ProjectNeed:event})
+                break;
+            case sectionNames.projectSource:this.setState({Sources:event})
                 break;
            default:
                break;
@@ -457,6 +463,7 @@ export default class St3 extends React.Component{
             Summery:this.state.Summery,
             ProjectName:this.state.ProjectName,
             PDescription:this.state.PDescription,
+            Sources:this.state.Sources,
             Advisor:[this.state.ProjectAdvisor],
             Major:this.state.projectMajor,
             ProjectCourse:this.state.projectCourse,
@@ -579,10 +586,10 @@ export default class St3 extends React.Component{
                         <RichText configs={Configs.ProjectNeed} defaultInput={this.state.ProjectNeed} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectNeed} />
                         {/* Project Findings*/}
                         <RichText configs={Configs.ProjectFindings} defaultInput={this.state.projectFindings} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectFindings} />
-                        {/* Project solution*/}
-                        {/* <RichText configs={Configs.ProjectSolution} defaultInput={this.state.projectSolution} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSolution} /> */}
                         {/* Project Conclusion*/}
                         <RichText configs={Configs.ProjectConclusion} defaultInput={this.state.ProjectConclusion} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.ProjectConclusion} />
+                        {/* project sources */}
+                        <RichText configs={Configs.Sources} defaultInput={this.state.Sources} ChangeInputTextarea={this.ChangeInputTextarea} InputTitle={sectionNames.projectSource} />
                         <Form.Row dir="rtl">
                             {/* project major
                             <SelectInput IsMandatory={true}  inputList={this.state.expertiesList} defaultInput={this.state.projectMajor} InputTitle={sectionNames.projectMajor} ChangeSelectInput={this.ChangeSelectedInputs} /> */}

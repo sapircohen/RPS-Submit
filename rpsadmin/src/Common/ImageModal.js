@@ -32,7 +32,23 @@ const ratio = [
         aspect:9/16
     },
 ]
-
+const aspects = [
+    {
+        checked:false,
+        id:1,
+        value:1/1,
+    },
+    {
+        checked:false,
+        id:1,
+        value:1/1,
+    },
+    {
+        checked:false,
+        id:1,
+        value:1/1,
+    },
+]
 class ModalImage extends React.Component{
     constructor(props){
         super(props);
@@ -218,11 +234,6 @@ class ModalImage extends React.Component{
                         </Col>
                         <Form.Label column sm="4">שם התמונה</Form.Label>
                     </Form.Group>
-                    <Row style={{justifyContent:'center'}}>
-                        {aspects.map((asp,key)=>
-                            <Form.Check defaultChecked={asp.checked} name="formCheck" id={asp.id} onChange={this.changeAspect} key={key} inline label={asp.Name} type='radio' value={asp.aspect} />
-                        )}
-                    </Row>
                 </div>
             }
            { this.props.showRatio&&

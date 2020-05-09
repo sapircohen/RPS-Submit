@@ -30,5 +30,7 @@ const Techs = (props) => {
             </Row>
         </div>
     )
-    }
 }
+
+export default Techs;
+

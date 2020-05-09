@@ -161,15 +161,13 @@ export default class Vt7 extends React.Component{
                         </Col>
                     </Row>
                     <Row style={{textAlign:'center',marginTop:'4%'}}>
-                        <Col></Col>
                         <Col style={{direction:'rtl'}}>
                         {/* project small summery */}
                         {
                         this.props.projectDetails.CDescription &&
-                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.CDescription} Icon={''} Title="רקע תיאורתי ומדעי"/>
+                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.CDescription} Icon={''} Title="רקע תיאורטי ומדעי"/>
                         }
                         </Col>
-                        <Col></Col>
                     </Row>
                     {/* project summery */}
                     {
@@ -207,7 +205,7 @@ export default class Vt7 extends React.Component{
                     </Col>
                     }
                     
-                    {(this.props.projectDetails.ProjectConclusion||this.props.projectDetails.ProjectFindings)&&
+                    {(this.props.projectDetails.ProjectConclusion||this.props.projectDetails.ProjectFindings||this.props.projectDetails.Sources)&&
                     <Col className="Box" style={{marginTop:'2%',textAlign:'center'}}>
                         <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                             <Col>
@@ -222,6 +220,11 @@ export default class Vt7 extends React.Component{
                                     </Col>}
                                 </Row>
                             </Col>
+                            {this.props.projectDetails.Sources&&
+                            <Col xs="12">
+                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Sources} Title="מקורות" Icon={GoBook} />
+                                <br/>
+                            </Col>}
                         </Row>
                     </Col>}
                     <br/>

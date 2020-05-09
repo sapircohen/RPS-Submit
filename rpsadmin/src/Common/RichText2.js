@@ -3,15 +3,6 @@ import ReactQuill from 'react-quill'; // ES6
 import 'react-quill/dist/quill.snow.css'; // ES6
 import {Form,Col,Row} from 'react-bootstrap';
 
-const modules = {
-  toolbar: [
-    [{ 'header': [1, 2, 3,4,false] }],
-    ['bold', 'italic', 'underline','strike', 'blockquote'],
-    [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'},{ 'direction': 'rtl' },{ 'align': [] }],
-    ['link'],
-    ['clean']
-  ],
-}
 
 const RichText = (props) => {
   const [counter,setCounter] = useState(props.defaultInput.length?props.defaultInput.length:0);

@@ -16,10 +16,10 @@ import './App.css'
 //test and prod enviorments
 import firebase from 'firebase';
 import 'firebase/storage';
-//import { FirebaseProdConfig } from './Constants/APIkeys';
-import { FirebaseTestConfig } from './Constants/APIkeys';
-//firebase.initializeApp(FirebaseProdConfig);
-firebase.initializeApp(FirebaseTestConfig);
+import { FirebaseProdConfig } from './Constants/APIkeys';
+//import { FirebaseTestConfig } from './Constants/APIkeys';
+firebase.initializeApp(FirebaseProdConfig);
+//firebase.initializeApp(FirebaseTestConfig);
 //firebase storage config
 export const storage =  firebase.storage();
 

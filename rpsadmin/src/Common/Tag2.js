@@ -8,7 +8,7 @@ const Hashtags = (props) => {
         <div dir="rtl" style={{padding:15,borderRadius:5,marginTop:30,border:'solid 1px',marginBottom:20,backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
             <SmallHeaderForm title="Hashtags"/>
             <br/>
-            {this.props.isMandatory&&(this.props.minimum&&<span style={{color:'blue'}}>מינמום {this.props.minimum} האשטגים</span>)}
+            {props.isMandatory&&(props.minimum&&<span style={{color:'blue'}}>מינמום {props.minimum} האשטגים</span>)}
             <Row style={{marginTop:'10px'}}>
                 <Col sm="2"></Col> 
                 <Col sm="8">
