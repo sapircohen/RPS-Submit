@@ -15,7 +15,7 @@ const Header = (props)=>{
                     alt="Ruppin logo"
                 />
                 <Navbar.Brand className="displayStaff" dir="rtl">
-                    <Nav.Link style={{fontSize:17}} onClick={()=>window.open("http://proj.ruppin.ac.il/bgroup20/test/gallery/" ,"_blank")} >לאתר תוצרי הסטודנטים</Nav.Link>
+                    <Nav.Link style={{fontSize:17}} onClick={()=>window.open("http://proj.ruppin.ac.il/gallery/" ,"_blank")} >לאתר תוצרי הסטודנטים</Nav.Link>
                 </Navbar.Brand>       
             </Navbar.Brand>
              
