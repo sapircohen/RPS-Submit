@@ -221,6 +221,8 @@ export default class St3 extends React.Component{
             ScreenShotsNames:this.state.ScreenShotsNames,
             HashTags:this.state.tags,
         }
+        console.log(project);
+        
         return project;
     }
     getAdvisorsForDepartment = ()=>{

@@ -149,7 +149,7 @@ export default class St3 extends React.Component{
                 ServiceName:dataForGroup.ServiceName?dataForGroup.ServiceName:'',
                 Instructor:dataForGroup.Instructor?dataForGroup.Instructor:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                ProjectLogo:dataForGroup.ProjectLogo?dataForGroup.ProjectLogo:[],
+                ProjectLogo:dataForGroup.ProjectLogo?[dataForGroup.ProjectLogo]:[],
                 ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
@@ -201,6 +201,7 @@ export default class St3 extends React.Component{
             ScreenShotsNames:this.state.ScreenShotsNames,
             HashTags:this.state.tags,
         }
+        console.log(project)
         return project;
     }
     CheckValidation=(projectData,trigger)=>{
@@ -476,7 +477,6 @@ export default class St3 extends React.Component{
     }
     //delete pdf/word file
     DeletePdf=()=>{
-        console.log(this.state.ProjectPDF)
         if(this.state.ProjectPDF!==''){
             const desertRef = firebase.storage().refFromURL(this.state.ProjectPDF);
             // Delete the file
