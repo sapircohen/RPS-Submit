@@ -9,7 +9,8 @@ const RichText = (props) => {
   const {isMandatory,maximum,minimum} = props.configs;
   const changeText=(value,title)=>{
     props.ChangeInputTextarea(value,title);
-    getLength(value);
+    console.log(value.length)
+    setCounter(value.length);
   }
   const walkTheDOM=(node, func) =>{
     func(node);
