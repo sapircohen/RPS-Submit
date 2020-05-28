@@ -13,9 +13,9 @@ import Iframe from 'react-iframe'
 import '../css/previewStyle.css';
 //ICONS:
 import { FaGoogle,FaAppleAlt,FaCameraRetro,FaBuffer } from "react-icons/fa";
-import {FiPaperclip,FiFlag,FiEdit2,FiAward,FiStar} from 'react-icons/fi';
+import {FiPaperclip,FiStar} from 'react-icons/fi';
 import {GiCrosshair} from "react-icons/gi";
-import {GoBook,GoTag,GoMarkGithub} from 'react-icons/go';
+import {GoTag,GoMarkGithub} from 'react-icons/go';
 import {MdOndemandVideo,MdExtension} from 'react-icons/md';
 import {IoIosLaptop,IoIosDesktop,IoIosRocket,IoIosContacts,IoMdSkipForward} from 'react-icons/io';
 import { Divider } from '@material-ui/core';
@@ -225,14 +225,14 @@ export default class ModalExample1 extends React.Component{
                     {/* project summery */}
                     {
                     this.props.projectDetails.ProjectSummery &&
-                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectSummery} Title="תקציר הפרויקט" Icon={IoMdSkipForward} />
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectSummery} Title="תקציר הפרויקט"/>
                     }
                     {(this.props.projectDetails.Challenges||this.props.projectDetails.Comments||this.props.projectDetails.PDescription)&&
                     <Col className="Box" style={{marginTop:'2%',textAlign:'center'}}>
                         <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                             {this.props.projectDetails.PDescription&&
                             <Col xs="12" sm={this.props.projectDetails.Challenges?"6":"12"}>
-                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="תיאור הפרויקט" Icon={GoBook} />
+                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="תיאור הפרויקט"/>
                             </Col>}
                             {(this.props.projectDetails.Challenges||this.props.projectDetails.Comments)&&
                             <Col xs="12" sm={this.props.projectDetails.PDescription?"6":"12"}>
@@ -240,11 +240,11 @@ export default class ModalExample1 extends React.Component{
                                     <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                                         {this.props.projectDetails.Challenges&&
                                         <Col dir="rtl" >
-                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Challenges} Title="אתגרי הפרויקט" Icon={IoIosRocket} />
+                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Challenges} Title="אתגרי הפרויקט"/>
                                         </Col>}
                                         {this.props.projectDetails.Comments &&
                                         <Col dir="rtl" >
-                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Comments} Title="הערות" Icon={IoIosContacts} />
+                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Comments} Title="הערות"/>
                                         </Col>}
                                     </Row>
                                 </Col>
@@ -259,11 +259,11 @@ export default class ModalExample1 extends React.Component{
                                 <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                                     {this.props.projectDetails.ProjectGoal &&
                                     <Col dir="rtl" >
-                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectGoal} Title="מטרת הפרויקט" Icon={GiCrosshair} />
+                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectGoal} Title="מטרת הפרויקט"/>
                                     </Col>}
                                     {this.props.projectDetails.ProjectNeed &&
                                     <Col dir="rtl" >
-                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectNeed} Title="הבעיה/צורך" Icon={FiFlag} />
+                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectNeed} Title="הבעיה/צורך"/>
                                     </Col>}
                                 </Row>
                             </Col>
@@ -271,24 +271,24 @@ export default class ModalExample1 extends React.Component{
                                 <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                                     {this.props.projectDetails.projectFindings &&
                                     <Col dir="rtl" >
-                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.projectFindings} Title="ממצאים" Icon={FiEdit2} />
+                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.projectFindings} Title="ממצאים"/>
                                     </Col>}
                                     {this.props.projectDetails.ProjectConclusion &&
                                     <Col dir="rtl" >
-                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="מסקנות" Icon={GoBook} />                            
+                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="מסקנות"/>                            
                                     </Col>}
                                 </Row>
                             </Col>
                             <Col style={{textAlign:'center'}}>
                                 {this.props.projectDetails.projectSolution &&
-                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.projectSolution} Title="פתרון" Icon={FiAward} />}
+                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.projectSolution} Title="פתרון"/>}
                             </Col>
                         </Row>
                     </Col>}
                     {/* project industrial partner */}
                     {
                     this.props.projectDetails.PartnerDescription &&
-                    <PreviewParagraph Paragraph={this.props.projectDetails.PartnerDescription} Title="שותף תעשייתי" Icon={IoIosContacts} />
+                    <PreviewParagraph Paragraph={this.props.projectDetails.PartnerDescription} Title="שותף תעשייתי"/>
                     }
                     
                     {/* project goals + modules (for IS project) */}
@@ -446,9 +446,6 @@ export default class ModalExample1 extends React.Component{
                     {
                         this.props.projectDetails.HashTags &&
                         <Row style={{marginTop:'4%',textAlign:'center'}} dir="rtl" className="show-grid">
-                            {/* <Col style={{textAlign:'right',fontSize:'30'}} sm="2">
-                                <p style={{fontSize:'20px'}}><GoTag size={40}/>האשטגים:</p>
-                            </Col> */}
                             <Col style={{textAlign:'right'}}>
                                 {
                                     this.props.projectDetails.HashTags.map((tag,key)=>

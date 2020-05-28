@@ -11,11 +11,7 @@ import Iframe from 'react-iframe'
 import '../css/previewStyle.css';
 //ICONS:
 import {FaCameraRetro } from "react-icons/fa";
-import {FiFlag} from 'react-icons/fi';
-import {GiCrosshair} from "react-icons/gi";
-import {GoBook,GoTag} from 'react-icons/go';
-import {MdOndemandVideo,MdExtension} from 'react-icons/md';
-import {IoIosRocket,IoIosContacts,IoMdSkipForward} from 'react-icons/io';
+import {GoTag} from 'react-icons/go';
 import { Divider } from '@material-ui/core';
 import { Card as Cardse, Icon } from 'semantic-ui-react';
 
@@ -171,8 +167,8 @@ export default class Vt7 extends React.Component{
                     </Row>
                     {/* project summery */}
                     {
-                    this.props.projectDetails.ProjectSummery &&
-                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Summery} Title="תקציר" Icon={IoMdSkipForward} />
+                    this.props.projectDetails.Summery &&
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Summery} Title="תקציר"/>
                     }
                     <Divider style={{margin:'0px auto',marginTop:'6px',width:'80%',color:'#444'}}/>
                     
@@ -181,7 +177,7 @@ export default class Vt7 extends React.Component{
                         <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                             {this.props.projectDetails.PDescription&&
                             <Col xs="12">
-                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="שאלות המחקר" Icon={GoBook} />
+                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.PDescription} Title="שאלות המחקר"/>
                                 <br/>
                             </Col>}
                             {(this.props.projectDetails.ProjectGoal||this.props.projectDetails.ProjectNeed)&&
@@ -190,11 +186,11 @@ export default class Vt7 extends React.Component{
                                     <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                                         {this.props.projectDetails.ProjectGoal&&
                                         <Col dir="rtl" >
-                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectGoal} Title="תיאור מטרת המחקר" Icon={IoIosRocket} />
+                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectGoal} Title="תיאור מטרת המחקר"/>
                                         </Col>}
                                         {this.props.projectDetails.ProjectNeed &&
                                         <Col dir="rtl" >
-                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectNeed} Title="שיטה" Icon={IoIosContacts} />
+                                            <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectNeed} Title="שיטה"/>
                                         </Col>}
                                     </Row>
                                 </Col>
@@ -212,17 +208,17 @@ export default class Vt7 extends React.Component{
                                 <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                                     {this.props.projectDetails.ProjectConclusion &&
                                     <Col dir="rtl" >
-                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="דיון ומסקנות" Icon={GiCrosshair} />
+                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="דיון ומסקנות"/>
                                     </Col>}
                                     {this.props.projectDetails.ProjectFindings &&
                                     <Col dir="rtl" >
-                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectFindings} Title="ממצאים" Icon={FiFlag} />
+                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectFindings} Title="ממצאים"/>
                                     </Col>}
                                 </Row>
                             </Col>
                             {this.props.projectDetails.Sources&&
                             <Col xs="12">
-                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Sources} Title="מקורות" Icon={GoBook} />
+                                <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Sources} Title="מקורות" />
                                 <br/>
                             </Col>}
                         </Row>
