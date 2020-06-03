@@ -5,7 +5,7 @@ import {storage} from '../App';
 import firebase from 'firebase';
 
 class PDFupload extends React.Component{
-    AddPDF = (error, file)=>{
+    AddPDF = (file)=>{
         console.log(file)
         if(this.fileValidate(file)){
             this.saveToFirebaseStorage(file.file);
@@ -74,7 +74,7 @@ class PDFupload extends React.Component{
     }
     render(){
         return(
-            <FilePond onremovefile={this.props.DeletePdf} allowMultiple={false} onaddfile={this.AddPDF} labelIdlE='PDF UPLOAD'/>
+            <FilePond onremovefile={this.props.DeletePdf} allowMultiple={false} onaddfilestart={this.AddPDF} labelIdlE='PDF UPLOAD'/>
         )
     }
 }

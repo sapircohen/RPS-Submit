@@ -11,6 +11,8 @@ import St4 from './Components/St4';
 import St5 from './Components/St5';
 import St6 from './Components/St6';
 import St7 from './Components/St7';
+import St8 from './Components/St8';
+
 //css:
 import './App.css'
 //test and prod enviorments
@@ -38,6 +40,7 @@ const App = ()=>{
       <Route path='/st5' component={St5}/>
       <Route path='/st6' component={St6}/>
       <Route path='/st7' component={St7}/>
+      <Route path='/st8' component={St8}/>
     </div>
   )
 }

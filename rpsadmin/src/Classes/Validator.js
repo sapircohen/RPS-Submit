@@ -66,6 +66,9 @@ export default class Validator{
                 case 'ProjectPDF':
                     this.ProjectPDF = element;
                     break;
+                case 'ProjectPresentation':
+                    this.ProjectPresentation = element;
+                    break;
                 case 'SystemDescriptionPDF':
                     this.SystemDescriptionPDF = element;
                     break;

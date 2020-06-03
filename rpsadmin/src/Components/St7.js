@@ -8,7 +8,6 @@ import TextareaInput from '../Common/TextAreaInputs';
 import SmallHeaderForm from '../Common/SmallHeaderForm';
 import { FaPlusCircle,FaCameraRetro } from "react-icons/fa";
 import PDFupload from '../Common/PdfFileUpload';
-import LinkInput from '../Common/Projectlinks';
 import StudentDetails from '../Common/StudentsDetails';
 import ModalImage from '../Common/ImageModal';
 import SaveAction from '../Common/SaveAction';

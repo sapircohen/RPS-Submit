@@ -107,6 +107,7 @@ export default class St3 extends React.Component{
         }
     }
     componentDidMount(){
+        console.log(this.configs)
         this.setState({
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
