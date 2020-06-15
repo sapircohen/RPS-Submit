@@ -194,7 +194,7 @@ class St1 extends React.Component{
                 ProjectSite:dataForGroup.ProjectSite?dataForGroup.ProjectSite:'',
                 MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
-                logo:dataForGroup.ProjectLogo?[dataForGroup.ProjectLogo]:[],
+                logo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
                 customerLogo:dataForGroup.CustomerLogo?[dataForGroup.CustomerLogo]:[],
                 comments:dataForGroup.Comments?dataForGroup.Comments:'',
                 CustCustomers:dataForGroup.CustCustomers?dataForGroup.CustCustomers:'',

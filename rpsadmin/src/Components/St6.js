@@ -28,7 +28,7 @@ import {ValidateData2} from '../functions/functions';
 import Validator from '../Classes/Validator';
 
 
-export default class St3 extends React.Component{
+export default class St6 extends React.Component{
     constructor(props){
         super(props);
         this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))!==[]?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st6'));
@@ -149,7 +149,7 @@ export default class St3 extends React.Component{
                 ServiceName:dataForGroup.ServiceName?dataForGroup.ServiceName:'',
                 Instructor:dataForGroup.Instructor?dataForGroup.Instructor:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                ProjectLogo:dataForGroup.ProjectLogo?[dataForGroup.ProjectLogo]:[],
+                ProjectLogo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
                 ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],

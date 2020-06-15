@@ -177,7 +177,7 @@ export default class St5 extends React.Component{
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
                 MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
-                logo:dataForGroup.ProjectLogo?[dataForGroup.ProjectLogo]:[],
+                logo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
                 customerLogo:dataForGroup.CustomerLogo?[dataForGroup.CustomerLogo]:[],
                 CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],

@@ -180,7 +180,7 @@ export default class Vt7 extends React.Component{
                         {/* project small summery */}
                         {
                         this.props.projectDetails.CDescription &&
-                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.CDescription} Icon={''} Title="רקע תיאורטי ומדעי"/>
+                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.CDescription} Icon={''} Title="תיאור קצר"/>
                         }
                         </Col>
                     </Row>
@@ -230,7 +230,9 @@ export default class Vt7 extends React.Component{
                         <Col xs="0" sm="0" md="1"></Col>
                         <Col className="Frame" xs="0" sm="0" md="10" style={{textAlign:'center'}}>
                             <h2>מצגת הפרויקט</h2>
-                            <iframe title="project document" src={this.props.projectDetails.ProjectPresentation+"&embedded=true"} width='100%' height='100%' frameborder='0'></iframe>               
+                            <object data={this.props.projectDetails.ProjectPresentation} width="400" height="300"></object>
+
+                            {/* <iframe title="project document" src={this.props.projectDetails.ProjectPresentation+"&embedded=true"} width='100%' height='100%' frameborder='0'></iframe>                */}
                         </Col>
                         <Col xs="0" sm="0" md="1"></Col>
                     </Row>}

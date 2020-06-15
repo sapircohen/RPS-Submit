@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@500&display=swap");
+
+
+#upgradePage{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    place-content: space-evenly;
+    font-family: 'Rubik', sans-serif;
+    font-size:35px;
+    direction: rtl;
+}
+#upgradePage img{
+    width: 200px;
+    height: 200px;
+    animation-name: picRotate;
+    animation-iteration-count: infinite;
+    animation-delay: 1s;
+    animation-duration: 4s;
+    /* margin-bottom: 100px; */
+}
+@keyframes picRotate{
+    from{transform: rotate(0deg);}
+    to{transform: rotate(360deg);}
+}

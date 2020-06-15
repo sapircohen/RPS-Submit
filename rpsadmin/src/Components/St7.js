@@ -168,7 +168,7 @@ export default class St3 extends React.Component{
                 ProjectGoal:dataForGroup.ProjectGoal?dataForGroup.ProjectGoal:'',
                 ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                poster:dataForGroup.ProjectLogo?[dataForGroup.ProjectLogo]:[],
+                poster:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
                 ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],

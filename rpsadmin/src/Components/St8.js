@@ -57,8 +57,6 @@ class St8 extends React.Component{
             showPreview:false,
             imagesToShowInModal:[],
             showImagesMode:false,
-            ScreenShots:[],
-            ScreenShotsNames:[],
             logo:[],
             isPublished:false,
             Advisor:'',
@@ -67,7 +65,6 @@ class St8 extends React.Component{
             HashSuggestions: [],
             HashOptions : [],
             tags:[],
-            MovieLink:'',
             PDescription:'',
             CDescription:null,
             ProjectName:'',
@@ -167,12 +164,9 @@ class St8 extends React.Component{
                 GroupName:dataForGroup.GroupName,
                 ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
-                ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
-                logo:dataForGroup.ProjectLogo?[dataForGroup.ProjectLogo]:[],
+                logo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
                 comments:dataForGroup.Comments?dataForGroup.Comments:'',
                 CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
-                ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 ProjectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
@@ -212,12 +206,9 @@ class St8 extends React.Component{
             isPublished:this.state.isPublished,
             CustomerName:this.state.CustomerName,
             CDescription:this.state.CDescription,
-            MovieLink:this.state.MovieLink,
             Students:this.state.StudentsDetails,
-            ScreenShots:this.state.ScreenShots,
             ProjectLogo:this.state.logo,
             Comments:this.state.comments,
-            ScreenShotsNames:this.state.ScreenShotsNames,
             isApproved:1,
         }
         this.setState({
@@ -343,15 +334,6 @@ class St8 extends React.Component{
             alert("לא הועלתה תמונת סטודנט");
         }
     }
-    OpenImagePreview = (title)=>{
-        switch (title) {
-            case 'Screenshots':
-                this.setState({modalTitle:title,showImagesMode:true,imagesToShowInModal:this.state.ScreenShots})
-                break;
-            default:
-                break;
-        }
-    }
     handleClose = ()=> {this.setState({ openModal: false });}
     handlePublishedChange = ()=>{this.setState({isPublished:!this.state.isPublished})}
     getStudentsDetails = (students)=>{this.setState({StudentsDetails:students},()=>this.SaveData())}
@@ -367,16 +349,11 @@ class St8 extends React.Component{
         switch (title) {
             case 'Project Logo':this.setState({logo:[url]})
                 break;
-            case 'Screenshots':this.changeScreenshots(url,screenshotName)
-                break;
             case 'Student Pic': this.changeStudentImage(url,index)
                 break;
             default:
                 break;
         }
-    }
-    changeScreenshots= (url,name)=>{
-        this.setState({ScreenShots:[...this.state.ScreenShots,url],ScreenShotsNames:[...this.state.ScreenShotsNames,name]})
     }
     changeStudentImage = (url,index)=>{
         this.state.StudentsDetails[index].Picture = url;
@@ -409,13 +386,10 @@ class St8 extends React.Component{
             Semester:this.state.Semester,
             isApproved:1,
             CDescription:this.state.CDescription,
-            ScreenShotsNames:this.state.ScreenShotsNames,
-            ScreenShots:this.state.ScreenShots,
             Students:this.state.StudentsDetails,
             Comments:this.state.comments,
             Advisor:[this.state.ProjectAdvisor],
             ProjectLogo:this.state.logo,
-            MovieLink:this.state.MovieLink,
             CustomerName:this.state.CustomerName,
             HashTags:this.state.tags,
             PDescription:this.state.PDescription,
@@ -445,11 +419,12 @@ class St8 extends React.Component{
     }
     DeletePresentation=()=>{
         if(this.state.ProjectPresentation!==''){
+            console.log(this.state.ProjectPresentation)
             const desertRef = firebase.storage().refFromURL(this.state.ProjectPresentation);
             // Delete the file
             desertRef.delete().then(()=> { 
                 this.setState({
-                    ProjectPDF:''
+                    ProjectPresentation:''
                 },()=>{
                     const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
                     ref.update({
@@ -518,15 +493,7 @@ class St8 extends React.Component{
                 break;
         }
     }
-    ChangeLinkInput = (event,linkTitle)=>{
-        switch (linkTitle) {
-            case sectionNames.projectMovie:
-                this.setState({MovieLink:event.target.value})
-                break;
-            default:
-                break;
-        }
-    }
+    
     closePreview = ()=>this.setState({showPreview:false})
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     ChangePublish = ()=>{
@@ -618,13 +585,7 @@ class St8 extends React.Component{
                         </Form.Row>
                     </div>
                     {/* tag the project */}
-                    <Hashtags isMandatory={Configs.HashTags.isMandatory} minimum={Configs.HashTags.minimum} chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions.length===0?['']:this.state.HashOptions}/>
-                    {/* Project links */}
-                    <div style={{border:'solid 1px',padding:15,borderRadius:5,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
-                        <SmallHeaderForm title="קישורים"/>
-                        {/* project movie link */}
-                        <LinkInput IsMandatory={Configs.MovieLink.isMandatory} ChangeLinkInput={this.ChangeLinkInput} defaultInput={this.state.MovieLink} InputTitle={sectionNames.projectMovie} inputSize="sm" placeholder="www.youtube.com.."/>
-                    </div>                    
+                    <Hashtags isMandatory={Configs.HashTags.isMandatory} minimum={Configs.HashTags.minimum} chosenHashs={this.state.tags} HashsChosen={this.HashsChosen} hashs={this.state.HashOptions.length===0?['']:this.state.HashOptions}/>                
                     {/* FILES UPLOAD */}
                     <div style={{border:'solid 1px',padding:20,borderRadius:5,marginTop:'2%',backgroundColor:'#fff',boxShadow:'5px 10px #888888'}}>
                         <SmallHeaderForm title="הוספת קבצים"/>
@@ -638,10 +599,10 @@ class St8 extends React.Component{
                                 </Col>
                                 <Col sm="6">
                                     <Form.Label>
-                                        {this.state.ProjectPresentation!==''?'עריכת מצגת':'הוספת מצגת'}
+                                        {this.state.ProjectPresentation!==''?' פורמט pdf ,עריכת מצגת':'הוספת מצגת'}
                                         {Configs.ProjectPresentation.isMandatory&&<span style={{color:'red'}}>*</span>}
                                     </Form.Label>                                    
-                                    <PDFupload  DeletePdf={this.DeletePresentation} pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePresentation}/>
+                                    <PDFupload DeletePdf={this.DeletePresentation} pdfFileSize={20000000} wordFileSize={5000000} savePDF={this.savePresentation}/>
                                 </Col>
                             </Row>
                             <Row dir="rtl" style={{marginTop:'2%'}} >
@@ -664,7 +625,8 @@ class St8 extends React.Component{
                             </Row>
                             
                             <Row dir="rtl" style={{marginTop:'2%'}} >
-                                <Col sm="4">
+                                <Col></Col>
+                                <Col>
                                     <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Project Logo','Plogo')}>
                                         <FaCameraRetro/>
                                         {this.state.logo.length!==0?`  עריכת תמונה מייצגת`:`  הוספת תמונה מייצגת`}
@@ -672,24 +634,9 @@ class St8 extends React.Component{
                                     <br/>
                                     {Configs.ProjectLogo.isMandatory&&(Configs.ProjectLogo.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ProjectLogo.minimum}</span>)}
                                 </Col>
-                                <Col sm="4">
-                                    <Button style={{backgroundColor:'#85B9A7',borderColor:'#85B9A7'}} onClick={()=>this.OpenImageModal('Screenshots','')}>
-                                        <FaCameraRetro/>{`  הוספת תמונות מסך`}
-                                    </Button>
-                                    <br/>
-                                    {Configs.ScreenShots.isMandatory&&(Configs.ScreenShots.minimum&&<span style={{color:'blue'}}>מינימום {Configs.ScreenShots.minimum}</span>)}
-                                </Col>
+                                <Col></Col>
                             </Row>
-                            <Row dir="rtl" style={{marginTop:'2%'}} >
-                                <Col sm="4"></Col>
-                                <Col sm="4">
-                                    <Button style={{backgroundColor:'#EECC4D',borderColor:'#EEE'}} onClick={()=>this.OpenImagePreview('Screenshots')}>
-                                        <FaCameraRetro/>
-                                        {`  עריכת תמונות מסך`}
-                                    </Button>
-                                </Col>
-                                <Col sm="4"></Col>
-                            </Row>
+                            
                     </div>
                     <StudentDetails Students={Configs.Students} Name={Configs.StudentName} Picture={Configs.StudentPicture} Email={Configs.StudentEmail} Id={Configs.StudentId} setStudents={this.getStudentsDetails} OpenImageModal={this.OpenImageModal} studentInitalDetails={this.state.StudentDetails} OpenPreviewModal={this.OpenImagePreviewForStudent}/>
                 </Form>

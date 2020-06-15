@@ -12,6 +12,7 @@ import St5 from './Components/St5';
 import St6 from './Components/St6';
 import St7 from './Components/St7';
 import St8 from './Components/St8';
+import Upgrade from './Components/Upgrade';
 
 //css:
 import './App.css'
@@ -31,6 +32,7 @@ const App = ()=>{
   }, [])
   return(
     <div className="App">
+      {/* <Route path='/' exact component={Upgrade}/> */}
       <Route path='/' exact component={LoginScreen}/>
       <Route path='/CourseChoice' component={CourseChoice}/>
       <Route path='/st1'  component={St1}/>

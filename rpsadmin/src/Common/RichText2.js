@@ -49,7 +49,7 @@ const RichText = (props) => {
   }
   return ( 
     <Form.Group as={Row}>
-        <Col dir='rtl' sm="10">
+        <Col style={{direction:'rtl'}} sm="10">
             <ReactQuill modules={modules} formats={formats} value={props.defaultInput}  onChange={(value) =>changeText(value,props.InputTitle)} />
             <p style={{border:'solid #CED4DA 0.5px',color:'#1C5F8A'}}>{counter}</p>
         </Col>
@@ -70,7 +70,7 @@ const modules = {
   toolbar: [
     [{ 'header': [1, 2, 3,4,false] }],
     ['bold', 'italic', 'underline','strike', 'blockquote'],
-    [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'},{ 'direction': 'rtl' },{ 'align': [] }],
+    [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'},{ 'direction': 'rtl' },{ 'align':[]}],
     ['link'],
     ['clean']
   ],
