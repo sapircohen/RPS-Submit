@@ -31,7 +31,7 @@ import {GetHashtags} from '../Common/HashtagsSetup';
 import Validator from '../Classes/Validator';
 //functions
 import {ValidateData2} from '../functions/functions';
-
+import {isArray} from 'util';
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
     projectChallenges:"אתגרי הפרויקט",
@@ -194,7 +194,7 @@ class St1 extends React.Component{
                 ProjectSite:dataForGroup.ProjectSite?dataForGroup.ProjectSite:'',
                 MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
-                logo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
+                logo:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
                 customerLogo:dataForGroup.CustomerLogo?[dataForGroup.CustomerLogo]:[],
                 comments:dataForGroup.Comments?dataForGroup.Comments:'',
                 CustCustomers:dataForGroup.CustCustomers?dataForGroup.CustCustomers:'',

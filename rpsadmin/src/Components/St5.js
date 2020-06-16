@@ -30,6 +30,10 @@ import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
 import Validator from '../Classes/Validator';
 import {ValidateData2} from '../functions/functions';
+import {isArray} from 'util';
+
+
+
 const configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st5'));
 
 const sectionNames = {
@@ -177,7 +181,7 @@ export default class St5 extends React.Component{
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
                 MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
-                logo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
+                logo:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
                 customerLogo:dataForGroup.CustomerLogo?[dataForGroup.CustomerLogo]:[],
                 CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],

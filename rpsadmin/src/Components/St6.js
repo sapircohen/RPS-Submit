@@ -26,6 +26,7 @@ import {GetHashtags} from '../Common/HashtagsSetup';
 import Vt6 from './Vt6';
 import {ValidateData2} from '../functions/functions';
 import Validator from '../Classes/Validator';
+import {isArray} from 'util';
 
 
 export default class St6 extends React.Component{
@@ -149,7 +150,7 @@ export default class St6 extends React.Component{
                 ServiceName:dataForGroup.ServiceName?dataForGroup.ServiceName:'',
                 Instructor:dataForGroup.Instructor?dataForGroup.Instructor:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                ProjectLogo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
+                ProjectLogo:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
                 ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],

@@ -29,6 +29,7 @@ import {GetHashtags} from '../Common/HashtagsSetup';
 import Validator from '../Classes/Validator';
 //functions
 import {ValidateData2} from '../functions/functions';
+import {isArray} from 'util';
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -164,7 +165,7 @@ class St8 extends React.Component{
                 GroupName:dataForGroup.GroupName,
                 ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                logo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
+                logo:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
                 comments:dataForGroup.Comments?dataForGroup.Comments:'',
                 CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,

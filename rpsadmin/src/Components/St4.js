@@ -27,6 +27,7 @@ import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
 import {ValidateData2} from '../functions/functions';
 import Validator from '../Classes/Validator';
+import {isArray} from 'util';
 
 const sectionNames = {
     projectNeed:'הבעיה/הצורך',
@@ -173,7 +174,7 @@ export default class St3 extends React.Component{
                 GroupName:dataForGroup.GroupName,
                 ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                poster:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
+                poster:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
                 ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
