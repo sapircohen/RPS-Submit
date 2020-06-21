@@ -230,7 +230,7 @@ export default class PreviewCard extends React.Component{
                     }
                     {/* projet usability video */}
                     {
-                        this.props.projectDetails.functionalityMovie &&
+                         (this.props.projectDetails.FunctionalityMovie) &&
                         <Col className="Box" style={{marginTop:'6%',textAlign:'center'}}>
                             <Col style={{textAlign:'center'}} sm="12">
                                 <h3>סרטון שימושיות<GiClapperboard size={45}/></h3>
@@ -238,7 +238,7 @@ export default class PreviewCard extends React.Component{
                             <Row style={{marginTop:'2%',textAlign:'center'}} dir="rtl" className="show-grid">
                                 <Col sm="2"></Col>
                                 <Col sm="8" style={{padding:'50px'}}>
-                                    <VideoPlayer MovieLink={this.props.projectDetails.functionalityMovie} />
+                                    <VideoPlayer MovieLink={this.props.projectDetails.FunctionalityMovie} />
                                 </Col>
                                 <Col sm="2"></Col>
                             </Row>

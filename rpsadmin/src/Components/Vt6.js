@@ -206,7 +206,7 @@ export default class Vt6 extends React.Component{
 
                     {/* project video */}
                     {
-                    this.props.projectDetails.MovieLink &&
+                     (this.props.projectDetails.MovieLink || this.props.projectDetails.FunctionalityMovie) &&
                     <Col className="Box" style={{marginTop:'2%',textAlign:'center'}}>
                         <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                             {this.props.projectDetails.MovieLink &&
@@ -214,10 +214,10 @@ export default class Vt6 extends React.Component{
                                 <h4><MdOndemandVideo size={20}/> סרטון הפרויקט</h4>
                                 <VideoPlayer MovieLink={this.props.projectDetails.MovieLink} />
                             </Col>}
-                        {    this.props.projectDetails.functionalityMovie &&
+                        {    this.props.projectDetails.FunctionalityMovie &&
                             <Col style={{padding:'50px'}}>
                                 <h4><MdExtension size={20}/> סרטון שימושיות</h4>
-                                <VideoPlayer MovieLink={this.props.projectDetails.functionalityMovie} />
+                                <VideoPlayer MovieLink={this.props.projectDetails.FunctionalityMovie} />
                             </Col>}
                         </Row>
                         <Divider style={{margin:'0px auto',marginTop:'6px',width:'80%',color:'#444'}}/>
