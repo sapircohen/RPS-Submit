@@ -45,7 +45,6 @@ class PDFupload extends React.Component{
         }
     }
     saveToFirebaseStorage = (file)=>{
-        
         const groupData = JSON.parse(localStorage.getItem('groupData'));
         const uploadPic = storage.ref('images/'+groupData.GroupName+'/ProjectDocument/'+file.name).put(file);
         uploadPic.on('state_changed',

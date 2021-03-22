@@ -92,7 +92,6 @@ class ModalImage extends React.Component{
         }
         if (files && files.length>0) {
             const isVerified = this.verifyFile(files);
-            console.log(isVerified)
             if(isVerified){
                 const currentFile = files[0];
                 console.log(currentFile)

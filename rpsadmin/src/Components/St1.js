@@ -32,6 +32,7 @@ import Validator from '../Classes/Validator';
 //functions
 import {ValidateData2} from '../functions/functions';
 import {isArray} from 'util';
+
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
     projectChallenges:"אתגרי הפרויקט",
