@@ -505,6 +505,7 @@ export default class St6 extends React.Component{
             })
         }
         else{
+            debugger;
             const isPublish = this.CheckValidation(this.getProjectDetails());
             if(isPublish){
                 this.setState({isPublished:temp},()=>{

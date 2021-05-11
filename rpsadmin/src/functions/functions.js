@@ -44,7 +44,7 @@ export const ValidateData2=(projectData,templateValidators)=>{
                 case "array":
                     if(projectData[validator.Name]!==undefined){
                         if(validator.isLength && validator.isMandatory){
-                            if(projectData[validator.Name].length<validator.minimum || projectData[validator.Name].length>validator.maximum){
+                            if(projectData[validator?.Name]?.length<validator?.minimum){
                                 validation=  {
                                     alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning',
                                     isPublish:false
