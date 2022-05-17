@@ -5,7 +5,6 @@ import { withRouter } from "react-router-dom";
 const Idle = () => {
   let idleTimer = useRef(null);
   function onAction(e) {
-    console.log('het')
     let currentTime = new Date();
     localStorage.setItem('currentTime', JSON.stringify(currentTime.getTime()));
   }

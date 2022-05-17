@@ -44,7 +44,7 @@ export const ValidateData2=(projectData,templateValidators)=>{
                 case "array":
                     if(projectData[validator.Name]!==undefined){
                         if(validator.isLength && validator.isMandatory){
-                            if(projectData[validator?.Name]?.length<validator?.minimum){
+                            if(projectData[validator.Name].length<validator.minimum || projectData[validator.Name].length>validator.maximum){
                                 validation=  {
                                     alertShow:true,alertTitle:'שימו לב',alertText:validator.alertText,alertIcon:'warning',
                                     isPublish:false
@@ -148,13 +148,30 @@ export const findCourseForProject = (project)=>{
     })
 }
 
-export const getConfigsForProject =  (project,course)=>{
+export const getConfigsForProject =  async (project,course)=>{
+    debugger;
     firebase.database().ref('Data').child('Ruppin')
     .child('Faculties').child(project.Faculty)
     .child('Departments').child(project.Department)
     .child('Experties').child(project.Major)
     .child('Courses').child(course)
     .once('value',async data=>{
-        await localStorage.setItem('TemplateConfig',JSON.stringify(data.val().TemplateConfig?data.val().TemplateConfig:[]))
+        if (data.val() && data.val().TemplateConfig) {
+            let config = data.val().TemplateConfig;
+            await asyncLocalStorage.setItem('TemplateConfig',JSON.stringify(config? config :[]));    
+        }
     })
 }
+
+const asyncLocalStorage = {
+    setItem: (key, value) => {
+        return Promise.resolve().then(function () {
+            localStorage.setItem(key, value);
+        });
+    },
+    getItem: (key) => {
+        return Promise.resolve().then(function () {
+            return localStorage.getItem(key);
+        });
+    }
+};

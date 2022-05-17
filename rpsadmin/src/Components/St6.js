@@ -26,7 +26,6 @@ import {GetHashtags} from '../Common/HashtagsSetup';
 import Vt6 from './Vt6';
 import {ValidateData2} from '../functions/functions';
 import Validator from '../Classes/Validator';
-import {isArray} from 'util';
 
 
 export default class St6 extends React.Component{
@@ -90,7 +89,8 @@ export default class St6 extends React.Component{
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData')),
-            
+            templateValidators:this.configs,
+            Configs:new Validator(this.configs)
         },()=>{
             this.GetData();
         })
@@ -150,7 +150,7 @@ export default class St6 extends React.Component{
                 ServiceName:dataForGroup.ServiceName?dataForGroup.ServiceName:'',
                 Instructor:dataForGroup.Instructor?dataForGroup.Instructor:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                ProjectLogo:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
+                ProjectLogo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
                 ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
@@ -202,7 +202,6 @@ export default class St6 extends React.Component{
             ScreenShotsNames:this.state.ScreenShotsNames,
             HashTags:this.state.tags,
         }
-        console.log(project)
         return project;
     }
     CheckValidation=(projectData,trigger)=>{
@@ -220,7 +219,6 @@ export default class St6 extends React.Component{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Advisors');
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
-            //console.log(snapshot.val())
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
         })
@@ -280,7 +278,6 @@ export default class St6 extends React.Component{
             let ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Experties').child(this.state.groupData.Major).child('Courses').child(course).child('Topics');
             ref.once("value", (snapshot)=> {
                 snapshot.forEach((topic)=> {
-                    console.log(topic.val().Name)
                     this.setState({
                         topicsList:[...this.state.topicsList,topic.val().Name]
                     })
@@ -377,7 +374,6 @@ export default class St6 extends React.Component{
     HashsChosen =(value)=>{
         this.setState({
             tags:value.map((val)=>{
-                console.log(val)
                 return val;
             })
         })
@@ -505,7 +501,6 @@ export default class St6 extends React.Component{
             })
         }
         else{
-            debugger;
             const isPublish = this.CheckValidation(this.getProjectDetails());
             if(isPublish){
                 this.setState({isPublished:temp},()=>{
@@ -530,7 +525,7 @@ export default class St6 extends React.Component{
     CloseAlert = ()=>{this.setState({alertShow:false})}
     render(){
         const {Configs} = this.state;
-        if (!this.state.isReady) {
+        if (!this.state.isReady || !Configs) {
             return(
                 <div style={{flex:1,backgroundColor:'#eee'}}>
                     <Loader 

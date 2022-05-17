@@ -30,11 +30,9 @@ import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
 import Validator from '../Classes/Validator';
 import {ValidateData2} from '../functions/functions';
-import {isArray} from 'util';
+import { config } from 'process';
 
-
-
-const configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st5'));
+let configs = localStorage.getItem('TemplateConfig')?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st5'));
 
 const sectionNames = {
     projectDesc : "רקע ומטרת הפרויקט *עד 400 תוים",
@@ -57,6 +55,10 @@ const sectionNames = {
     ProjectSummery:'תקציר *עד 1000 תוים'
 }
 export default class St5 extends React.Component{
+    constructor(props){
+        super(props); 
+        configs = localStorage.getItem('TemplateConfig')?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st5'));
+    }
     state={
         alertTitle:'',
         alertText:'',
@@ -100,7 +102,7 @@ export default class St5 extends React.Component{
         chosenTechs:[],
         Year:'',
         Semester:'',
-        isReady:true,
+        isReady:false,
         ProjectSummery:'',
         ProjectTopic:'בחר',
         topicList:[],
@@ -108,19 +110,21 @@ export default class St5 extends React.Component{
         projectKey:'',
         groupData :'',
         showRatio:false,
-        templateValidators:configs,
-        Configs:new Validator(configs)    
+        templateValidators:this.configs,
+        Configs:new Validator(this.configs)
     }
     componentDidMount(){
         this.setState({
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData')),
-            
-        },()=>{
-            console.log(this.state.Configs)
-            this.GetData();
-        })
+            templateValidators:config,
+            Configs:new Validator(configs)    
+        },()=>this.GetData())
+        this.autoSaveData();
+    }
+
+    autoSaveData(){
         window.setInterval(()=>{
             let currentTime = JSON.parse(localStorage.getItem('currentTime'));
             let time = new Date();
@@ -149,10 +153,8 @@ export default class St5 extends React.Component{
             let tagsList = [];
             if(dataForGroup.HashTags){
                 dataForGroup.HashTags.forEach((tag)=>{
-                    console.log(tag)
                     let t={};
                     if(tag.__isNew__ || tag.label){
-                        console.log(tag)
                         t = {
                             'value':tag.value,
                             'label':tag.label
@@ -181,7 +183,7 @@ export default class St5 extends React.Component{
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
                 MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
                 ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
-                logo:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
+                logo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
                 customerLogo:dataForGroup.CustomerLogo?[dataForGroup.CustomerLogo]:[],
                 CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
                 ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
@@ -190,14 +192,13 @@ export default class St5 extends React.Component{
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
                 chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
                 ProjectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
-
                 ProjectConclusion:dataForGroup.ProjectConclusion?dataForGroup.ProjectConclusion:'',
                 projectFindings:dataForGroup.projectFindings?dataForGroup.projectFindings:'',
                 PartnerDescription:dataForGroup.PartnerDescription?dataForGroup.PartnerDescription:'',
                 ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
                 tags:tagsList,
             },()=>{
-                this.setState({projectDetails:this.getProjectDetails()})
+                this.setState({projectDetails:this.getProjectDetails(),isReady:true});
             })
             this.getTechnologies();
             this.getAdvisors();
@@ -217,15 +218,12 @@ export default class St5 extends React.Component{
         picTitle:pic})
     }
     getProjectGoals = (goals)=>{
-        this.setState({projectGoals:goals},()=>{
-            console.log(this.state.projectGoals)
-        })
+        this.setState({projectGoals:goals})
     }
     getAdvisors = ()=>{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Advisors');
         ref.once("value", (snapshot)=> {
             this.setState({advisorsList:snapshot.val()});
-            console.log(snapshot.val())
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
         })
@@ -235,7 +233,6 @@ export default class St5 extends React.Component{
         ref.once("value", (snapshot)=> {
             snapshot.forEach((topicName)=>{
                 this.setState({topicList:[...this.state.topicList,topicName.val().Name]});
-                console.log(topicName.val())
             })
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
@@ -280,14 +277,12 @@ export default class St5 extends React.Component{
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
         })
-        .then(()=>console.log(this.state.HashOptions))
     }
     savePDF = (url)=>{
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
         this.setState({
             ProjectPDF:url
         },()=>{
-            console.log(this.state.ProjectPDF)
             ref.update({
                 ProjectPDF:this.state.ProjectPDF,
             })
@@ -297,7 +292,6 @@ export default class St5 extends React.Component{
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
         this.setState({SystemDescriptionPDF:url
         },()=>{
-            console.log(this.state.ProjectPDF)
             ref.update({
                 ProjectPDF:this.state.ProjectPDF,
             })
@@ -338,12 +332,9 @@ export default class St5 extends React.Component{
         }
     }
     getStudentsDetails = (students)=>{
-        this.setState({StudentsDetails:students},()=>{
-            console.log(this.state.StudentsDetails);
-        })
+        this.setState({StudentsDetails:students});
     }
     savePic=(url,title,index,screenshotName)=>{
-        console.log(screenshotName)
         switch (title) {
             case 'Customer Logo':this.setState({customerLogo:[url]})
                 break;
@@ -477,7 +468,6 @@ export default class St5 extends React.Component{
     changeStudentImage = (url,index)=>{
         this.state.StudentsDetails[index].Picture = url;
         this.forceUpdate();
-        console.log(this.state.StudentsDetails);
     }
     changeProjectType = (e)=>{this.setState({ProjectTopic:e.target.value})}
     ChangeLinkInput = (event,linkTitle)=>{
@@ -582,10 +572,10 @@ export default class St5 extends React.Component{
             }
         }
     }
-    CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
+    CloseAlert = ()=>{this.setState({alertShow:false})}
     render(){
         const {Configs} = this.state;
-        if (!this.state.isReady) {
+        if (!this.state.isReady || !Configs) {
             return(
                 <div style={{flex:1,backgroundColor:'#eee'}}>
                     <Loader 

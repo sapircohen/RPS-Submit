@@ -33,11 +33,8 @@ export default class ProjectModules extends React.Component{
     }
     removeModule= (index)=>{
         let array = [...this.state.modules];
-    
-        console.log(this.state.modules)
         if (index !== -1) {
             array.splice(index, 1);
-            console.log(array);
             this.setState({modules: array},()=>{
                 this.props.setProjectModules(this.state.modules);
             });

@@ -29,7 +29,6 @@ import {GetHashtags} from '../Common/HashtagsSetup';
 import Validator from '../Classes/Validator';
 //functions
 import {ValidateData2} from '../functions/functions';
-import {isArray} from 'util';
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -134,7 +133,6 @@ class St8 extends React.Component{
         let dataForGroup ={};
         ref.once("value", (snapshot)=> {
             dataForGroup=snapshot.val();
-            console.log(snapshot.val())
         })
         .then(()=>{
             let tagsList = [];
@@ -165,7 +163,7 @@ class St8 extends React.Component{
                 GroupName:dataForGroup.GroupName,
                 ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                logo:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
+                logo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
                 comments:dataForGroup.Comments?dataForGroup.Comments:'',
                 CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
@@ -232,7 +230,6 @@ class St8 extends React.Component{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Experties').child(this.state.groupData.Major).child('Courses').child('Final project').child('Topics');
         ref.once("value", (snapshot)=> {
             snapshot.forEach((topicName)=>{
-                console.log(topicName.val())
                 this.setState({topicList:[...this.state.topicList,topicName.val().Name]});
             })
         }, (errorObject)=> {
@@ -243,7 +240,6 @@ class St8 extends React.Component{
     getAdvisors = ()=>{
         const ref = firebase.database().ref('Data').child('Ruppin').child('Faculties').child(this.state.groupData.Faculty).child('Departments').child(this.state.groupData.Department).child('Advisors');
         ref.once("value", (snapshot)=> {
-            console.log(snapshot.val())
             this.setState({advisorsList:snapshot.val()});
         }, (errorObject)=> {
             console.log("The read failed: " + errorObject.code);
@@ -286,7 +282,6 @@ class St8 extends React.Component{
         this.setState({
             ProjectPDF:url
         },()=>{
-            console.log(this.state.ProjectPDF)
             ref.update({
                 ProjectPDF:this.state.ProjectPDF,
             })
@@ -297,7 +292,6 @@ class St8 extends React.Component{
         this.setState({
             ProjectPresentation:url
         },()=>{
-            console.log(this.state.ProjectPresentation)
             ref.update({
                 ProjectPresentation:this.state.ProjectPresentation,
             })
@@ -400,7 +394,6 @@ class St8 extends React.Component{
     }
     //delete pdf/word file
     DeletePdf=()=>{
-        console.log(this.state.ProjectPDF)
         if(this.state.ProjectPDF!==''){
             const desertRef = firebase.storage().refFromURL(this.state.ProjectPDF);
             // Delete the file
@@ -420,7 +413,6 @@ class St8 extends React.Component{
     }
     DeletePresentation=()=>{
         if(this.state.ProjectPresentation!==''){
-            console.log(this.state.ProjectPresentation)
             const desertRef = firebase.storage().refFromURL(this.state.ProjectPresentation);
             // Delete the file
             desertRef.delete().then(()=> { 
@@ -531,7 +523,7 @@ class St8 extends React.Component{
     CloseAlert = ()=>{this.setState({alertShow:false})}
     render(){
         const {Configs} = this.state;
-        if (!this.state.isReady) {
+        if (!this.state.isReady || !Configs) {
             return(
                 <div style={{flex:1,marginTop:'20%'}}>
                     <Loader 

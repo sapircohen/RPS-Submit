@@ -12,7 +12,6 @@ class PreviewModal extends React.Component{
         this.props.deletePic(this.state.currentPic);
     }
     PicCurrentIndex = (image)=>{
-        console.log(image);
         this.setState({
             currentPic:image
         },()=>{

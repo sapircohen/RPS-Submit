@@ -27,7 +27,6 @@ import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
 import {ValidateData2} from '../functions/functions';
 import Validator from '../Classes/Validator';
-import {isArray} from 'util';
 
 const sectionNames = {
     projectNeed:'הבעיה/הצורך',
@@ -87,7 +86,7 @@ export default class St3 extends React.Component{
             showPreview:false,
             CDescription:'',
             ProjectTopic:'',
-            isReady:true,
+            isReady:false,
             ProjectAdvisor:'',
             projectMajor:'',
             projectCourse:'',
@@ -113,6 +112,8 @@ export default class St3 extends React.Component{
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData')),
+            templateValidators:this.configs,
+            Configs:new Validator(this.configs)
             
         },()=>{
             this.GetData();
@@ -144,10 +145,8 @@ export default class St3 extends React.Component{
             let tagsList = [];
             if(dataForGroup.HashTags){
                 dataForGroup.HashTags.forEach((tag)=>{
-                    console.log(tag)
                     let t={};
                     if(tag.__isNew__ || tag.label){
-                        console.log(tag)
                         t = {
                             'value':tag.value,
                             'label':tag.label
@@ -173,7 +172,7 @@ export default class St3 extends React.Component{
                 ProjectGoal:dataForGroup.ProjectGoal?dataForGroup.ProjectGoal:'',
                 ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                poster:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
+                poster:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
                 ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
                 isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
@@ -196,7 +195,7 @@ export default class St3 extends React.Component{
             //get hashtags
             this.getHashs();
             
-        },()=>this.setState({projectDetails:this.getProjectDetails()}))
+        },()=> this.setState({projectDetails:this.getProjectDetails(),isReady:true}))
     }
     getProjectDetails = ()=>{
         const project = {
@@ -223,8 +222,6 @@ export default class St3 extends React.Component{
             ScreenShotsNames:this.state.ScreenShotsNames,
             HashTags:this.state.tags,
         }
-        console.log(project);
-        
         return project;
     }
     getAdvisorsForDepartment = ()=>{
@@ -358,7 +355,6 @@ export default class St3 extends React.Component{
     imagesModalClose = ()=>this.setState({showImagesMode:false})
     //delete image from screenshots
     DeletePic = (picURL)=>{
-        console.log(picURL)
         const desertRef = firebase.storage().refFromURL(picURL);
         // Delete the file
         desertRef.delete().then(()=> {
@@ -380,12 +376,10 @@ export default class St3 extends React.Component{
     changeStudentImage = (url,index)=>{
         this.state.StudentsDetails[index].Picture = url;
         this.forceUpdate();
-        console.log(this.state.StudentsDetails);
     }
     HashsChosen =(value)=>{
         this.setState({
             tags:value.map((val)=>{
-                console.log(val)
                 return val;
             })
         })
@@ -396,7 +390,6 @@ export default class St3 extends React.Component{
         this.setState({
             ProjectPDF:url
         },()=>{
-            console.log(this.state.ProjectPDF)
             ref.update({
                 ProjectPDF:this.state.ProjectPDF,
             })
@@ -501,7 +494,6 @@ export default class St3 extends React.Component{
     }
     //delete pdf/word file
     DeletePdf=()=>{
-        console.log(this.state.ProjectPDF)
         if(this.state.ProjectPDF!==''){
             const desertRef = firebase.storage().refFromURL(this.state.ProjectPDF);
             // Delete the file
@@ -552,7 +544,7 @@ export default class St3 extends React.Component{
     CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
     render(){
         const {Configs} = this.state;
-        if (!this.state.isReady) {
+        if (!this.state.isReady || !Configs) {
             return(
                 <div style={{flex:1,backgroundColor:'#eee'}}>
                     <Loader 

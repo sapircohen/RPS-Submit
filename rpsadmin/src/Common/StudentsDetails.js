@@ -48,7 +48,6 @@ export default class StudentsDetails extends React.Component{
         var array = [...this.state.students];
         if (index !== -1) {
             array.splice(index, 1);
-            console.log(array);
             this.setState({students: array},()=>{
                 this.props.setStudents(this.state.students);
             });

@@ -3,11 +3,9 @@ import {Modal,Button,Container,Row,Col,Card,Accordion} from 'react-bootstrap';
 import VideoPlayer from '../Common/VideoPlayer';
 import LinkButton from '../Common/LinkToWeb';
 import RichTextPreviewParagraph from '../Common/RichTextPreviewP';
-import PreviewParagraph from '../Common/PreviewParagraph';
 import Avatar from '@material-ui/core/Avatar';
 import Chip from '@material-ui/core/Chip';
 import Swiper from 'react-id-swiper';
-import Iframe from 'react-iframe'
 // import 'react-id-swiper/lib/styles/css/swiper.css';
 //CSS:
 import '../css/previewStyle.css';
@@ -17,12 +15,13 @@ import {FiPaperclip,FiStar} from 'react-icons/fi';
 import {GiCrosshair} from "react-icons/gi";
 import {GoTag,GoMarkGithub} from 'react-icons/go';
 import {MdOndemandVideo,MdExtension} from 'react-icons/md';
-import {IoIosLaptop,IoIosDesktop,IoIosRocket,IoIosContacts,IoMdSkipForward} from 'react-icons/io';
+import {IoIosLaptop,IoIosDesktop} from 'react-icons/io';
 import { Divider } from '@material-ui/core';
 import { Card as Cardse, Icon } from 'semantic-ui-react';
-
+import PreviewParagraph from '../Common/PreviewParagraph';
 
 import '../css/previewStyle.css';
+
 const params = {
     effect: 'coverflow',
     grabCursor: true,
@@ -288,7 +287,7 @@ export default class ModalExample1 extends React.Component{
                     {/* project industrial partner */}
                     {
                     this.props.projectDetails.PartnerDescription &&
-                    <PreviewParagraph Paragraph={this.props.projectDetails.PartnerDescription} Title="שותף תעשייתי"/>
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.PartnerDescription} Title="שותף תעשייתי"/>
                     }
                     
                     {/* project goals + modules (for IS project) */}

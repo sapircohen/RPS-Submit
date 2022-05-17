@@ -31,7 +31,6 @@ import {GetHashtags} from '../Common/HashtagsSetup';
 import Validator from '../Classes/Validator';
 //functions
 import {ValidateData2} from '../functions/functions';
-import {isArray} from 'util';
 
 const sectionNames = {
     projectDesc : "תיאור הפרויקט",
@@ -57,7 +56,7 @@ const sectionNames = {
 class St1 extends React.Component{
     constructor(props){
         super(props); 
-        this.configs = JSON.parse(localStorage.getItem('TemplateConfig'))?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st1'));
+        this.configs = localStorage.getItem('TemplateConfig')?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st1'));
         this.state={
             alertTitle:'',
             alertText:'',
@@ -132,7 +131,8 @@ class St1 extends React.Component{
             course :JSON.parse(localStorage.getItem('course')),
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData')),
-            
+            templateValidators:this.configs,
+            Configs:new Validator(this.configs)
         },()=>{
             this.GetData();
         })
@@ -155,80 +155,80 @@ class St1 extends React.Component{
     }
     GetData = ()=>{
         this.setState({isReady:false},()=>{
-        const ref = firebase.database().ref('RuppinProjects').child(this.state.projectKey);
-        let dataForGroup ={};
-        ref.once("value", (snapshot)=> {
-            dataForGroup=snapshot.val();
-        })
-        .then(()=>{
-            let tagsList = [];
-            if(dataForGroup.HashTags){
-                    dataForGroup.HashTags.forEach((tag)=>{
-                        let t={};
-                        if(tag.__isNew__ || tag.label){
-                            t = {
-                                'value':tag.value,
-                                'label':tag.label
-                            }
-                        }
-                        else{
-                            t = {
-                                'value':tag,
-                                'label':tag
-                            }
-                        }
-                        tagsList.push(t);
-                    })
-            }
-            this.setState({
-                Year:dataForGroup.Year?dataForGroup.Year:'',
-                Semester:dataForGroup.Semester?dataForGroup.Semester:'',
-                Github:dataForGroup.Github?dataForGroup.Github:'',
-                CustomerName:dataForGroup.CustomerName?dataForGroup.CustomerName:'',
-                Advisor:dataForGroup.Advisor?dataForGroup.Advisor:'',
-                firstAdvisor:dataForGroup.Advisor?(dataForGroup.Advisor.length?dataForGroup.Advisor[0]:''):'',
-                secondAdvisor:dataForGroup.Advisor?(dataForGroup.Advisor.length===2?dataForGroup.Advisor[1]:''):'',
-                Challenges:dataForGroup.Challenges?dataForGroup.Challenges:'',
-                GroupName:dataForGroup.GroupName,
-                ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
-                PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                ProjectSite:dataForGroup.ProjectSite?dataForGroup.ProjectSite:'',
-                MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
-                ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
-                logo:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
-                customerLogo:dataForGroup.CustomerLogo?[dataForGroup.CustomerLogo]:[],
-                comments:dataForGroup.Comments?dataForGroup.Comments:'',
-                CustCustomers:dataForGroup.CustCustomers?dataForGroup.CustCustomers:'',
-                CStackholders:dataForGroup.CStackholders?dataForGroup.CStackholders:'',
-                CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
-                ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
-                projectModules:dataForGroup.Module?dataForGroup.Module:[],
-                projectGoals:dataForGroup.Goals?dataForGroup.Goals:[],
-                isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
-                StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
-                chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
-                ProjectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
-                ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
-                tags:tagsList,
-                functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:'',
-                appleLink:dataForGroup.AppStore?dataForGroup.AppStore:'',
-                googleLink:dataForGroup.GooglePlay?dataForGroup.GooglePlay:'',
-                appExists:dataForGroup.GooglePlay?true:false
-            },()=>{
-                this.setState({projectDetails:this.getProjectDetails(),isReady:true})
+            const ref = firebase.database().ref('RuppinProjects').child(this.state.projectKey);
+            let dataForGroup ={};
+            ref.once("value", (snapshot)=> {
+                dataForGroup=snapshot.val();
             })
-            //get list of advisors from firebase
-            this.getAdvisors();
-            //get technologies from firebase
-            this.getTechnologies();
-            //get courses from firebase
-            this.getCourses();
-            //get topics for Final project from firebase
-            this.getTopicForFinalProject();
-            //get hashtags for options - autocomplite
-            this.getHashs();
+            .then(()=>{
+                let tagsList = [];
+                if(dataForGroup.HashTags){
+                        dataForGroup.HashTags.forEach((tag)=>{
+                            let t={};
+                            if(tag.__isNew__ || tag.label){
+                                t = {
+                                    'value':tag.value,
+                                    'label':tag.label
+                                }
+                            }
+                            else{
+                                t = {
+                                    'value':tag,
+                                    'label':tag
+                                }
+                            }
+                            tagsList.push(t);
+                        })
+                }
+                this.setState({
+                    Year:dataForGroup.Year?dataForGroup.Year:'',
+                    Semester:dataForGroup.Semester?dataForGroup.Semester:'',
+                    Github:dataForGroup.Github?dataForGroup.Github:'',
+                    CustomerName:dataForGroup.CustomerName?dataForGroup.CustomerName:'',
+                    Advisor:dataForGroup.Advisor?dataForGroup.Advisor:'',
+                    firstAdvisor:dataForGroup.Advisor?(dataForGroup.Advisor.length?dataForGroup.Advisor[0]:''):'',
+                    secondAdvisor:dataForGroup.Advisor?(dataForGroup.Advisor.length===2?dataForGroup.Advisor[1]:''):'',
+                    Challenges:dataForGroup.Challenges?dataForGroup.Challenges:'',
+                    GroupName:dataForGroup.GroupName,
+                    ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
+                    PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
+                    ProjectSite:dataForGroup.ProjectSite?dataForGroup.ProjectSite:'',
+                    MovieLink:dataForGroup.MovieLink?dataForGroup.MovieLink:'',
+                    ScreenShots:dataForGroup.ScreenShots?dataForGroup.ScreenShots:[],
+                    logo:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
+                    customerLogo:dataForGroup.CustomerLogo?[dataForGroup.CustomerLogo]:[],
+                    comments:dataForGroup.Comments?dataForGroup.Comments:'',
+                    CustCustomers:dataForGroup.CustCustomers?dataForGroup.CustCustomers:'',
+                    CStackholders:dataForGroup.CStackholders?dataForGroup.CStackholders:'',
+                    CDescription:dataForGroup.CDescription?dataForGroup.CDescription:'',
+                    ScreenShotsNames:dataForGroup.ScreenShotsNames?dataForGroup.ScreenShotsNames:[],
+                    projectModules:dataForGroup.Module?dataForGroup.Module:[],
+                    projectGoals:dataForGroup.Goals?dataForGroup.Goals:[],
+                    isPublished:dataForGroup.isPublished?dataForGroup.isPublished:false,
+                    StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
+                    chosenTechs:dataForGroup.Technologies?dataForGroup.Technologies:[],
+                    ProjectCourse:dataForGroup.ProjectCourse?dataForGroup.ProjectCourse:this.state.course,
+                    ProjectTopic:dataForGroup.ProjectTopic?dataForGroup.ProjectTopic:'בחר',
+                    tags:tagsList,
+                    functionalityMovie:dataForGroup.functionalityMovie?dataForGroup.functionalityMovie:'',
+                    appleLink:dataForGroup.AppStore?dataForGroup.AppStore:'',
+                    googleLink:dataForGroup.GooglePlay?dataForGroup.GooglePlay:'',
+                    appExists:dataForGroup.GooglePlay?true:false
+                },()=>{
+                    this.setState({projectDetails:this.getProjectDetails(),isReady:true})
+                })
+                //get list of advisors from firebase
+                this.getAdvisors();
+                //get technologies from firebase
+                this.getTechnologies();
+                //get courses from firebase
+                this.getCourses();
+                //get topics for Final project from firebase
+                this.getTopicForFinalProject();
+                //get hashtags for options - autocomplite
+                this.getHashs();
+            })
         })
-    })
     }
     getProjectDetails=()=>{
         // const arrayOfTags = this.state.tags.map((text)=>text.text);
@@ -617,7 +617,7 @@ class St1 extends React.Component{
     CloseAlert = ()=>{this.setState({alertShow:false})}
     render(){
         const {Configs} = this.state;
-        if (!this.state.isReady) {
+        if (!this.state.isReady || !Configs) {
             return(
                 <div style={{flex:1,marginTop:'20%'}}>
                     <Loader 

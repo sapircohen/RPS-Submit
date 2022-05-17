@@ -26,7 +26,6 @@ import { isObject } from 'util';
 import {GetHashtags} from '../Common/HashtagsSetup';
 import {ValidateData2} from '../functions/functions';
 import Validator from '../Classes/Validator';
-import {isArray} from 'util';
 
 
 const sectionNames = {
@@ -76,7 +75,7 @@ class St2 extends React.Component{
             projectDetails:{},
             showPreview:false,
             ProjectTopic:'',
-            isReady:true,
+            isReady:false,
             ProjectAdvisor:'',
             projectMajor:'',
             projectCourse:'',
@@ -92,6 +91,8 @@ class St2 extends React.Component{
         this.setState({
             projectKey:JSON.parse(localStorage.getItem('projectKey')),
             groupData :JSON.parse(localStorage.getItem('groupData')),
+            templateValidators:this.configs,
+            Configs:new Validator(this.configs)
             
         },()=>{
             this.GetData();
@@ -151,7 +152,7 @@ class St2 extends React.Component{
                 GroupName:dataForGroup.GroupName,
                 ProjectName:dataForGroup.ProjectName?dataForGroup.ProjectName:'',
                 PDescription:dataForGroup.PDescription?dataForGroup.PDescription:'',
-                poster:dataForGroup.ProjectLogo?(isArray(dataForGroup.ProjectLogo)?dataForGroup.ProjectLogo[0]:dataForGroup.ProjectLogo):[],
+                poster:dataForGroup.ProjectLogo?(dataForGroup.ProjectLogo.length>0?dataForGroup.ProjectLogo[0]:[]):[],
                 ProjectPDF:dataForGroup.ProjectPDF?dataForGroup.ProjectPDF:'',
                 isPublished:dataForGroup.isPublished!==undefined?dataForGroup.isPublished:false,
                 StudentDetails:dataForGroup.Students?dataForGroup.Students:[],
@@ -159,7 +160,7 @@ class St2 extends React.Component{
                 tags:tagsList
 
             },()=>{
-                this.setState({projectDetails:this.getProjectDetails()})
+                this.setState({projectDetails:this.getProjectDetails(),isReady:true});
             })
             //get list of advisors from firebase
             this.getAdvisorsForDepartment();
@@ -278,9 +279,7 @@ class St2 extends React.Component{
         })
     }
     getStudentsDetails = (students)=>{
-        this.setState({StudentsDetails:students},()=>{
-            console.log(this.state.StudentsDetails);
-        })
+        this.setState({StudentsDetails:students})
     }
     savePic=(url,title,index)=>{
         switch (title) {
@@ -295,14 +294,12 @@ class St2 extends React.Component{
     changeStudentImage = (url,index)=>{
         this.state.StudentsDetails[index].Picture = url;
         this.forceUpdate();
-        console.log(this.state.StudentsDetails);
     }
     savePDF = (url)=>{
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
         this.setState({
             ProjectPDF:url
         },()=>{
-            console.log(this.state.ProjectPDF)
             ref.update({
                 ProjectPDF:this.state.ProjectPDF,
             })
@@ -361,7 +358,6 @@ class St2 extends React.Component{
     }
     //delete pdf/word file
     DeletePdf=()=>{
-        console.log(this.state.ProjectPDF)
         if(this.state.ProjectPDF!==''){
             const desertRef = firebase.storage().refFromURL(this.state.ProjectPDF);
             // Delete the file
@@ -380,11 +376,10 @@ class St2 extends React.Component{
         }
     }
     ChangeInputTextarea = (event,textareaTitle)=>{
-        console.log(event)
         switch (textareaTitle) {
             case sectionNames.projectDesc:this.setState({PDescription:event})
                 break;
-            case sectionNames.projectName:this.setState({ProjectName:event.target.value},()=>{console.log(this.state.ProjectName)})
+            case sectionNames.projectName:this.setState({ProjectName:event.target.value})
                 break;
            default:
                break;
@@ -416,7 +411,7 @@ class St2 extends React.Component{
                 break;
         }
     }
-    CloseAlert = ()=>{this.setState({alertShow:false},()=>console.log(this.state.alertShow))}
+    CloseAlert = ()=>{this.setState({alertShow:false})}
     changePublished = ()=>{
         const temp = !this.state.isPublished;
         const ref = firebase.database().ref('RuppinProjects/'+this.state.projectKey);
@@ -450,7 +445,7 @@ class St2 extends React.Component{
     }
     render(){
         const {Configs} = this.state;
-        if (!this.state.isReady) {
+        if (!this.state.isReady || !Configs) {
             return(
                 <div style={{flex:1,backgroundColor:'#eee'}}>
                     <Loader type="Watch" color="#58947B" height="100" width="100"/> 

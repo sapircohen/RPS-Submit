@@ -152,12 +152,12 @@ export default class PreviewCard extends React.Component{
                     {/* project industrial partner */}
                     {
                     this.props.projectDetails.PartnerDescription &&
-                    <PreviewParagraph Paragraph={this.props.projectDetails.PartnerDescription} Title="שותף תעשייתי" Icon={IoIosContacts} />
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.PartnerDescription} Title="שותף תעשייתי" Icon={IoIosContacts} />
                     }
                     {/* project Comments */}
                     {
                     this.props.projectDetails.Comments &&
-                    <PreviewParagraph Paragraph={this.props.projectDetails.Comments} Title="הערות" Icon={IoIosContacts} />
+                    <RichTextPreviewParagraph Paragraph={this.props.projectDetails.Comments} Title="הערות" Icon={IoIosContacts} />
                     }
                     {/* project goals (for IS project) */}
                     {

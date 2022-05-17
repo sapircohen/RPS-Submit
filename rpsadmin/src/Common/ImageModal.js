@@ -94,7 +94,6 @@ class ModalImage extends React.Component{
             const isVerified = this.verifyFile(files);
             if(isVerified){
                 const currentFile = files[0];
-                console.log(currentFile)
                 const reader = new FileReader();
                 reader.addEventListener('load',()=>{
                     this.setState({
@@ -200,10 +199,7 @@ class ModalImage extends React.Component{
         this.setState({ zoom })
     }
     screenShotName = (e)=>{
-        this.setState({screenshotName:e.target.value},
-        ()=>{
-            console.log(this.state.screenshotName)
-        })
+        this.setState({screenshotName:e.target.value});
     }
     changeAspect=(e)=>{
         this.setState({aspect:e.target.value})
