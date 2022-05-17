@@ -5,6 +5,7 @@ import {Form,Col,Row} from 'react-bootstrap';
 
 
 const RichText = (props) => {
+  debugger;
   const [counter,setCounter] = useState(props.defaultInput.length?props.defaultInput.length:0);
   const {isMandatory,maximum,minimum} = props.configs;
   const changeText=(value,title)=>{

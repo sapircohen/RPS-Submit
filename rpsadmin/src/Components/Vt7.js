@@ -201,7 +201,7 @@ export default class Vt7 extends React.Component{
                     </Col>
                     }
                     
-                    {(this.props.projectDetails.ProjectConclusion||this.props.projectDetails.ProjectFindings||this.props.projectDetails.Sources)&&
+                    {(this.props.projectDetails.ProjectConclusion||this.props.projectDetails.projectFindings||this.props.projectDetails.Sources)&&
                     <Col className="Box" style={{marginTop:'2%',textAlign:'center'}}>
                         <Row style={{textAlign:'center'}} dir="rtl" className="show-grid">
                             <Col>
@@ -210,9 +210,9 @@ export default class Vt7 extends React.Component{
                                     <Col dir="rtl" >
                                         <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectConclusion} Title="דיון ומסקנות"/>
                                     </Col>}
-                                    {this.props.projectDetails.ProjectFindings &&
+                                    {this.props.projectDetails.projectFindings &&
                                     <Col dir="rtl" >
-                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.ProjectFindings} Title="ממצאים"/>
+                                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.projectFindings} Title="ממצאים"/>
                                     </Col>}
                                 </Row>
                             </Col>

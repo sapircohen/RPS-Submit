@@ -196,7 +196,7 @@ export default class ModalExample1 extends React.Component{
                         {/* project small summery */}
                         {
                         this.props.projectDetails.CDescription &&
-                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.CDescription} Icon={''} Title="תקציר הפרויקט"/>
+                        <RichTextPreviewParagraph Paragraph={this.props.projectDetails.CDescription} Icon={''} Title="תיאור קצר"/>
                         }
                         </Col>
                         <Col></Col>

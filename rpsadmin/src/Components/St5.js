@@ -35,9 +35,9 @@ import { config } from 'process';
 let configs = localStorage.getItem('TemplateConfig')?JSON.parse(localStorage.getItem('TemplateConfig')):JSON.parse(localStorage.getItem('st5'));
 
 const sectionNames = {
-    projectDesc : "רקע ומטרת הפרויקט *עד 400 תוים",
+    projectDesc : "רקע ומטרת הפרויקט",
     projectChallenges:"אתגרי הפרויקט",
-    projectSmallDesc:" תיאור קצר *עד 200 תוים",
+    projectSmallDesc:" תיאור קצר",
     projectComments:"הערות",
     projectName:"שם הפרויקט",
     projectStackholders:"בעלי עניין",
@@ -49,10 +49,10 @@ const sectionNames = {
     projectMovie:'קישור לסרטון הפרויקט ביוטיוב',
     projectSemester:'סמסטר',
     projectYear:'שנה',
-    ProjectConclusion:'סיכום ומסקנות *עד 1000 תוים',
-    projectFindings:'תוצאות *עד 2000 תוים',
+    ProjectConclusion:'סיכום ומסקנות',
+    projectFindings:'תוצאות',
     projectPartnerDescription:'תיאור שותף תעשייתי',
-    ProjectSummery:'תקציר *עד 1000 תוים'
+    ProjectSummery:'תקציר'
 }
 export default class St5 extends React.Component{
     constructor(props){
@@ -385,7 +385,7 @@ export default class St5 extends React.Component{
             Technologies:this.state.chosenTechs,
             ProjectCourse:this.state.ProjectCourse,
             ProjectConclusion:this.state.ProjectConclusion,
-            ProjectFindings:this.state.projectFindings,
+            projectFindings:this.state.projectFindings,
             PartnerDescription:this.state.PartnerDescription,
             HashTags:this.state.tags,
         }

@@ -58,6 +58,7 @@ export default class Validator{
                     case 'Recommendations':
                         this.Recommendations = element;
                         break;
+                    case 'projectFindings':
                     case 'ProjectFindings':
                         this.ProjectFindings = element;
                         break;
